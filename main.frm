@@ -47,10 +47,10 @@ object MainForm: TMainForm
     Height = 408
     Top = 42
     Width = 504
-    ActivePage = AboutPage
+    ActivePage = CfgPage
     Align = alClient
     ShowTabs = False
-    TabIndex = 5
+    TabIndex = 2
     TabOrder = 1
     object PopolnPage: TTabSheet
       Caption = 'PopolnPage'
@@ -292,20 +292,20 @@ object MainForm: TMainForm
       ClientWidth = 496
       object ScrollBox1: TScrollBox
         Left = 0
-        Height = 380
+        Height = 400
         Top = 0
         Width = 496
         HorzScrollBar.Increment = 36
         HorzScrollBar.Page = 365
         HorzScrollBar.Smooth = True
         HorzScrollBar.Tracking = True
-        VertScrollBar.Increment = 38
-        VertScrollBar.Page = 380
+        VertScrollBar.Increment = 40
+        VertScrollBar.Page = 400
         VertScrollBar.Smooth = True
         VertScrollBar.Tracking = True
         Align = alClient
         BorderStyle = bsNone
-        ClientHeight = 380
+        ClientHeight = 400
         ClientWidth = 479
         TabOrder = 0
         object GroupBox1: TGroupBox
@@ -329,6 +329,7 @@ object MainForm: TMainForm
             Width = 445
             Anchors = [akTop, akLeft, akRight]
             BorderSpacing.Right = 8
+            MaxLength = 100
             OnChange = NameOrgEditChange
             OnUTF8KeyPress = NameOrgEditUTF8KeyPress
             TabOrder = 0
@@ -477,7 +478,7 @@ object MainForm: TMainForm
             EditLabel.Caption = 'Папка с STT файлами'
             EditLabel.ParentColor = False
             TabOrder = 1
-            OnClick = STTEditClick
+            OnChange = STTEditChange
           end
           object STTDirButton: TSpeedButton
             AnchorSideRight.Side = asrBottom

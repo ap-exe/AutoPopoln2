@@ -128,7 +128,7 @@ type
     procedure SetDTButtonClick(Sender: TObject);
     procedure STTCheckBoxClick(Sender: TObject);
     procedure STTDirButtonClick(Sender: TObject);
-    procedure STTEditClick(Sender: TObject);
+    procedure STTEditChange(Sender: TObject);
     procedure TreeView1Click(Sender: TObject);
     procedure CopyConsFiles(FromPath, ToPath, Mask: string);
     function GetPathX(const path: string): string;
@@ -138,7 +138,6 @@ type
     procedure USRCheckBoxClick(Sender: TObject);
     procedure USRDirButtonClick(Sender: TObject);
     procedure USRDirEditChange(Sender: TObject);
-    procedure USRDirEditClick(Sender: TObject);
     procedure yes1Click(Sender: TObject);
     procedure WriteReport;
   private
@@ -165,6 +164,7 @@ uses
 
 { TMainForm }
 
+// при щелчке по названию раздела показывает его
 procedure TMainForm.TreeView1Click(Sender: TObject);
 begin
   PageControl.ActivePageIndex:=TreeView1.Selected.Index;
@@ -176,6 +176,7 @@ begin
   Close;
 end;
 
+// копирование файлов
 procedure TMainForm.CopyButtonClick(Sender: TObject);
 begin
   if USRCheckBox.Checked then CopyUSR;
@@ -183,11 +184,13 @@ begin
   if PopolnCheckBox.Checked then CopyPopoln;
 end;
 
+// добавляет в настройках командной строки параметр /base*
 procedure TMainForm.base1Click(Sender: TObject);
 begin
   KeyCmdEdit.Text:=KeyCmdEdit.Text+' /base*';
 end;
 
+// создавать или нет подпапки с названием организации
 procedure TMainForm.cbCreateSubDirClick(Sender: TObject);
 begin
   if cbCreateSubDir.Checked then
@@ -196,6 +199,7 @@ begin
     USRPath:=USRPath+'\';
 end;
 
+// выбор папки с Консультантом
 procedure TMainForm.DirConsButtonClick(Sender: TObject);
 begin
   SelectDirDialog.Title:='Выберите папку с Консультантом';
@@ -216,46 +220,32 @@ begin
   ErrDocRE.SetFocus;
 end;
 
+// процедура используется для копирования SST и USR файлов
 procedure TMainForm.CopyConsFiles(FromPath, ToPath, Mask: string);
 var
-  SR: TSearchRec;
-  s: string;
+  CopyThread: TCopyFileThread;
 begin
-  if ToPath<>'' then begin
-    s:=Copy(Mask, Length(Mask)-2, 3);
-    TotalCopyLabel.Caption:='Копирую '+s+' файлы...';
-    if not ForceDirectories(ToPath) then begin
-      MessageDlg('Ошибка', 'Не могу создать папку '+ToPath, mtError, [mbOK], 0);
-      Exit;
-    end;
-
-       if FindFirst(FromPath+Mask, faAnyFile, SR)=0 then begin
-        repeat
-          if not CopyFileEx(FromPath+SR.Name, ToPath+'\'+SR.Name, true, nil) then
-            if MessageDlg('Произошла ошибка копирования файла '+SR.Name+'!'+#10#13+
-              'Продолжить копирование?', mtError, [mbYes, mbNo], 0, mbNo)=mrNo then begin
-                TotalCopyLabel.Caption:=Mask+'-файлы не скопированы';
-                Exit;
-              end;
-          Application.ProcessMessages;
-        until FindNext(SR) <> 0;
-      end;
-    end;
-
-    TotalCopyLabel.Caption:=s+'-файлы скопированы';
-    SysUtils.FindClose(SR);
+  CopyThread:=TCopyFileThread.Create(FromPath, ToPath, Mask, True);
+  CopyThread.Start;
+  while not CopyThread.Finished do Application.ProcessMessages;
+  CopyThread.Terminate;
+  TotalCopyLabel.Caption:='';
+  ProgressBar1.Position:=0;
 end;
 
+// копирование USR файлов
 procedure TMainForm.CopyUSR;
 begin
   CopyConsFiles(DirConsEdit.Text+'\Receive\', USRPath, 'CONS#*.USR');
 end;
 
+// копирование STT файлов в папку USR
 procedure TMainForm.CopySTT;
 begin
   CopyConsFiles(STTEdit.Text+'\', USRPath, '*.STT');
 end;
 
+// копирвание пополнений
 procedure TMainForm.CopyPopoln;
 var
   i, j: integer;
@@ -285,7 +275,8 @@ begin
     CopyThread.Start;
     // ждем поток
     while not CopyThread.Finished do Application.ProcessMessages;
-    TotalCopyLabel.Caption:=IntToStr(CopyThread.FFileNames.Count)+' файлов скопированы';
+    TotalCopyLabel.Caption:=IntToStr(CopyThread.FFileNames.Count)+
+      ' файлов пополнения скопированы';
 
     //добавление в лог последней даты пополнения
     //формат папки с пополнением 3112pop
@@ -321,11 +312,22 @@ begin
   cbCreateSubDir.Enabled:=USRCheckBox.Checked;
 end;
 
+// выбор папки куда будут складываться USR файлы
+// сразу после выбора буква диска меняется на [x]
+// [x] - это буква диска с которого запущена программа, обычно это флешка
 procedure TMainForm.USRDirButtonClick(Sender: TObject);
 begin
   SelectDirDialog.Title:='Выберите папку куда нужно будет скопировать USR-файлы';
   if SelectDirDialog.Execute then
     USRDirEdit.Text:='[x]'+Copy(SelectDirDialog.FileName, 3, Length(SelectDirDialog.FileName));
+end;
+
+// выбор папки с пополнением в настройках
+procedure TMainForm.PopolnButtonClick(Sender: TObject);
+begin
+  SelectDirDialog.Title:='Выберите папку с пополнением';
+  if SelectDirDialog.Execute then
+    PopolnEdit.Text:='[x]'+Copy(SelectDirDialog.FileName, 3, Length(SelectDirDialog.FileName));
 end;
 
 procedure TMainForm.USRDirEditChange(Sender: TObject);
@@ -337,21 +339,19 @@ begin
     USRPath:=USRDirEdit.Text;
 end;
 
-procedure TMainForm.USRDirEditClick(Sender: TObject);
-begin
-
-end;
-
+// добавляет в настройках командной строки параметр /yes
 procedure TMainForm.yes1Click(Sender: TObject);
 begin
   KeyCmdEdit.Text:=KeyCmdEdit.Text+' /yes';
 end;
 
+// добавляет в настройках командной строки параметр /adm
 procedure TMainForm.adm1Click(Sender: TObject);
 begin
-  KeyCmdEdit.Text:=KeyCmdEdit.Text+'/adm';
+  KeyCmdEdit.Text:=KeyCmdEdit.Text+' /adm';
 end;
 
+// поиск в описаниях ошибок
 procedure TMainForm.FindEditChange(Sender: TObject);
 var
   opt: TSearchOptions;
@@ -381,6 +381,7 @@ begin
   FindEdit.SetFocus;
 end;
 
+// закрытие программы
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 var
   i: integer;
@@ -394,6 +395,7 @@ begin
   ListFiles.Free;
 end;
 
+// инициализация программы
 procedure TMainForm.FormCreate(Sender: TObject);
 var
   buffer: array [0..255] of Char;
@@ -477,11 +479,13 @@ begin
   end;
 end;
 
+// показ меню с ключами коммандной строки
 procedure TMainForm.KeyCmdButtonClick(Sender: TObject);
 begin
   KeyCmdMenu.PopUp;
 end;
 
+// выбор или отмена всех элементов в списке баз
 procedure TMainForm.ListBasesColumnClick(Sender: TObject; Column: TListColumn);
 begin
   if Column.Index=0 then begin
@@ -492,6 +496,7 @@ begin
   end;
 end;
 
+// закрашивает серым цветом невыделенные элементы в списке баз
 procedure TMainForm.ListBasesCustomDrawItem(Sender: TCustomListView;
   Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean);
 begin
@@ -499,7 +504,7 @@ begin
     ListBases.Canvas.Font.Color:=clGray;
 end;
 
-
+// при выборе раздела Лог вывод его
 procedure TMainForm.LogPageShow(Sender: TObject);
 begin
   WriteReport;
@@ -513,6 +518,7 @@ begin
   KeyCmdMemo.SetFocus;
 end;
 
+// снятие выбора со всех элементов в списке баз
 procedure TMainForm.N3Click(Sender: TObject);
 var
   i: integer;
@@ -523,6 +529,7 @@ begin
   ListBases.Columns[0].Caption:='[  ]';
 end;
 
+// выбор всех элементов в списке баз
 procedure TMainForm.N4Click(Sender: TObject);
 var
   i: integer;
@@ -533,12 +540,14 @@ begin
   ListBases.Columns[0].Caption:='[v]';
 end;
 
+// вывод в заголовке названия организации
 procedure TMainForm.NameOrgEditChange(Sender: TObject);
 begin
    NameOrgEdit.Color:=clWindow;
    ClientLabel.Caption:='Организация: '+NameOrgEdit.Text;
 end;
 
+// проверка на ввод правильных символов при вводе названия организации
 procedure TMainForm.NameOrgEditUTF8KeyPress(Sender: TObject;
   var UTF8Key: TUTF8Char);
 begin
@@ -548,11 +557,13 @@ begin
   end;
 end;
 
+// добавляет в настройках командной строки параметр /norunner
 procedure TMainForm.norunner1Click(Sender: TObject);
 begin
   KeyCmdEdit.Text:=KeyCmdEdit.Text+' /norunner';
 end;
 
+// открытие в проводнике папки с Консультантом
 procedure TMainForm.OpenDirConsButtonClick(Sender: TObject);
 begin
   if DirectoryExists(DirConsEdit.Text) then
@@ -564,13 +575,6 @@ begin
 
 end;
 
-procedure TMainForm.PopolnButtonClick(Sender: TObject);
-begin
-  SelectDirDialog.Title:='Выберите папку с пополнением';
-  if SelectDirDialog.Execute then
-    PopolnEdit.Text:='[x]'+Copy(SelectDirDialog.FileName, 3, Length(SelectDirDialog.FileName));
-end;
-
 procedure TMainForm.PopolnCheckBoxClick(Sender: TObject);
 begin
   PopolnEdit.Enabled:=PopolnCheckBox.Checked;
@@ -578,6 +582,7 @@ begin
   PopolnEdit.Color:=clWindow;
 end;
 
+// функция замены [x] на букву диска с которого запушена программа
 function TMainForm.GetPathX(const path: string): string;
 begin
   if Copy(path, 0, 3)='[x]' then
@@ -596,28 +601,32 @@ begin
     PopolnPath:=PopolnEdit.Text;
 end;
 
+// вывод главной вкладки
 procedure TMainForm.PopolnPageShow(Sender: TObject);
 var
   FreeSize: integer;
   s, dir: string;
   ResFiles: TStringList;
 begin
+  // вывод версии cons.exe
   if FileExists(DirConsEdit.Text+'\cons.exe') then
-    ConsText.Caption:='cons.exe: '+GetFileVersionEx(DirConsEdit.Text+'\cons.exe')
+    ConsText.Caption:='cons.exe: '+FileVersion(DirConsEdit.Text+'\cons.exe')
   else
     ConsText.Caption:='Файл cons.exe не найден';
-
+  // поиск и вывод версии файла *.res
   if DirConsEdit.Text<>'' then begin
     ResFiles:=TStringList.Create;
     FindFiles(DirConsEdit.Text, 'vr*.res;ht*.res;sh*.res', ResFiles, false);
     if ResFiles.Count>0 then begin
       s:=ResFiles[ResFiles.Count-1];
-      RESText.Caption:=Copy(s, s.LastDelimiter('\')+2, Length(s)-1)+': '+GetFileVersionEx(s);
+      RESText.Caption:=Copy(s, s.LastDelimiter('\')+2, Length(s)-1)+': '+FileVersion(s);
     end
     else
       RESText.Caption:='RES файл не найден';
     ResFiles.Free;
   end;
+  // выводится свободное место на диске с Консультантом
+  // если папка с Консультантом не указана, выводится свободное место на диске C:
   if DirConsEdit.Text<>'' then
     dir:=DirConsEdit.Text
   else
@@ -627,30 +636,36 @@ begin
   if FreeSize<1000 then FreeSizeText.Font.Color:=clRed;
   FreeSizeText.Caption:='Свободное место на диске '+Copy(dir, 0, 1)+
     ': '+IntToStr(FreeSize)+' МБ';
+  // текущее время и дата
   DateTimePicker1.DateTime:=Now;
 end;
 
+// добавляет в настройках командной строки параметр /process=2
 procedure TMainForm.process21Click(Sender: TObject);
 begin
   KeyCmdEdit.Text:=KeyCmdEdit.Text+' /process=2';
 end;
 
+// добавляет в настройках командной строки параметр /receive
 procedure TMainForm.receive1Click(Sender: TObject);
 begin
   KeyCmdEdit.Text:=KeyCmdEdit.Text+' /receive';
 end;
 
+// обновление текущей даты и времени
 procedure TMainForm.ReloadDTButtonClick(Sender: TObject);
 begin
   DateTimePicker1.DateTime:=Now;
 end;
 
+// обновление лога по кнопке F5
 procedure TMainForm.ReportKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if Key=VK_F5 then WriteReport;
 end;
 
+// запуск Консультанта с ключами указанными в настройках
 procedure TMainForm.RunPopolnButtonClick(Sender: TObject);
 var
   StartupInfo: TStartupInfo;
@@ -667,6 +682,7 @@ begin
     MessageDlg('Ошибка', 'Не найден файл cons.exe', mtError, [mbOK], 0);
 end;
 
+// изменение даты и времени на компе
 procedure TMainForm.SetDTButtonClick(Sender: TObject);
 var
   st: TSystemTime;
@@ -698,11 +714,12 @@ begin
     STTEdit.Text:=SelectDirDialog.FileName;
 end;
 
-procedure TMainForm.STTEditClick(Sender: TObject);
+procedure TMainForm.STTEditChange(Sender: TObject);
 begin
   STTEdit.Color:=clWindow;
 end;
 
+// вывод лога
 procedure TMainForm.WriteReport;
 var
   lastrec: TStringList;
@@ -724,6 +741,7 @@ begin
   end;
 end;
 
+// вывод таблицы с базами
 procedure TMainForm.FillTableBase;
 var
   i, p, index: integer;

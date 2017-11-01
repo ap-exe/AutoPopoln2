@@ -84,7 +84,7 @@ end;
 // SizeFiles - размер всех файлов полученый из функции FindFiles
 // DestDir - папка куда все копируется
 // Replace - Заменять файлы или нет?
-// CreateDir - создавать папки или все в DestDir свалить?
+// CreateDir - создавать подкаталоги или все в DestDir свалить?
 procedure TCopyFileThread.CopyFiles(FileNames: TStringList; SizeFiles: Int64; DestDir: string;
   Replace: boolean = False; CreateDir: boolean = False);
 var
@@ -145,7 +145,6 @@ begin
   FSrcDir:=SrcDir;
   FMask:=Mask;
   FReplace:=Replace;
-  //FreeOnTerminate:=True;
 end;
 
 destructor TCopyFileThread.Destroy;
@@ -159,9 +158,9 @@ procedure TCopyFileThread.ShowProgress;
 begin
   with MainForm do begin
     TotalCopyLabel.Caption:='Копируется '+FName;
-    ProgressBar1.Max:=round((FSizeFiles/1024)/1024);
-    ProgressBar1.Position:=round((FPosition/1024)/1024);
-    // показываем прогресс копирования фалйов на панели задач
+    ProgressBar1.Max:=FSizeFiles;
+    ProgressBar1.Position:=round((FPosition/1024)/1024); //пересчитываем в МБ
+    // показываем прогресс копирования файлов на панели задач
     if CheckWin32Version(6,1) then
       iTaskBar.SetProgressValue(MainForm.Handle, UInt64(ProgressBar1.Position),
         UInt64(ProgressBar1.Max));
@@ -171,8 +170,10 @@ end;
 // запуск поиска и копирования файлов в потоке
 procedure TCopyFileThread.Execute;
 begin
-  FSizeFiles:=FindFiles(FSrcDir, FMask, FFileNames, true);
+  // поиск файлов. размер найденных файлов персчитавется в МБ
+  FSizeFiles:=round((FindFiles(FSrcDir, FMask, FFileNames, true)/1024)/1024);
   CopyFiles(FFileNames, FSizeFiles, FDestDir, True);
+
 end;
 
 end.

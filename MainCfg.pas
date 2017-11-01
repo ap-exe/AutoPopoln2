@@ -13,6 +13,8 @@ uses
 var
   r: TRegistry;
 
+// парсинг строки S в которой присутствует разделитель Char
+// Count указывает на позицию
 function Parse(Char, S: string; Count: Integer): string;
 var
   I: Integer;
@@ -28,6 +30,7 @@ begin
   Result := T;
 end;
 
+// функция сохраняет параметры программы в реестре
 function SaveCfg: boolean;
 var
   i: integer;
@@ -81,6 +84,7 @@ begin
   end;
 end;
 
+// функция загрузки параметров программы
 function LoadCfg: boolean;
 var
   i, p: integer;
@@ -116,10 +120,8 @@ begin
         MainForm.USRCheckBox.Checked:=r.ReadBool('CopyUSR');
         MainForm.USRDirEdit.Text:=r.ReadString('USRDir');
       end
-      else begin
-        //MainForm.USRDirEdit.Text:='[apdrive]\usr';
+      else
         MainForm.USRCheckBox.Checked:=false;
-      end;
       MainForm.USRCheckBoxClick(nil);
 
       if r.ValueExists('CreateSubDir') then begin

@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, SysUtils, Classes, ComObj, Masks, ShellApi, Graphics, Forms, Dialogs,
-  Controls, main;
+  Controls;
 
 {$IFDEF UNICODE}
     function PrivateExtractIcons(lpszFile: PChar; nIconIndex, cxIcon, cyIcon: integer; phicon: PHANDLE; piconid: PDWORD; nicon, flags: DWORD): DWORD; stdcall ; external 'user32.dll' name 'PrivateExtractIconsW';
@@ -15,23 +15,12 @@ uses
 Type
   TCallBack=procedure (Position, FileSize: Int64); {Для индикации процесса копирования}
 
-  TGetDirSizeCallback = procedure(CurrentSize: Int64; count: integer);
 
 procedure FindFiles(StartFolder, Mask: string; List: TStrings;
   ScanSubFolders: Boolean = True);
-procedure GetDirSize(Dir: string; IncludeSubDirs: Boolean; var Result: Int64;
-  CallbackProc: TGetDirSizeCallback = nil; CallbackTag: Integer = 0); overload;
 
 function CopyFileEx(const InFile, OutFile: string; Replace: boolean;
   CallBack: TCallBack): boolean;
-
-function GetFileVersionEx(FileName: string): string;
-
-function GetDiskFreeSpaceEx(lpDirectoryName: PAnsiChar;
-  var lpFreeBytesAvailableToCaller : Integer;
-  var lpTotalNumberOfBytes: Integer;
-  var lpTotalNumberOfFreeBytes: Integer) : bool; stdcall; external kernel32
-  name 'GetDiskFreeSpaceExA';
 
 function FileVersion(const FileName: TFileName): String;
 
@@ -82,37 +71,6 @@ begin
   end;
 end;
 
-procedure GetDirSize(Dir: string; IncludeSubDirs: Boolean; var Result: Int64;
-  CallbackProc: TGetDirSizeCallback = nil; CallbackTag: Integer = 0); overload;
-var
-  SearchRec: TSearchRec;
-  FindResult: Integer;
-begin
-  Dir := IncludeTrailingBackslash(Dir);
-  FindResult := FindFirst(Dir + '*.*', faAnyFile, SearchRec);
-  try
-    while FindResult = 0 do
-      with SearchRec do
-      begin
-        if (Attr and faDirectory) <> 0 then
-        begin
-          if IncludeSubDirs and (Name <> '.') and (Name <> '..') then
-            GetDirSize(Dir + Name, IncludeSubDirs, Result, CallbackProc,
-              CallbackTag);
-        end
-        else
-        begin
-          Result := Result + Cardinal(Size);
-          if Assigned(CallbackProc) then
-            CallbackProc(CallbackTag, Result);
-        end;
-        FindResult := FindNext(SearchRec);
-      end;
-  finally
-    FindClose(SearchRec);
-  end;
-end;
-
 
 // Функция копирования файлов с поддержкой докачки
 function CopyFileEx(const InFile, OutFile: string; Replace: boolean;
@@ -160,72 +118,7 @@ begin
   Result:=True;
 end;
 
-function GetFileVersionEx(FileName: string): string;
-var
-  InfoSize, puLen: DWORD;
-  Pt, InfoPtr: Pointer;
-  VerInfo : TVSFixedFileInfo;
-begin
-  InfoSize := GetFileVersionInfoSize( PChar(FileName), puLen );
-  FillChar(VerInfo, SizeOf(TVSFixedFileInfo), 0);
-  if InfoSize > 0 then
-  begin
-    GetMem(Pt,InfoSize);
-    GetFileVersionInfo( PChar(FileName), 0, InfoSize, Pt);
-    VerQueryValue(Pt,'\',InfoPtr,puLen);
-    Move(InfoPtr^, VerInfo, sizeof(TVSFixedFileInfo) );
-    FreeMem(Pt);
-    Result := Format('%u.%u.%u.%u',[HiWord(VerInfo.dwProductVersionMS),
-      LoWord(VerInfo.dwProductVersionMS), HiWord(VerInfo.dwProductVersionLS),
-      LoWord(VerInfo.dwProductVersionLS)])
-  end
-  else
-    Result := '';
-end;
-
-procedure GetDiskSizeAvail(TheDrive : PAnsiChar;
-  var TotalBytes : int64; var TotalFree : int64);
-var
-  AvailToCall : integer;
-  TheSize : integer;
-  FreeAvail : integer;
-begin
-  GetDiskFreeSpaceEx(TheDrive, AvailToCall, TheSize, FreeAvail);
-  {$IFOPT Q+}
-  {$DEFINE TURNOVERFLOWON}
-  {$Q-}
-  {$ENDIF}
-  if TheSize >= 0 then
-    TotalBytes := TheSize
-  else
-  if TheSize = -1 then
-  begin
-    TotalBytes := $7FFFFFFF;
-    TotalBytes := TotalBytes * 2;
-    TotalBytes := TotalBytes + 1;
-  end
-  else
-  begin
-    TotalBytes := $7FFFFFFF;
-    TotalBytes := TotalBytes + abs($7FFFFFFF - TheSize);
-  end;
-
-  if AvailToCall >= 0 then
-    TotalFree := AvailToCall
-  else
-  if AvailToCall = -1 then
-  begin
-    TotalFree := $7FFFFFFF;
-    TotalFree := TotalFree * 2;
-    TotalFree := TotalFree + 1;
-  end
-  else
-  begin
-    TotalFree := $7FFFFFFF;
-    TotalFree := TotalFree + abs($7FFFFFFF - AvailToCall);
-  end;
-end;
-
+// функция возвращает версию exe-файла
 function FileVersion(const FileName: TFileName): String;
 var
   VerInfoSize: Cardinal;
@@ -241,7 +134,7 @@ begin
     if GetFileVersionInfo(PChar(FileName), 0, VerInfoSize, PVerInfo) then
       if VerQueryValue(PVerInfo, '\', Pointer(PVerValue), VerValueSize) then
         with PVerValue^ do
-          Result := Format('v%d.%d.%d build %d', [
+          Result := Format('v%d.%d.%d.%d', [
             HiWord(dwFileVersionMS), //Major
             LoWord(dwFileVersionMS), //Minor
             HiWord(dwFileVersionLS), //Release
@@ -251,6 +144,7 @@ begin
   end;
 end;
 
+// процедура запуска программ от имени админа
 procedure RunAsAdministrator(const source: string; const params: string = '');
 var
   shExecInfo: LPSHELLEXECUTEINFO;
