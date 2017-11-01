@@ -1,0 +1,28 @@
+program ap;
+
+{$mode objfpc}{$H+}
+
+uses
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
+  Interfaces, // this includes the LCL widgetset
+  Forms, main, CopyFileThread
+  { you can add units after this };
+
+{$R *.res}
+
+begin
+  RequireDerivedFormResource:=True;
+  Application.Initialize;
+  Application.CreateForm(TMainForm, MainForm);
+  if MainForm.LoadedCfg and (ParamStr(1)='/auto') and (ParamStr(2)='') then begin
+    MainForm.Show;
+    MainForm.CopyButtonClick(nil);
+    MainForm.RunPopolnButtonClick(nil);
+    if MainForm.cbCloseProg.Checked then Application.Terminate;
+  end;
+  {$IFDEF WINDOWS}{$Warnings OFF}Application.MainFormOnTaskBar := True;{$Warnings ON}{$ENDIF}
+  Application.Run;
+end.
+
