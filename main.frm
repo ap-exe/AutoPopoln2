@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 324
+  Left = 299
   Height = 500
-  Top = 221
+  Top = 0
   Width = 624
   Caption = 'АвтоПополнение'
   ClientHeight = 500
@@ -11,7 +11,9 @@ object MainForm: TMainForm
   DefaultMonitor = dmPrimary
   OnClose = FormClose
   OnCreate = FormCreate
+  OnShow = FormShow
   Position = poWorkAreaCenter
+  ShowHint = True
   LCLVersion = '6.2'
   object TreeView1: TTreeView
     Left = 0
@@ -47,10 +49,10 @@ object MainForm: TMainForm
     Height = 408
     Top = 42
     Width = 504
-    ActivePage = CfgPage
+    ActivePage = AboutPage
     Align = alClient
     ShowTabs = False
-    TabIndex = 2
+    TabIndex = 5
     TabOrder = 1
     object PopolnPage: TTabSheet
       Caption = 'PopolnPage'
@@ -110,6 +112,7 @@ object MainForm: TMainForm
         AnchorSideRight.Control = RunPopolnButton
         Left = 37
         Height = 25
+        Hint = 'Копировать обновления, USR и STT файлы'
         Top = 61
         Width = 100
         Anchors = [akTop, akRight]
@@ -123,6 +126,7 @@ object MainForm: TMainForm
         AnchorSideRight.Side = asrBottom
         Left = 357
         Height = 25
+        Hint = 'Открыть папку с Консультатнтом'
         Top = 61
         Width = 100
         Anchors = [akTop, akRight]
@@ -137,6 +141,7 @@ object MainForm: TMainForm
         AnchorSideRight.Control = OpenDirConsButton
         Left = 197
         Height = 25
+        Hint = 'Запуск Консультанта для пополнения'
         Top = 61
         Width = 100
         Anchors = [akTop, akRight]
@@ -185,7 +190,7 @@ object MainForm: TMainForm
       object ReloadDTButton: TSpeedButton
         Left = 33
         Height = 24
-        Hint = 'Обновить'
+        Hint = 'Обновить дату и время'
         Top = 247
         Width = 95
         Caption = 'Обновить'
@@ -196,6 +201,7 @@ object MainForm: TMainForm
         AnchorSideRight.Side = asrBottom
         Left = 355
         Height = 25
+        Hint = 'Изменить системную дату и время'
         Top = 246
         Width = 102
         Anchors = [akTop, akRight]
@@ -210,6 +216,7 @@ object MainForm: TMainForm
         AnchorSideRight.Control = SetDTButton
         Left = 149
         Height = 23
+        Hint = 'Колесиком мышки можно менять дату и время'
         Top = 248
         Width = 185
         CenturyFrom = 1941
@@ -242,7 +249,7 @@ object MainForm: TMainForm
       ClientWidth = 496
       object ListBases: TListView
         Left = 0
-        Height = 540
+        Height = 400
         Top = 0
         Width = 496
         Align = alClient
@@ -290,6 +297,7 @@ object MainForm: TMainForm
       Caption = 'CfgPage'
       ClientHeight = 400
       ClientWidth = 496
+      OnExit = CfgPageExit
       object ScrollBox1: TScrollBox
         Left = 0
         Height = 400
@@ -379,6 +387,7 @@ object MainForm: TMainForm
           AnchorSideRight.Side = asrBottom
           Left = 439
           Height = 23
+          Hint = 'Открыть окно для выбора папки'
           Top = 112
           Width = 23
           Anchors = [akTop, akRight]
@@ -432,6 +441,7 @@ object MainForm: TMainForm
             AnchorSideRight.Side = asrBottom
             Left = 428
             Height = 23
+            Hint = 'Открыть окно для выбора папки'
             Top = 21
             Width = 23
             Anchors = [akTop, akRight]
@@ -484,6 +494,7 @@ object MainForm: TMainForm
             AnchorSideRight.Side = asrBottom
             Left = 428
             Height = 23
+            Hint = 'Открыть окно для выбора папки'
             Top = 21
             Width = 23
             Anchors = [akTop, akRight]
@@ -537,6 +548,7 @@ object MainForm: TMainForm
             AnchorSideRight.Side = asrBottom
             Left = 428
             Height = 23
+            Hint = 'Открыть окно для выбора папки'
             Top = 21
             Width = 23
             Anchors = [akTop, akRight]
@@ -607,6 +619,7 @@ object MainForm: TMainForm
           Anchors = [akTop, akRight]
           BorderSpacing.Right = 10
           Caption = 'Сброс настроек'
+          OnClick = ResetCFGButtonClick
           TabOrder = 7
         end
         object KeyCmdButton: TSpeedButton
@@ -632,6 +645,7 @@ object MainForm: TMainForm
       object Report: TMemo
         Left = 0
         Height = 400
+        Hint = 'Обновить окно можно кнопкой F5'
         Top = 0
         Width = 496
         Align = alClient
@@ -723,6 +737,7 @@ object MainForm: TMainForm
       object Image1: TImage
         Left = 16
         Height = 64
+        Hint = 'Делал, делал и наконец доделал!)))'
         Top = 16
         Width = 64
         AutoSize = True

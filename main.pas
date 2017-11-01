@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, FileUtil, DateTimePicker, Forms, Controls, Graphics,
   ActiveX, Dialogs, ComCtrls, ExtCtrls, StdCtrls, Menus, Buttons, EditBtn,
   ShlObj, Windows, RegExpr, zlibfunc, LCLType,lconvencoding, RichMemo,
-  LazUTF8, DateUtils;
+  LazUTF8, DateUtils, Registry;
 
 type
 
@@ -94,6 +94,7 @@ type
     TreeView1: TTreeView;
     procedure base1Click(Sender: TObject);
     procedure cbCreateSubDirClick(Sender: TObject);
+    procedure CfgPageExit(Sender: TObject);
     procedure CopyButtonClick(Sender: TObject);
     procedure DirConsButtonClick(Sender: TObject);
     procedure DirConsEditChange(Sender: TObject);
@@ -104,6 +105,7 @@ type
     procedure FindEditMouseEnter(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure KeyCmdButtonClick(Sender: TObject);
     procedure ListBasesColumnClick(Sender: TObject; Column: TListColumn);
     procedure ListBasesCustomDrawItem(Sender: TCustomListView; Item: TListItem;
@@ -124,6 +126,7 @@ type
     procedure receive1Click(Sender: TObject);
     procedure ReloadDTButtonClick(Sender: TObject);
     procedure ReportKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure ResetCFGButtonClick(Sender: TObject);
     procedure RunPopolnButtonClick(Sender: TObject);
     procedure SetDTButtonClick(Sender: TObject);
     procedure STTCheckBoxClick(Sender: TObject);
@@ -140,6 +143,7 @@ type
     procedure USRDirEditChange(Sender: TObject);
     procedure yes1Click(Sender: TObject);
     procedure WriteReport;
+    procedure OpenCfgPage;
   private
     BasesLST: TStringList;
     TempPath, USRPath, PopolnPath, AppPath: string;
@@ -190,6 +194,7 @@ begin
   KeyCmdEdit.Text:=KeyCmdEdit.Text+' /base*';
 end;
 
+
 // создавать или нет подпапки с названием организации
 procedure TMainForm.cbCreateSubDirClick(Sender: TObject);
 begin
@@ -197,6 +202,43 @@ begin
     USRPath:=USRPath+'\'+NameOrgEdit.Text+'\'
   else
     USRPath:=USRPath+'\';
+end;
+
+// проверка на правильность настроек
+procedure TMainForm.CfgPageExit(Sender: TObject);
+begin
+  if NameOrgEdit.Text='' then begin
+    NameOrgEdit.Color:=clRed;
+    OpenCfgPage;
+  end;
+
+  if not DirectoryExists(PopolnEdit.Text) and PopolnCheckBox.Checked and
+    not (Copy(PopolnEdit.Text, 0, 3)='[x]') then begin
+      PopolnEdit.Color:=clRed;
+      OpenCfgPage;
+  end;
+
+  if not DirectoryExists(STTEdit.Text) and STTCheckBox.Checked then begin
+    STTEdit.Color:=clRed;
+    OpenCfgPage;
+  end;
+
+  if not DirectoryExists(USRDirEdit.Text) and USRCheckBox.Checked and
+    not (Copy(USRDirEdit.Text, 0, 3)='[x]') then begin
+      USRDirEdit.Color:=clRed;
+      OpenCfgPage;
+  end;
+
+  if not FileExists(DirConsEdit.Text+'\base\baselist.cfg') then begin
+    DirConsEdit.Color:=clRed;
+    OpenCfgPage;
+  end;
+
+  if DirConsChange then begin
+    FillTableBase;
+    N3Click(self);
+    DirConsChange:=False;
+  end;
 end;
 
 // выбор папки с Консультантом
@@ -479,6 +521,12 @@ begin
   end;
 end;
 
+// если не загрузились параметры при запуске программы, открыть раздел с настройками
+procedure TMainForm.FormShow(Sender: TObject);
+begin
+  if not LoadedCfg then OpenCfgPage;
+end;
+
 // показ меню с ключами коммандной строки
 procedure TMainForm.KeyCmdButtonClick(Sender: TObject);
 begin
@@ -663,6 +711,47 @@ procedure TMainForm.ReportKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if Key=VK_F5 then WriteReport;
+end;
+
+// открытие раздела настройки
+procedure TMainForm.OpenCfgPage;
+begin
+  TreeView1.Items[2].Selected:=True;
+  PageControl.Pages[2].Show;
+  PageControl.Pages[2].SetFocus;
+end;
+
+// сброс настроек
+procedure TMainForm.ResetCFGButtonClick(Sender: TObject);
+var
+  r: TRegistry;
+begin
+  // чистка реестра
+  r:=TRegistry.Create;
+  try
+    r.RootKey:=HKEY_CURRENT_USER;
+    r.OpenKey('Software', False);
+    r.DeleteKey('AutoPopoln');
+  finally
+    r.Free;
+  end;
+
+  NameOrgEdit.Text:='';
+  PopolnEdit.Text:='';
+  DirConsEdit.Text:='';
+  USRDirEdit.Text:='';
+  STTEdit.Text:='';
+  cbCreateSubDir.Checked:=true;
+  PopolnCheckBox.Checked:=false;
+  PopolnCheckBoxClick(nil);
+  STTCheckBox.Checked:=false;
+  STTCheckBoxClick(nil);
+  USRCheckBox.Checked:=false;
+  USRCheckBoxClick(nil);
+  KeyCmdEdit.Text:='/adm /receive /base* /yes';
+  cbCloseProg.Checked:=False;
+  ListBases.Items.Clear;
+  OpenCfgPage;
 end;
 
 // запуск Консультанта с ключами указанными в настройках
