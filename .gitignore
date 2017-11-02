@@ -1,0 +1,7 @@
+*.o
+*.ppu
+lib/i386-win32/libimpMyFileUtils.a
+lib/i386-win32/main.frm
+lib/i386-win32/ap.compiled
+lib/i386-win32/ap.or
+lib/i386-win32/ap.res
