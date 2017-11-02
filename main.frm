@@ -50,10 +50,10 @@ object MainForm: TMainForm
     Height = 408
     Top = 42
     Width = 504
-    ActivePage = PopolnPage
+    ActivePage = AboutPage
     Align = alClient
     ShowTabs = False
-    TabIndex = 0
+    TabIndex = 5
     TabOrder = 1
     object PopolnPage: TTabSheet
       Caption = 'PopolnPage'
@@ -769,7 +769,7 @@ object MainForm: TMainForm
         BorderStyle = bsNone
         Lines.Strings = (
           'Программа является проектом с открытыми исходными кодами, они доступны на GitHub (https://github.com/ap-exe/AutoPopoln2).'
-          'Абсолютна бесплатна для коммерческого использования.'
+          'Абсолютна бесплатна для коммерческого использования. GNU LGPL 3'
           'Программа написана на FreePascal(https://www.freepascal.org/) с использованием Lazarus(http://www.lazarus-ide.org/) и CodeTyphon(http://www.pilotlogic.com/).'
           ''
           'Лицензионное соглашение.'
