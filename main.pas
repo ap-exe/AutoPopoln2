@@ -16,6 +16,7 @@ type
 
   TMainForm = class(TForm)
     BasesMenu: TPopupMenu;
+    ReloadDTButton: TButton;
     cbCloseProg: TCheckBox;
     cbCreateSubDir: TCheckBox;
     ConsText: TLabel;
@@ -41,7 +42,6 @@ type
     PopolnButton: TSpeedButton;
     PopolnCheckBox: TCheckBox;
     PopolnEdit: TLabeledEdit;
-    ReloadDTButton: TSpeedButton;
     Report: TMemo;
     ResetCFGButton: TButton;
     ResText: TLabel;
@@ -138,6 +138,7 @@ type
     procedure CopyUSR;
     procedure CopySTT;
     procedure CopyPopoln;
+    procedure TreeView1KeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure USRCheckBoxClick(Sender: TObject);
     procedure USRDirButtonClick(Sender: TObject);
     procedure USRDirEditChange(Sender: TObject);
@@ -193,7 +194,6 @@ procedure TMainForm.base1Click(Sender: TObject);
 begin
   KeyCmdEdit.Text:=KeyCmdEdit.Text+' /base*';
 end;
-
 
 // создавать или нет подпапки с названием организации
 procedure TMainForm.cbCreateSubDirClick(Sender: TObject);
@@ -345,6 +345,15 @@ begin
   end;
 end;
 
+// переключение разделов с помощью кнопок вверх и вниз
+procedure TMainForm.TreeView1KeyUp(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if (Key=VK_DOWN) or (Key=VK_UP) then begin
+    PageControl.ActivePageIndex:=TreeView1.Selected.Index;
+    InfoLabel.Caption:='Текущий раздел: '+TreeView1.Selected.Text;
+  end;
+end;
 
 procedure TMainForm.USRCheckBoxClick(Sender: TObject);
 begin

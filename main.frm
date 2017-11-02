@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 299
+  Left = 317
   Height = 500
-  Top = 0
+  Top = 184
   Width = 624
   Caption = 'АвтоПополнение'
   ClientHeight = 500
@@ -31,6 +31,7 @@ object MainForm: TMainForm
     TabOrder = 0
     ToolTips = False
     OnClick = TreeView1Click
+    OnKeyUp = TreeView1KeyUp
     Options = [tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoRowSelect, tvoShowButtons, tvoThemedDraw]
     Items.Data = {
       F9FFFFFF020006000000FFFFFFFF00000000FFFFFFFFFFFFFFFF000000000000
@@ -49,10 +50,10 @@ object MainForm: TMainForm
     Height = 408
     Top = 42
     Width = 504
-    ActivePage = AboutPage
+    ActivePage = PopolnPage
     Align = alClient
     ShowTabs = False
-    TabIndex = 5
+    TabIndex = 0
     TabOrder = 1
     object PopolnPage: TTabSheet
       Caption = 'PopolnPage'
@@ -133,7 +134,7 @@ object MainForm: TMainForm
         BorderSpacing.Right = 20
         Caption = 'Папка К+'
         OnClick = OpenDirConsButtonClick
-        TabOrder = 2
+        TabOrder = 3
       end
       object RunPopolnButton: TButton
         AnchorSideLeft.Control = CopyButton
@@ -149,7 +150,7 @@ object MainForm: TMainForm
         BorderSpacing.Right = 60
         Caption = 'Пополнить'
         OnClick = RunPopolnButtonClick
-        TabOrder = 3
+        TabOrder = 2
       end
       object ConsText: TLabel
         Left = 16
@@ -187,15 +188,6 @@ object MainForm: TMainForm
         Brush.Style = bsClear
         Pen.Color = clBtnShadow
       end
-      object ReloadDTButton: TSpeedButton
-        Left = 33
-        Height = 24
-        Hint = 'Обновить дату и время'
-        Top = 247
-        Width = 95
-        Caption = 'Обновить'
-        OnClick = ReloadDTButtonClick
-      end
       object SetDTButton: TButton
         AnchorSideRight.Control = Shape3
         AnchorSideRight.Side = asrBottom
@@ -208,10 +200,9 @@ object MainForm: TMainForm
         BorderSpacing.Right = 30
         Caption = 'Изменить'
         OnClick = SetDTButtonClick
-        TabOrder = 4
+        TabOrder = 6
       end
       object DateTimePicker1: TDateTimePicker
-        AnchorSideLeft.Control = ReloadDTButton
         AnchorSideLeft.Side = asrBottom
         AnchorSideRight.Control = SetDTButton
         Left = 149
@@ -241,6 +232,15 @@ object MainForm: TMainForm
         MonthNames = 'Long'
         ShowMonthNames = True
         Options = [dtpoAutoCheck, dtpoFlatButton]
+      end
+      object ReloadDTButton: TButton
+        Left = 37
+        Height = 25
+        Top = 246
+        Width = 91
+        Caption = 'Обновить'
+        OnClick = ReloadDTButtonClick
+        TabOrder = 4
       end
     end
     object BasesPage: TTabSheet
@@ -768,9 +768,9 @@ object MainForm: TMainForm
         BorderSpacing.Bottom = 5
         BorderStyle = bsNone
         Lines.Strings = (
-          'Программа является проектом с открытыми исходными кодами, они доступны на GitHub https://github.com/ap-exe/AutoPopoln2'
+          'Программа является проектом с открытыми исходными кодами, они доступны на GitHub (https://github.com/ap-exe/AutoPopoln2).'
           'Абсолютна бесплатна для коммерческого использования.'
-          'Программа написана на FreePascal(https://www.freepascal.org/) с использованием Lazarus(http://www.lazarus-ide.org/) и CodeTyphon(http://www.pilotlogic.com/)'
+          'Программа написана на FreePascal(https://www.freepascal.org/) с использованием Lazarus(http://www.lazarus-ide.org/) и CodeTyphon(http://www.pilotlogic.com/).'
           ''
           'Лицензионное соглашение.'
           ''
@@ -778,7 +778,6 @@ object MainForm: TMainForm
           ''
           'Если вы не согласны с условиями данной лицензии, то должны удалить программу со своих устройств хранения информации и отказаться от дальнейшего использования этого программного продукта.'
         )
-        ScrollBars = ssAutoVertical
         TabOrder = 0
       end
     end
