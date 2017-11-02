@@ -50,10 +50,10 @@ object MainForm: TMainForm
     Height = 408
     Top = 42
     Width = 504
-    ActivePage = AboutPage
+    ActivePage = PopolnPage
     Align = alClient
     ShowTabs = False
-    TabIndex = 5
+    TabIndex = 0
     TabOrder = 1
     object PopolnPage: TTabSheet
       Caption = 'PopolnPage'
@@ -234,10 +234,12 @@ object MainForm: TMainForm
         Options = [dtpoAutoCheck, dtpoFlatButton]
       end
       object ReloadDTButton: TButton
-        Left = 37
+        AnchorSideLeft.Control = Shape3
+        Left = 38
         Height = 25
         Top = 246
         Width = 91
+        BorderSpacing.Left = 30
         Caption = 'Обновить'
         OnClick = ReloadDTButtonClick
         TabOrder = 4

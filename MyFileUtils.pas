@@ -134,7 +134,7 @@ begin
     if GetFileVersionInfo(PChar(FileName), 0, VerInfoSize, PVerInfo) then
       if VerQueryValue(PVerInfo, '\', Pointer(PVerValue), VerValueSize) then
         with PVerValue^ do
-          Result := Format('v%d.%d.%d.%d', [
+          Result := Format('Версия %d.%d.%d.%d', [
             HiWord(dwFileVersionMS), //Major
             LoWord(dwFileVersionMS), //Minor
             HiWord(dwFileVersionLS), //Release
