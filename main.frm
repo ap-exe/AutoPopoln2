@@ -2,10 +2,10 @@ object MainForm: TMainForm
   Left = 317
   Height = 500
   Top = 184
-  Width = 624
+  Width = 636
   Caption = 'АвтоПополнение'
   ClientHeight = 500
-  ClientWidth = 624
+  ClientWidth = 636
   Constraints.MinHeight = 500
   Constraints.MinWidth = 624
   DefaultMonitor = dmPrimary
@@ -16,6 +16,7 @@ object MainForm: TMainForm
   ShowHint = True
   LCLVersion = '6.2'
   object TreeView1: TTreeView
+    Cursor = crHandPoint
     Left = 0
     Height = 408
     Top = 42
@@ -49,11 +50,11 @@ object MainForm: TMainForm
     Left = 120
     Height = 408
     Top = 42
-    Width = 504
-    ActivePage = PopolnPage
+    Width = 516
+    ActivePage = AboutPage
     Align = alClient
     ShowTabs = False
-    TabIndex = 0
+    TabIndex = 5
     TabOrder = 1
     object PopolnPage: TTabSheet
       Caption = 'PopolnPage'
@@ -735,7 +736,7 @@ object MainForm: TMainForm
     object AboutPage: TTabSheet
       Caption = 'AboutPage'
       ClientHeight = 400
-      ClientWidth = 496
+      ClientWidth = 508
       object Image1: TImage
         Left = 16
         Height = 64
@@ -763,15 +764,16 @@ object MainForm: TMainForm
         Left = 5
         Height = 291
         Top = 104
-        Width = 486
+        Width = 498
         Anchors = [akTop, akLeft, akRight, akBottom]
         BorderSpacing.Left = 5
         BorderSpacing.Right = 5
         BorderSpacing.Bottom = 5
         BorderStyle = bsNone
         Lines.Strings = (
-          'Программа является проектом с открытыми исходными кодами, они доступны на GitHub (https://github.com/ap-exe/AutoPopoln2).'
-          'Абсолютна бесплатна для коммерческого использования. GNU LGPL 3'
+          'Программа распростроняется под лицензией GNU Lesser General Public License version 3'
+          'Это проект с открытыми исходными кодами, они доступны на GitHub (https://github.com/ap-exe/AutoPopoln2).'
+          'Абсолютна бесплатна для коммерческого использования.'
           'Программа написана на FreePascal(https://www.freepascal.org/) с использованием Lazarus(http://www.lazarus-ide.org/) и CodeTyphon(http://www.pilotlogic.com/).'
           ''
           'Лицензионное соглашение.'
@@ -788,16 +790,16 @@ object MainForm: TMainForm
     Left = 0
     Height = 50
     Top = 450
-    Width = 624
+    Width = 636
     Align = alBottom
     BevelOuter = bvNone
     ClientHeight = 50
-    ClientWidth = 624
+    ClientWidth = 636
     TabOrder = 2
     object ExitButton: TButton
       AnchorSideRight.Control = Panel1
       AnchorSideRight.Side = asrBottom
-      Left = 519
+      Left = 531
       Height = 25
       Top = 12
       Width = 85
@@ -812,12 +814,12 @@ object MainForm: TMainForm
     Left = 0
     Height = 42
     Top = 0
-    Width = 624
+    Width = 636
     Align = alTop
     Alignment = taLeftJustify
     BevelOuter = bvNone
     ClientHeight = 42
-    ClientWidth = 624
+    ClientWidth = 636
     Color = clGrayText
     ParentColor = False
     TabOrder = 3

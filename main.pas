@@ -133,22 +133,23 @@ type
     procedure STTDirButtonClick(Sender: TObject);
     procedure STTEditChange(Sender: TObject);
     procedure TreeView1Click(Sender: TObject);
-    procedure CopyConsFiles(FromPath, ToPath, Mask: string);
-    function GetPathX(const path: string): string;
-    procedure CopyUSR;
-    procedure CopySTT;
-    procedure CopyPopoln;
     procedure TreeView1KeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure USRCheckBoxClick(Sender: TObject);
     procedure USRDirButtonClick(Sender: TObject);
     procedure USRDirEditChange(Sender: TObject);
     procedure yes1Click(Sender: TObject);
-    procedure WriteReport;
-    procedure OpenCfgPage;
   private
     BasesLST: TStringList;
     TempPath, USRPath, PopolnPath, AppPath: string;
     AddDate, DirConsChange: boolean;
+    procedure CopyConsFiles(FromPath, ToPath, Mask: string);
+    function GetPathX(const path: string): string;
+    procedure CopyUSR;
+    procedure CopySTT;
+    procedure CopyPopoln;
+    procedure WriteReport;
+    procedure OpenCfgPage;
+    function LoadRTF(FileName: string; rm: TRichMemo): boolean;
   public
     LoadedCfg: boolean;
     DatePopoln, ListFiles: TStringList;
@@ -442,8 +443,22 @@ begin
       mtError, [mbOK], 0);
   DatePopoln.Free;
   BasesLST.Free;
-  for I := 0 to ListFiles.Count-1 do DeleteFile(PChar(ListFiles[i]));
+  for I := 0 to ListFiles.Count-1 do
+    SysUtils.DeleteFile(ListFiles[i]);
   ListFiles.Free;
+end;
+
+function TMainForm.LoadRTF(FileName: string; rm: TRichMemo): boolean;
+var
+  f: TFileStream;
+begin
+  Result:=False;
+  f:=TFileStream.Create(FileName, fmOpenRead);
+  try
+    Result:=rm.LoadRichText(f);
+  finally
+    f.Free;
+  end;
 end;
 
 // инициализация программы
@@ -455,7 +470,6 @@ var
   f: text;
   hIcon: THandle;
   nIconId: DWORD;
-  Icon2: TIcon;
 begin
   GetTempPath(256, buffer);
   s:=StrPas(buffer);
@@ -482,8 +496,8 @@ begin
         BasesLST.Add(s3);
       end;
       CloseFile(f);
-      ErrDocRE.LoadRichText(TFileStream.Create(TempPath+'\errors.rtf', fmOpenRead));
-      KeyCmdMemo.LoadRichText(TFileStream.Create(TempPath+'\keys.rtf', fmOpenRead));
+      LoadRTF(TempPath+'\errors.rtf', ErrDocRE);
+      LoadRTF(TempPath+'\keys.rtf', KeyCmdMemo);
       ListFiles.Clear;
       ListFiles.Add(TempPath+'\bases.txt');
       ListFiles.Add(TempPath+'\errors.rtf');
@@ -511,13 +525,7 @@ begin
   if PrivateExtractIcons(pchar(Application.ExeName), 0, 64, 64, @hIcon, @nIconId,
     1, LR_LOADFROMFILE) <> 0 then
   try
-    Icon2:=TIcon.Create;
-    try
-      Icon2.Handle:=hIcon;
-      Image1.Picture.Icon.Assign(Icon2);
-    finally
-      Icon2.Free;
-    end;
+    Image1.Picture.Icon.Handle:=hIcon;
   finally
     DestroyIcon (hIcon);
   end;
