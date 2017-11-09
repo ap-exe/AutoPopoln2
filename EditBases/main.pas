@@ -338,6 +338,7 @@ begin
   SetChange(True);
 end;
 
+
 // загрузка текстового файла с описанием баз
 procedure TMainForm.LoadBasesTXTClick(Sender: TObject);
 var

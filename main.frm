@@ -771,7 +771,7 @@ object MainForm: TMainForm
         BorderSpacing.Bottom = 5
         BorderStyle = bsNone
         Lines.Strings = (
-          'Программа распростроняется под лицензией GNU Lesser General Public License version 3'
+          'Программа распростроняется под лицензией GNU General Public License version 3'
           'Это проект с открытыми исходными кодами, они доступны на GitHub (https://github.com/ap-exe/AutoPopoln2).'
           'Абсолютна бесплатна для коммерческого использования.'
           'Программа написана на FreePascal(https://www.freepascal.org/) с использованием Lazarus(http://www.lazarus-ide.org/) и CodeTyphon(http://www.pilotlogic.com/).'
