@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 14
+  Left = 57
   Height = 500
-  Top = 0
+  Top = 71
   Width = 636
   Caption = 'АвтоПополнение'
   ClientHeight = 500
@@ -51,10 +51,10 @@ object MainForm: TMainForm
     Height = 408
     Top = 42
     Width = 516
-    ActivePage = CfgPage
+    ActivePage = AboutPage
     Align = alClient
     ShowTabs = False
-    TabIndex = 2
+    TabIndex = 5
     TabOrder = 1
     object PopolnPage: TTabSheet
       Caption = 'PopolnPage'
@@ -742,7 +742,6 @@ object MainForm: TMainForm
       object Image1: TImage
         Left = 16
         Height = 64
-        Hint = 'Делал, делал и наконец доделал!)))'
         Top = 16
         Width = 64
         AutoSize = True

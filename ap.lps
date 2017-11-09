@@ -346,7 +346,7 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit43>
     </Units>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="29" HistoryIndex="28">
       <Position1>
         <Filename Value="main.pas"/>
         <Caret Line="359" TopLine="279"/>
@@ -463,10 +463,6 @@
         <Filename Value="main.pas"/>
         <Caret Line="144" TopLine="134"/>
       </Position29>
-      <Position30>
-        <Filename Value="main.pas"/>
-        <Caret Line="626" Column="67" TopLine="675"/>
-      </Position30>
     </JumpHistory>
   </ProjectSession>
 </CONFIG>
