@@ -94,6 +94,8 @@ type
     TreeView1: TTreeView;
     procedure base1Click(Sender: TObject);
     procedure cbCreateSubDirClick(Sender: TObject);
+    procedure cbCreateSubDirKeyUp(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
     procedure CfgPageExit(Sender: TObject);
     procedure CopyButtonClick(Sender: TObject);
     procedure DirConsButtonClick(Sender: TObject);
@@ -115,6 +117,8 @@ type
     procedure N3Click(Sender: TObject);
     procedure N4Click(Sender: TObject);
     procedure NameOrgEditChange(Sender: TObject);
+    procedure NameOrgEditKeyUp(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
     procedure NameOrgEditUTF8KeyPress(Sender: TObject; var UTF8Key: TUTF8Char);
     procedure norunner1Click(Sender: TObject);
     procedure OpenDirConsButtonClick(Sender: TObject);
@@ -203,6 +207,13 @@ begin
     USRPath:=USRPath+'\'+NameOrgEdit.Text+'\'
   else
     USRPath:=USRPath+'\';
+end;
+
+// перемещение скроллбокса в конец
+procedure TMainForm.cbCreateSubDirKeyUp(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key=VK_TAB then ScrollBox1.ScrollInView(ResetCFGButton);
 end;
 
 // проверка на правильность настроек
@@ -390,6 +401,7 @@ begin
   else
     USRPath:=USRDirEdit.Text;
 end;
+
 
 // добавляет в настройках командной строки параметр /yes
 procedure TMainForm.yes1Click(Sender: TObject);
@@ -610,6 +622,13 @@ procedure TMainForm.NameOrgEditChange(Sender: TObject);
 begin
    NameOrgEdit.Color:=clWindow;
    ClientLabel.Caption:='Организация: '+NameOrgEdit.Text;
+end;
+
+// перемещение скроллбокса на начало
+procedure TMainForm.NameOrgEditKeyUp(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key=VK_TAB then ScrollBox1.ScrollInView(NameOrgEdit);
 end;
 
 // проверка на ввод правильных символов при вводе названия организации
