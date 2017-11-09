@@ -19,6 +19,8 @@ object MainForm: TMainForm
     Width = 555
     ActivePage = TabSheet1
     Align = alClient
+    Constraints.MinHeight = 421
+    Constraints.MinWidth = 555
     TabIndex = 0
     TabOrder = 0
     object TabSheet1: TTabSheet
