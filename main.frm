@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 57
+  Left = 28
   Height = 500
-  Top = 71
+  Top = 0
   Width = 636
   Caption = 'АвтоПополнение'
   ClientHeight = 500
@@ -51,15 +51,15 @@ object MainForm: TMainForm
     Height = 408
     Top = 42
     Width = 516
-    ActivePage = AboutPage
+    ActivePage = BasesPage
     Align = alClient
     ShowTabs = False
-    TabIndex = 5
+    TabIndex = 1
     TabOrder = 1
     object PopolnPage: TTabSheet
       Caption = 'PopolnPage'
       ClientHeight = 400
-      ClientWidth = 496
+      ClientWidth = 508
       OnShow = PopolnPageShow
       object Shape1: TShape
         AnchorSideRight.Control = PopolnPage
@@ -67,7 +67,7 @@ object MainForm: TMainForm
         Left = 8
         Height = 96
         Top = 8
-        Width = 479
+        Width = 491
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Right = 9
         Brush.Style = bsClear
@@ -79,7 +79,7 @@ object MainForm: TMainForm
         Left = 8
         Height = 96
         Top = 120
-        Width = 479
+        Width = 491
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Right = 9
         Brush.Style = bsClear
@@ -91,7 +91,7 @@ object MainForm: TMainForm
         Left = 18
         Height = 15
         Top = 16
-        Width = 459
+        Width = 471
         Alignment = taCenter
         Anchors = [akTop, akLeft, akRight]
         AutoSize = False
@@ -104,7 +104,7 @@ object MainForm: TMainForm
         Left = 18
         Height = 18
         Top = 32
-        Width = 459
+        Width = 471
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Right = 10
         TabOrder = 0
@@ -112,7 +112,7 @@ object MainForm: TMainForm
       object CopyButton: TButton
         AnchorSideLeft.Control = ProgressBar1
         AnchorSideRight.Control = RunPopolnButton
-        Left = 37
+        Left = 49
         Height = 25
         Hint = 'Копировать обновления, USR и STT файлы'
         Top = 61
@@ -126,7 +126,7 @@ object MainForm: TMainForm
       object OpenDirConsButton: TButton
         AnchorSideRight.Control = ProgressBar1
         AnchorSideRight.Side = asrBottom
-        Left = 357
+        Left = 369
         Height = 25
         Hint = 'Открыть папку с Консультатнтом'
         Top = 61
@@ -141,7 +141,7 @@ object MainForm: TMainForm
         AnchorSideLeft.Control = CopyButton
         AnchorSideLeft.Side = asrBottom
         AnchorSideRight.Control = OpenDirConsButton
-        Left = 197
+        Left = 209
         Height = 25
         Hint = 'Запуск Консультанта для пополнения'
         Top = 61
@@ -183,7 +183,7 @@ object MainForm: TMainForm
         Left = 8
         Height = 56
         Top = 232
-        Width = 479
+        Width = 491
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Right = 9
         Brush.Style = bsClear
@@ -192,7 +192,7 @@ object MainForm: TMainForm
       object SetDTButton: TButton
         AnchorSideRight.Control = Shape3
         AnchorSideRight.Side = asrBottom
-        Left = 355
+        Left = 367
         Height = 25
         Hint = 'Изменить системную дату и время'
         Top = 246
@@ -210,7 +210,7 @@ object MainForm: TMainForm
         Height = 23
         Hint = 'Колесиком мышки можно менять дату и время'
         Top = 248
-        Width = 185
+        Width = 197
         CenturyFrom = 1941
         MaxDate = 2958465
         MinDate = -53780
@@ -249,12 +249,12 @@ object MainForm: TMainForm
     object BasesPage: TTabSheet
       Caption = 'BasesPage'
       ClientHeight = 400
-      ClientWidth = 496
+      ClientWidth = 508
       object ListBases: TListView
         Left = 0
         Height = 400
         Top = 0
-        Width = 496
+        Width = 508
         Align = alClient
         AutoSort = False
         AutoWidthLastColumn = True
@@ -262,7 +262,7 @@ object MainForm: TMainForm
         Checkboxes = True
         Columns = <        
           item
-            Caption = '[  ]'
+            Caption = '[v]'
             MaxWidth = 26
             MinWidth = 26
             Width = 26
@@ -283,7 +283,7 @@ object MainForm: TMainForm
           end        
           item
             Caption = 'Полное название'
-            Width = 373
+            Width = 385
           end>
         GridLines = True
         PopupMenu = BasesMenu
@@ -345,7 +345,6 @@ object MainForm: TMainForm
             OnKeyUp = NameOrgEditKeyUp
             OnUTF8KeyPress = NameOrgEditUTF8KeyPress
             TabOrder = 0
-            Text = 'NameOrgEdit'
           end
           object Label4: TLabel
             AnchorSideRight.Control = NameOrgEdit
@@ -384,7 +383,6 @@ object MainForm: TMainForm
           EditLabel.Caption = 'Папка с Консультантом'
           EditLabel.ParentColor = False
           TabOrder = 1
-          Text = 'D:\1\AutoPopoln 2'
           OnChange = DirConsEditChange
         end
         object DirConsButton: TSpeedButton
@@ -437,7 +435,6 @@ object MainForm: TMainForm
             EditLabel.Caption = 'Папка с пополнением'
             EditLabel.ParentColor = False
             TabOrder = 1
-            Text = 'd:\temp\flash\popoln'
             OnChange = PopolnEditChange
           end
           object PopolnButton: TSpeedButton
@@ -545,7 +542,6 @@ object MainForm: TMainForm
             EditLabel.Caption = 'Папка с USR файлами'
             EditLabel.ParentColor = False
             TabOrder = 1
-            Text = 'd:\temp'
             OnChange = USRDirEditChange
           end
           object USRDirButton: TSpeedButton
@@ -663,12 +659,12 @@ object MainForm: TMainForm
     object DocPage: TTabSheet
       Caption = 'DocPage'
       ClientHeight = 400
-      ClientWidth = 496
+      ClientWidth = 508
       object PageControl1: TPageControl
         Left = 0
         Height = 400
         Top = 0
-        Width = 496
+        Width = 508
         ActivePage = TabSheet1
         Align = alClient
         TabIndex = 0
@@ -676,7 +672,7 @@ object MainForm: TMainForm
         object TabSheet1: TTabSheet
           Caption = 'Коды ошибок'
           ClientHeight = 372
-          ClientWidth = 488
+          ClientWidth = 500
           object Label1: TLabel
             Left = 25
             Height = 15
@@ -698,7 +694,7 @@ object MainForm: TMainForm
             Left = 0
             Height = 316
             Top = 56
-            Width = 488
+            Width = 500
             Align = alBottom
             Anchors = [akTop, akLeft, akRight, akBottom]
             BorderStyle = bsNone
@@ -706,6 +702,7 @@ object MainForm: TMainForm
             Lines.Strings = (
               'ErrDocRE'
             )
+            OnMouseWheel = ErrDocREMouseWheel
             ReadOnly = True
             ScrollBars = ssVertical
             TabOrder = 1
@@ -714,19 +711,20 @@ object MainForm: TMainForm
         end
         object TabSheet2: TTabSheet
           Caption = 'Ключи командной строки'
-          ClientHeight = 512
-          ClientWidth = 488
+          ClientHeight = 372
+          ClientWidth = 500
           object KeyCmdMemo: TRichMemo
             Left = 0
-            Height = 512
+            Height = 372
             Top = 0
-            Width = 488
+            Width = 500
             Align = alClient
             BorderStyle = bsNone
             HideSelection = False
             Lines.Strings = (
               'KeyCmdMemo'
             )
+            OnMouseWheel = KeyCmdMemoMouseWheel
             ReadOnly = True
             ScrollBars = ssVertical
             TabOrder = 0

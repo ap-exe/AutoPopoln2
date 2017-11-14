@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, SysUtils, Classes, ComObj, Masks, ShellApi, Graphics, Forms, Dialogs,
-  Controls;
+  Controls, ShlObj, ActiveX;
 
 {$IFDEF UNICODE}
     function PrivateExtractIcons(lpszFile: PChar; nIconIndex, cxIcon, cyIcon: integer; phicon: PHANDLE; piconid: PDWORD; nicon, flags: DWORD): DWORD; stdcall ; external 'user32.dll' name 'PrivateExtractIconsW';
@@ -18,20 +18,17 @@ Type
 
 procedure FindFiles(StartFolder, Mask: string; List: TStrings;
   ScanSubFolders: Boolean = True);
-
 function CopyFileEx(const InFile, OutFile: string; Replace: boolean;
   CallBack: TCallBack): boolean;
-
 function FileVersion(const FileName: TFileName): String;
-
 procedure RunAsAdministrator(const source: string; const params: string = '');
-
-var
-  drive: array [0..25] of Char=('A','B','C','D','E','F','G','H','I','J','K','L',
-                        'M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
+function GetFileNameFromLink(LinkFileName: string): string;
+function GetDesktopDir: string;
+function FindCons: string;
 
 implementation
 
+// процедура поиска файлов
 procedure FindFiles(StartFolder, Mask: string; List: TStrings;
   ScanSubFolders: Boolean = True);
 var
@@ -72,7 +69,7 @@ begin
 end;
 
 
-// Функция копирования файлов с поддержкой докачки
+// Функция копирования файлов
 function CopyFileEx(const InFile, OutFile: string; Replace: boolean;
   CallBack: TCallBack): boolean;
 var
@@ -162,6 +159,70 @@ begin
   ShellExeCuteExA(shExecInfo);
   Dispose(shExecInfo);
   shExecInfo := nil;
+end;
+
+// функция получение имени файла из его ярлыка
+function GetFileNameFromLink(LinkFileName: string): string;
+var
+  MyObj: IUnknown;
+  SL: IShellLink;
+  PF: IPersistFile;
+  FindData: TWin32FINDDATA;
+  FullPathToLnk: array[0..MAX_PATH] of WideChar;
+  Buff: array[0..MAX_PATH] of Char;
+begin
+  Result:='';
+  if not FileExists(LinkFileName) then Exit;
+
+  MyObj:=CreateComObject(CLSID_ShellLink);
+  PF:=MyObj as IPersistFile;
+  SL:=MyObj as IShellLink;
+  StringToWideChar(LinkFileName, FullPathToLnk, SizeOf(FullPathToLnk));
+  PF.Load(FullPathToLnk, STGM_READ);
+  SL.GetPath(Buff, MAX_PATH, FindData, SLGP_UNCPRIORITY);
+  Result:=Buff;
+end;
+
+// функция определения папки рабочего стола
+function GetDesktopDir: string;
+var
+  idl: PITEMIDLIST;
+  tmp: LPSTR;
+begin
+  Result:='';
+  SHGetSpecialFolderLocation(0, CSIDL_DESKTOPDIRECTORY, idl);
+  try
+    tmp:=StrAlloc(MAX_PATH);
+    if SHGetPathFromIDList(idl, tmp) then
+      Result:=tmp;
+  finally
+    CoTaskMemFree(idl);
+  end;
+end;
+
+// функция поиска ярлыка Консультанта на рабочем столе
+// и определения по нему папки где установлен Консультант
+function FindCons: string;
+var
+  l: TStringList;
+  i: integer;
+  s, s2: string;
+begin
+  Result:='';
+  l:=TStringList.Create;
+  try
+    FindFiles(GetDesktopDir, '*.lnk', l, False);
+    for i:=0 to l.Count-1 do begin
+      s:=GetFileNameFromLink(l[i]);
+      if ExtractFileName(s)='cons.exe' then begin
+        s2:=ExtractFilePath(s);
+        Result:=Copy(s2, 0, Length(s2)-1);
+        Exit;
+      end;
+    end;
+  finally
+    l.Free;
+  end;
 end;
 
 end.

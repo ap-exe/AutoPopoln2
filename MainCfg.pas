@@ -179,8 +179,7 @@ begin
             'В сохраненных настройках не отмечены ни одной базы для пополнения'
             +' хотя в разделе "Базы" загружен список из '
             +IntToStr(MainForm.ListBases.Items.Count)+' баз.'+#13#10+
-            'Зайдите в раздел "Базы" и настройте.'+#13#10+
-            'После этого перезапустите программу.', mtError, [mbOK], 0);
+            'Зайдите в раздел "Базы" и настройте.', mtError, [mbOK], 0);
 
         MainForm.DatePopoln.Clear;
         for i:=1 to 10 do begin
@@ -190,7 +189,8 @@ begin
         end;
       end;
     end
-    else Exit(False);
+    else
+      Exit(False);
   finally
     r.Free;
   end;

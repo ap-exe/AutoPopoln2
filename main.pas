@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, FileUtil, DateTimePicker, Forms, Controls, Graphics,
   ActiveX, Dialogs, ComCtrls, ExtCtrls, StdCtrls, Menus, Buttons, EditBtn,
   ShlObj, Windows, RegExpr, zlibfunc, LCLType,lconvencoding, RichMemo,
-  LazUTF8, DateUtils, Registry;
+  LazUTF8, DateUtils, Registry, Types;
 
 type
 
@@ -101,6 +101,8 @@ type
     procedure DirConsButtonClick(Sender: TObject);
     procedure DirConsEditChange(Sender: TObject);
     procedure ErrDocREMouseEnter(Sender: TObject);
+    procedure ErrDocREMouseWheel(Sender: TObject; Shift: TShiftState;
+      WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure ExitButtonClick(Sender: TObject);
     procedure adm1Click(Sender: TObject);
     procedure FindEditChange(Sender: TObject);
@@ -109,6 +111,8 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure KeyCmdButtonClick(Sender: TObject);
+    procedure KeyCmdMemoMouseWheel(Sender: TObject; Shift: TShiftState;
+      WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure ListBasesColumnClick(Sender: TObject; Column: TListColumn);
     procedure ListBasesCustomDrawItem(Sender: TCustomListView; Item: TListItem;
       State: TCustomDrawState; var DefaultDraw: Boolean);
@@ -272,6 +276,15 @@ end;
 procedure TMainForm.ErrDocREMouseEnter(Sender: TObject);
 begin
   ErrDocRE.SetFocus;
+end;
+
+procedure TMainForm.ErrDocREMouseWheel(Sender: TObject; Shift: TShiftState;
+  WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+begin
+  ErrDocRE.ScrollBy(0, WheelDelta+10);
+  // измененяется размер шрифта при зажатом CTRL и вращение колёсика мышки
+  if Shift=[ssCtrl] then
+    ErrDocRE.ZoomFactor:=ErrDocRE.ZoomFactor + WheelDelta * 0.001;
 end;
 
 // процедура используется для копирования SST и USR файлов
@@ -528,8 +541,8 @@ begin
   LoadedCfg:=LoadCfg;
   DirConsChange:=False;
 
-  Label2.Caption:='АвтоПополнение'+#10#13+FileVersion(Application.ExeName)+
-    #10#13+'Freeware (C) 2009-2017';
+  Label2.Caption:='АвтоПополнение'+#13#10+FileVersion(Application.ExeName)+
+    #13#10+'Freeware (C) 2009-2017';
 
   PageControl.Page[0].Show;
   TreeView1.Selected:=TreeView1.Items.GetFirstNode;
@@ -541,7 +554,7 @@ begin
   finally
     DestroyIcon (hIcon);
   end;
-  // инициализация прогрессбара на таскбаре в Windows 7
+  // инициализация прогрессбара на панели задач в Windows 7+
   if CheckWin32Version(6,1) then begin
     CoCreateInstance(CLSID_TaskbarList, nil, CLSCTX_INPROC, ITaskbarList3, iTaskBar);
     iTaskBar.HrInit;
@@ -553,13 +566,25 @@ end;
 // если не загрузились параметры при запуске программы, открыть раздел с настройками
 procedure TMainForm.FormShow(Sender: TObject);
 begin
-  if not LoadedCfg then OpenCfgPage;
+  if not LoadedCfg then begin
+    DirConsEdit.Text:=FindCons;
+    OpenCfgPage;
+  end;
 end;
 
 // показ меню с ключами коммандной строки
 procedure TMainForm.KeyCmdButtonClick(Sender: TObject);
 begin
   KeyCmdMenu.PopUp;
+end;
+
+procedure TMainForm.KeyCmdMemoMouseWheel(Sender: TObject; Shift: TShiftState;
+  WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+begin
+  KeyCmdMemo.ScrollBy(0, WheelDelta+5);
+  // измененяется размер шрифта при зажатом CTRL и вращение колёсика мышки
+  if Shift=[ssCtrl] then
+    KeyCmdMemo.ZoomFactor:=KeyCmdMemo.ZoomFactor + WheelDelta * 0.001;
 end;
 
 // выбор или отмена всех элементов в списке баз
@@ -601,7 +626,8 @@ var
   i: integer;
 begin
   ListBases.Items.BeginUpdate;
-  for i := 0 to ListBases.Items.Count - 1 do ListBases.Items[i].Checked:=True;
+  for i := 0 to ListBases.Items.Count - 1 do
+    ListBases.Items[i].Checked:=True;
   ListBases.Items.EndUpdate;
   ListBases.Columns[0].Caption:='[  ]';
 end;
@@ -612,7 +638,8 @@ var
   i: integer;
 begin
   ListBases.Items.BeginUpdate;
-  for i := 0 to ListBases.Items.Count - 1 do ListBases.Items[i].Checked:=False;
+  for i := 0 to ListBases.Items.Count - 1 do
+    ListBases.Items[i].Checked:=False;
   ListBases.Items.EndUpdate;
   ListBases.Columns[0].Caption:='[v]';
 end;
