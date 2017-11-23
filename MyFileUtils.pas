@@ -200,8 +200,7 @@ begin
   end;
 end;
 
-// функция поиска ярлыка Консультанта на рабочем столе
-// и определения по нему папки где установлен Консультант
+// функция пытается найти где установлен Консультант
 function FindCons: string;
 var
   l: TStringList;
@@ -209,6 +208,13 @@ var
   s, s2: string;
 begin
   Result:='';
+  // пытаемся найти в папке c:\consultant
+  if FileExists('c:\consultant\cons.exe') then begin
+    Result:='c:\consultant';
+    Exit;
+  end;
+  // если не нашли, пытемся найти ярлык на рабочем столе с Консультантом
+  // и по нему определить папку где он установлен
   l:=TStringList.Create;
   try
     FindFiles(GetDesktopDir, '*.lnk', l, False);

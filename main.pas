@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, DateTimePicker, Forms, Controls, Graphics,
   ActiveX, Dialogs, ComCtrls, ExtCtrls, StdCtrls, Menus, Buttons, EditBtn,
-  ShlObj, Windows, RegExpr, zlibfunc, LCLType,lconvencoding, RichMemo,
+  ShlObj, Windows, RegExpr, zlibfunc, LCLType, lconvencoding, RichMemo,
   LazUTF8, DateUtils, Registry, Types;
 
 type
@@ -16,6 +16,7 @@ type
 
   TMainForm = class(TForm)
     BasesMenu: TPopupMenu;
+    Label3: TLabel;
     ReloadDTButton: TButton;
     cbCloseProg: TCheckBox;
     cbCreateSubDir: TCheckBox;
@@ -36,7 +37,6 @@ type
     Label2: TLabel;
     Label4: TLabel;
     ListBases: TListView;
-    Memo1: TMemo;
     NameOrgEdit: TEdit;
     PageControl1: TPageControl;
     PopolnButton: TSpeedButton;
@@ -93,13 +93,13 @@ type
     AboutPage: TTabSheet;
     TreeView1: TTreeView;
     procedure base1Click(Sender: TObject);
+    procedure BasesPageShow(Sender: TObject);
     procedure cbCreateSubDirClick(Sender: TObject);
-    procedure cbCreateSubDirKeyUp(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
-    procedure CfgPageExit(Sender: TObject);
+    procedure CfgPageHide(Sender: TObject);
     procedure CopyButtonClick(Sender: TObject);
     procedure DirConsButtonClick(Sender: TObject);
     procedure DirConsEditChange(Sender: TObject);
+    procedure DirConsEditEditingDone(Sender: TObject);
     procedure ErrDocREMouseEnter(Sender: TObject);
     procedure ErrDocREMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
@@ -143,6 +143,8 @@ type
     procedure TreeView1Click(Sender: TObject);
     procedure TreeView1KeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure USRCheckBoxClick(Sender: TObject);
+    procedure USRCheckBoxKeyUp(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
     procedure USRDirButtonClick(Sender: TObject);
     procedure USRDirEditChange(Sender: TObject);
     procedure yes1Click(Sender: TObject);
@@ -175,13 +177,12 @@ uses
 
 {$R *.frm}
 
-
 { TMainForm }
 
 // при щелчке по названию раздела показывает его
 procedure TMainForm.TreeView1Click(Sender: TObject);
 begin
-  PageControl.ActivePageIndex:=TreeView1.Selected.Index;
+  PageControl.Pages[TreeView1.Selected.Index].Show;
   InfoLabel.Caption:='Текущий раздел: '+TreeView1.Selected.Text;
 end;
 
@@ -204,6 +205,11 @@ begin
   KeyCmdEdit.Text:=KeyCmdEdit.Text+' /base*';
 end;
 
+procedure TMainForm.BasesPageShow(Sender: TObject);
+begin
+
+end;
+
 // создавать или нет подпапки с названием организации
 procedure TMainForm.cbCreateSubDirClick(Sender: TObject);
 begin
@@ -213,15 +219,8 @@ begin
     USRPath:=USRPath+'\';
 end;
 
-// перемещение скроллбокса в конец
-procedure TMainForm.cbCreateSubDirKeyUp(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
-begin
-  if Key=VK_TAB then ScrollBox1.ScrollInView(ResetCFGButton);
-end;
-
 // проверка на правильность настроек
-procedure TMainForm.CfgPageExit(Sender: TObject);
+procedure TMainForm.CfgPageHide(Sender: TObject);
 begin
   if NameOrgEdit.Text='' then begin
     NameOrgEdit.Color:=clRed;
@@ -248,13 +247,13 @@ begin
   if not FileExists(DirConsEdit.Text+'\base\baselist.cfg') then begin
     DirConsEdit.Color:=clRed;
     OpenCfgPage;
-  end;
-
-  if DirConsChange then begin
-    FillTableBase;
-    N3Click(self);
-    DirConsChange:=False;
-  end;
+  end
+  else
+    if DirConsChange then begin
+      FillTableBase;
+      N3Click(self);
+      DirConsChange:=False;
+    end;
 end;
 
 // выбор папки с Консультантом
@@ -263,14 +262,27 @@ begin
   SelectDirDialog.Title:='Выберите папку с Консультантом';
   if SelectDirDialog.Execute then begin
     DirConsEdit.Text:=SelectDirDialog.FileName;
-    DirConsChange:=True;
+    //DirConsChange:=True;
   end;
 end;
 
 procedure TMainForm.DirConsEditChange(Sender: TObject);
 begin
-  DirConsChange:=True;
   DirConsEdit.Color:=clWindow;
+end;
+
+procedure TMainForm.DirConsEditEditingDone(Sender: TObject);
+var
+  s: string;
+begin
+  if DirConsEdit.Text<>'' then begin
+    DirConsChange:=True;
+    s:=DirConsEdit.Text+'\ADM\STS';
+    if DirectoryExists(s) then
+      STTEdit.Text:=s
+    else
+      STTEdit.Text:='';
+  end;
 end;
 
 procedure TMainForm.ErrDocREMouseEnter(Sender: TObject);
@@ -352,8 +364,8 @@ begin
     RegExp.Expression := '(\d\d\d\d)POP';
     for j:=0 to CopyThread.FFileNames.Count-1 do
       if RegExp.Exec(CopyThread.FFileNames[j]) then begin
-        d:=inttostr(YearOf(Now))+'.'+Copy(RegExp.Match[1], 0, 2)+'.'+
-          Copy(RegExp.Match[1], 3, 2);
+        d:=Copy(RegExp.Match[1], 0, 2)+'.'+Copy(RegExp.Match[1], 3, 2)+'.'+
+          inttostr(YearOf(Now));
         if not DatePopoln.Find(d, i) then begin
           if DatePopoln.Count=10 then DatePopoln.Delete(0);
           DatePopoln.Add(d);
@@ -386,6 +398,13 @@ begin
   USRDirEdit.Enabled:=USRCheckBox.Checked;
   USRDirButton.Enabled:=USRCheckBox.Checked;
   cbCreateSubDir.Enabled:=USRCheckBox.Checked;
+end;
+
+// перемещение скроллбокса в конец
+procedure TMainForm.USRCheckBoxKeyUp(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key=VK_TAB then ScrollBox1.ScrollInView(ResetCFGButton);
 end;
 
 // выбор папки куда будут складываться USR файлы
@@ -473,6 +492,7 @@ begin
   ListFiles.Free;
 end;
 
+// загрузка RTF файла в TRichMemo
 function TMainForm.LoadRTF(FileName: string; rm: TRichMemo): boolean;
 var
   f: TFileStream;
@@ -493,9 +513,9 @@ var
   s, s3: string;
   s2: RawByteString;
   f: text;
-  hIcon: THandle;
-  nIconId: DWORD;
 begin
+  TotalCopyLabel.Caption:='';
+
   GetTempPath(256, buffer);
   s:=StrPas(buffer);
   TempPath:=Copy(s, 0, Length(s)-1);
@@ -529,7 +549,9 @@ begin
       ListFiles.Add(TempPath+'\keys.rtf');
     end
     else begin
-      MessageDlg('Ошибка', 'Невозможно загрузить файл bases.lst',
+      MessageDlg('Ошибка!', 'Невозможно загрузить файл bases.lst!'+#13#10+
+        'Файл bases.lst должен находиться в одной папке с программой.'+#13#10+
+        'Если у Вас нет этого файла, сформируйте его с помощью программы EditBases.',
         mtError, [mbOK], 0);
       Application.Terminate;
     end;
@@ -546,14 +568,7 @@ begin
 
   PageControl.Page[0].Show;
   TreeView1.Selected:=TreeView1.Items.GetFirstNode;
-  //загрузка иконки из эзешника
-  if PrivateExtractIcons(pchar(Application.ExeName), 0, 64, 64, @hIcon, @nIconId,
-    1, LR_LOADFROMFILE) <> 0 then
-  try
-    Image1.Picture.Icon.Handle:=hIcon;
-  finally
-    DestroyIcon (hIcon);
-  end;
+
   // инициализация прогрессбара на панели задач в Windows 7+
   if CheckWin32Version(6,1) then begin
     CoCreateInstance(CLSID_TaskbarList, nil, CLSCTX_INPROC, ITaskbarList3, iTaskBar);
@@ -662,7 +677,7 @@ end;
 procedure TMainForm.NameOrgEditUTF8KeyPress(Sender: TObject;
   var UTF8Key: TUTF8Char);
 begin
-  if not ExecRegExpr('[\d\s\-_a-zа-яёЁ]', UTF8ToAnsi(UTF8Key)) then begin
+  if not ExecRegExpr('[\x08\d\s\-_a-zа-яёЁ]', UTF8Key) then begin
    UTF8Key:=#0;
    MessageBeep(0);
   end;
@@ -781,7 +796,7 @@ procedure TMainForm.OpenCfgPage;
 begin
   TreeView1.Items[2].Selected:=True;
   PageControl.Pages[2].Show;
-  PageControl.Pages[2].SetFocus;
+  //PageControl.Pages[2].SetFocus;
 end;
 
 // сброс настроек
@@ -871,7 +886,7 @@ begin
   STTEdit.Color:=clWindow;
 end;
 
-// вывод лога
+// вывод отчёта
 procedure TMainForm.WriteReport;
 var
   lastrec: TStringList;
@@ -891,41 +906,50 @@ begin
   finally
     lastrec.Free
   end;
+
 end;
 
-// вывод таблицы с базами
+// заполнение таблицы с базами
 procedure TMainForm.FillTableBase;
 var
   i, p, index: integer;
   bases: TStringList;
-  s: string;
+  ShortName, FullName, s: string;
   NewItem: TListItem;
 begin
+  ShortName:='';
+  FullName:='';
+  s:='';
   ListBases.Items.Clear;
   if FileExists(DirConsEdit.Text+'\base\baselist.cfg') then begin
     bases:=TStringList.Create;
     try
-      bases.LoadFromFile(DirConsEdit.Text+'\base\baselist.cfg');
+      bases.LoadFromFile(DirConsEdit.Text+'\base\baselist.cfg', TEncoding.Default);
       bases.Sort;
-      for i := 0 to bases.Count - 1 do begin
-        s:=UpperCase(bases[i]);
-        if s='' then continue;
+      for i:=0 to bases.Count-1 do begin
+        if bases[i]='' then continue;
+
+        p:=Pos('COMMENT', bases[i]);
+        if p>0 then begin
+          s:=Copy(bases[i], 0, p-2);
+          FullName:=Copy(bases[i], p+9, Length(bases[i])-(p+9));
+        end
+        else begin
+          s:=bases[i];
+          for index:=0 to BasesLST.Count-1 do begin
+            p:=Pos('=', BasesLST[index]);
+            if ShortName=Copy(BasesLST[index], 0, p-1) then begin
+              FullName:=Copy(BasesLST[index], p+1, Length(BasesLst[index]));
+              Break;
+            end;
+          end;
+        end;
+        ShortName:=UpperCase(s);
 
         NewItem:=ListBases.Items.Add;
         NewItem.SubItems.Add(IntToStr(i+1));
-        NewItem.SubItems.Add(s);
-
-        p:=0;
-        for index := 0 to BasesLST.Count - 1 do begin
-          p:=Pos('=', BasesLST[index]);
-          if s=Copy(BasesLST[index], 0, p-1) then begin
-            NewItem.SubItems.Add(Copy(BasesLST[index], p+1, Length(BasesLst[index])));
-            Break;
-          end
-          else begin
-            //ListBases.Items[i].Checked:=False;
-          end;
-        end;
+        NewItem.SubItems.Add(ShortName);
+        NewItem.SubItems.Add(FullName);
       end;
     finally
       bases.Free;

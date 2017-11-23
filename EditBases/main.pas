@@ -241,7 +241,7 @@ begin
     ListFiles.Add(tmp+'keys.rtf');
   end
   else
-    MessageDlg('Ошибка', 'Не найден файл bases.lst!', mtError, [mbOk], 0);
+    MessageDlg('Внимание!', 'Не найден файл bases.lst!', mtWarning, [mbOk], 0);
 end;
 
 // процедура изменения статуса программы
@@ -306,9 +306,6 @@ end;
 
 // инициализация программы
 procedure TMainForm.FormCreate(Sender: TObject);
-var
-  hIcon: THandle;
-  nIconId: DWORD;
 begin
   BasesListEditor.Strings.Sorted:=True;
   tmp:=GetLocalTmpPath;
@@ -317,14 +314,6 @@ begin
   LoadLST('bases.lst');
   SetChange(False);
 
-  //загрузка иконки из эзешника
-  if PrivateExtractIcons(pchar(Application.ExeName), 0, 64, 64, @hIcon, @nIconId,
-    1, LR_LOADFROMFILE) <> 0 then
-  try
-    Image1.Picture.Icon.Handle:=hIcon;
-  finally
-    DestroyIcon (hIcon);
-  end;
   Label1.Caption:='EditBases'+#10#13+FileVersion(Application.ExeName)+
     #10#13+'Freeware (C) 2012-2017';
 

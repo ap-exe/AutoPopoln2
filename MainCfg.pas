@@ -45,18 +45,15 @@ begin
         r.WriteString('NameOrg', MainForm.NameOrgEdit.Text);
 
         r.WriteBool('CopyPopoln', MainForm.PopolnCheckBox.Checked);
-        if MainForm.PopolnCheckBox.Checked then
-          r.WriteString('DirPopoln', MainForm.PopolnEdit.Text);
+        r.WriteString('DirPopoln', MainForm.PopolnEdit.Text);
 
         r.WriteString('DirCons', MainForm.DirConsEdit.Text);
 
         r.WriteBool('CopyUSR', MainForm.USRCheckBox.Checked);
-        if MainForm.USRCheckBox.Checked then
-          r.WriteString('USRDir', MainForm.USRDirEdit.Text);
+        r.WriteString('USRDir', MainForm.USRDirEdit.Text);
 
         r.WriteBool('CopySTT', MainForm.STTCheckBox.Checked);
-        if MainForm.STTCheckBox.Checked then
-          r.WriteString('STTDir', MainForm.STTEdit.Text);
+        r.WriteString('STTDir', MainForm.STTEdit.Text);
 
         r.WriteBool('CreateSubDir', MainForm.cbCreateSubDir.Checked);
         r.WriteString('KeyCmd', MainForm.KeyCmdEdit.Text);
