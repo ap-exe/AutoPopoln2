@@ -116,6 +116,7 @@ type
     procedure ListBasesColumnClick(Sender: TObject; Column: TListColumn);
     procedure ListBasesCustomDrawItem(Sender: TCustomListView; Item: TListItem;
       State: TCustomDrawState; var DefaultDraw: Boolean);
+    procedure ListBasesEnter(Sender: TObject);
     procedure LogPageShow(Sender: TObject);
     procedure N1Click(Sender: TObject);
     procedure N3Click(Sender: TObject);
@@ -262,7 +263,7 @@ begin
   SelectDirDialog.Title:='Выберите папку с Консультантом';
   if SelectDirDialog.Execute then begin
     DirConsEdit.Text:=SelectDirDialog.FileName;
-    //DirConsChange:=True;
+    DirConsChange:=True;
   end;
 end;
 
@@ -553,7 +554,7 @@ begin
         'Файл bases.lst должен находиться в одной папке с программой.'+#13#10+
         'Если у Вас нет этого файла, сформируйте его с помощью программы EditBases.',
         mtError, [mbOK], 0);
-      Application.Terminate;
+      //Application.Terminate;
     end;
 
   ErrDocRE.SelStart:=0;
@@ -619,6 +620,12 @@ procedure TMainForm.ListBasesCustomDrawItem(Sender: TCustomListView;
 begin
   if not Item.Checked then
     ListBases.Canvas.Font.Color:=clGray;
+end;
+
+// при получении фокуса ListBases, выделить первую строку
+procedure TMainForm.ListBasesEnter(Sender: TObject);
+begin
+  ListBases.Items[0].Selected:=True;
 end;
 
 // при выборе раздела Лог вывод его

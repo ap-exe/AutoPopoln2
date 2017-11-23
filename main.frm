@@ -51,10 +51,11 @@ object MainForm: TMainForm
     Height = 408
     Top = 42
     Width = 504
-    ActivePage = DocPage
+    TabStop = False
+    ActivePage = CfgPage
     Align = alClient
     ShowTabs = False
-    TabIndex = 4
+    TabIndex = 2
     TabOrder = 1
     object PopolnPage: TTabSheet
       Caption = 'PopolnPage'
@@ -295,6 +296,7 @@ object MainForm: TMainForm
         ViewStyle = vsReport
         OnColumnClick = ListBasesColumnClick
         OnCustomDrawItem = ListBasesCustomDrawItem
+        OnEnter = ListBasesEnter
       end
     end
     object CfgPage: TTabSheet
@@ -703,7 +705,7 @@ object MainForm: TMainForm
             BorderStyle = bsNone
             HideSelection = False
             Lines.Strings = (
-              'ErrDocRE'
+              ''
             )
             OnMouseWheel = ErrDocREMouseWheel
             ReadOnly = True
@@ -715,18 +717,15 @@ object MainForm: TMainForm
         object TabSheet2: TTabSheet
           Caption = 'Ключи командной строки'
           ClientHeight = 372
-          ClientWidth = 500
+          ClientWidth = 488
           object KeyCmdMemo: TRichMemo
             Left = 0
             Height = 372
             Top = 0
-            Width = 500
+            Width = 488
             Align = alClient
             BorderStyle = bsNone
             HideSelection = False
-            Lines.Strings = (
-              'KeyCmdMemo'
-            )
             OnMouseWheel = KeyCmdMemoMouseWheel
             ReadOnly = True
             ScrollBars = ssVertical
