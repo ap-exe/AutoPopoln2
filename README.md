@@ -6,7 +6,7 @@
 **EditBases** - программа для формирования файла bases.lst, необходимого для программы АвтоПополнение2. В этом файле хранятся описание баз, коды ошибок и описание ключей коммандной строки ©Консультант Плюс.
 
 Программы абсолютно бесплатны для коммерческого использования.
-Написана на [FreePascal](https://www.freepascal.org/) с использованием [Lazarus](http://www.lazarus-ide.org/) и [CodeTyphon](http://www.pilotlogic.com/).
+Написаны на [FreePascal](https://www.freepascal.org/) с использованием [Lazarus](http://www.lazarus-ide.org/) и [CodeTyphon](http://www.pilotlogic.com/).
 
 Лицензионное соглашение.
 
