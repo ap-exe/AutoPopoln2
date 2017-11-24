@@ -332,6 +332,7 @@ var
   d, masks: string;
   RegExp: TRegExpr;
   CopyThread: TCopyFileThread;
+  date: TDateTime;
 begin
   if PopolnPath='' then begin
     MessageDlg('Ошибка', 'Не указана папка с пополнением!', mtError, [mbOK], 0);
@@ -348,7 +349,7 @@ begin
     masks:='';
     for i := 0 to ListBases.Items.Count - 1 do
       if ListBases.Items[i].Checked then
-        masks:=masks+';'+ListBases.Items[i].SubItems[1]+'*.ans';
+        masks:=masks+ListBases.Items[i].SubItems[1]+'*.ans;';
     // поиск и копирование файлов в потоке)
     CopyThread:=TCopyFileThread.Create(PopolnPath, DirConsEdit.Text+'\Receive',
       masks, True);
@@ -360,13 +361,23 @@ begin
 
     //добавление в лог последней даты пополнения
     //формат папки с пополнением 3112pop
+    //если таких папок нет, то в отчёт пишет текущая дата
     RegExp := TRegExpr.Create;
     RegExp.ModifierI:=true;
     RegExp.Expression := '(\d\d\d\d)POP';
     for j:=0 to CopyThread.FFileNames.Count-1 do
       if RegExp.Exec(CopyThread.FFileNames[j]) then begin
         d:=Copy(RegExp.Match[1], 0, 2)+'.'+Copy(RegExp.Match[1], 3, 2)+'.'+
-          inttostr(YearOf(Now));
+          IntToStr(YearOf(Now));
+        if not DatePopoln.Find(d, i) then begin
+          if DatePopoln.Count=10 then DatePopoln.Delete(0);
+          DatePopoln.Add(d);
+        end
+      end
+      else begin // пишем текущую дату
+        date:=Now;
+        d:=IntToStr(DayOf(date))+'.'+IntToStr(MonthOf(date))+'.'+
+          IntToStr(YearOf(date));
         if not DatePopoln.Find(d, i) then begin
           if DatePopoln.Count=10 then DatePopoln.Delete(0);
           DatePopoln.Add(d);
@@ -913,7 +924,6 @@ begin
   finally
     lastrec.Free
   end;
-
 end;
 
 // заполнение таблицы с базами
