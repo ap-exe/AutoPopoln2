@@ -10,3 +10,5 @@ EditBases/lib/i386-win32/main.frm
 
 EditBases/lib/i386-win32/EditBases.res
 bases.lst
+*.html~
+*.css~
