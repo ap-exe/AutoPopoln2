@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Программы для специалистов работающих с ©Консультант Плюс">
+    <meta name="author" content="user" >
+    <link rel="icon" href="images/icon.png">
+    <title>АвтоПополнение</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="css/lightbox.min.css" rel="stylesheet" >
+    <link href="css/style.css" rel="stylesheet">
+  </head>
+  
+  <body class="container">
+  
+    <header>	  
+      <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+	  <div class="container">
+        <a class="navbar-brand" href="index.html"><img src="images/icon.png"></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Главная</a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="#">АвтоПополнение</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="editbases.html">EditBases</a>
+            </li>
+          </ul>
+        </div>
+		</div>
+      </nav>	  
+    </header>
+	
+	<br><p><h5 class="text-center">Инструкция по работе с программой АвтоПополнение</h5></p>
+	<div class="row featurette">
+	  <div class="col-md-7 order-md-2">
+		<p>При первом запуске откроется вкладка "Настройки". Программа также попытается автоматически найти где установлен ©КонсультантПлюс. Она ищет в "C:\Consultant" и если не находит, ищет ярлык с Консультантом на рабочем столе из которого берёт путь к папке.</p>
+	   <p>В настройках нужно ввести название организации, путь к папке с Консультантом, путь к папке с обновлениями, указать где находится STT файл и выбрать куда складывать STT и USR файлы.</p>
+		<p>[x] - Вместо x подставляется буква диска с которого была запущена программа.</p>
+		<p>Выбор параметра "Закрывать программу" нужен для того, чтобы при запуске с ключом /AUTO программа запускалась, выполняла все выбранные функции(копирует обновления, служебные файлы, запускает ©КонсультантПлюс с ключами для обновления) и закрывалась.</p>
+	  </div>
+	  <div class="col-md-5 order-md-1">
+		<a href="images/config.png" data-lightbox="general" data-title="Настройки">
+			<img class="featurette-image img-fluid mx-auto" src="images/config.png" alt="Настройки">
+		</a>
+	  </div>
+	</div>
+	<hr class="featurette-divider">
+
+	<div class="row featurette">
+	  <div class="col-md-7 order-md-2">
+		<p>После того как вы всё настроите, в разделе "Базы" будет показан список установленных у клиента баз.</p>
+		<p>Здесь можно выбрать базы для которых нужно копировать обновления.</p>
+	  </div>
+	  <div class="col-md-5 order-md-1">
+		<a href="images/bases.png" data-lightbox="general" data-title="Список баз">
+			<img class="featurette-image img-fluid mx-auto" src="images/bases.png" alt="Список баз">
+		</a>
+	  </div>
+	</div>
+	<hr class="featurette-divider">
+
+	<div class="row featurette">
+	  <div class="col-md-7 order-md-2">
+		<p>В разделе "Пополнение" можно проконтролировать версии файлов cons.exe и *.res. Также там отображается свободное место на диске где установлен ©КонсультантПлюс.</p>
+		<p>Также там отображается текущая дата и время на компьютере клиента. Её можно изменить в поле ввода с помощью клавиатуры или с помощью колёсика мышки. Если программа была запущена с правами администратор, при нажатии на кнопку <kbd>Изменить</kbd> программа сама изменит дату и время, а если нет, запустит системные настройки по изменению даты и времени. </p>
+		<p>При нажатии на кнопку <kbd>Копировать</kbd> программа выполнит выбранные в настройках действия - скопирует обновления с флешки и служебные файлы USR и STT на флешку.</p>
+		<p>Кнопка <kbd>Пополнить</kbd> запускает ©КонсультантПлюс с ключами для принятия скопированных пополнений.</p>
+		<p>Кнопка <kbd>Папка К+</kbd> запустит проводник с открытой папкой где установлен Консультант.</p>
+	  </div>
+	  <div class="col-md-5 order-md-1">
+		<a href="images/general.png" data-lightbox="general" data-title="Главное окно">
+			<img class="featurette-image img-fluid mx-auto" src="images/general.png" alt="Главное окно">
+		</a>
+	  </div>
+	</div>
+	<hr class="featurette-divider">
+
+	<div class="row featurette">
+	  <div class="col-md-7 order-md-2">
+		<p>В разделе "Отчёт" отображаются даты последних 10 обновлений и содержимое файла last_rec.txt.</p>
+	  </div>
+	  <div class="col-md-5 order-md-1">
+		<a href="images/report.png" data-lightbox="general" data-title="Раздел 'Отчёт'">
+			<img class="featurette-image img-fluid mx-auto" src="images/report.png" alt="Раздел 'Отчёт'">
+		</a>
+	  </div>
+	</div>
+	<hr class="featurette-divider">
+
+	<div class="row featurette">
+	  <div class="col-md-7 order-md-2">
+		<p>Если вы создали файл bases.lst в программе <a href="editbases.html">EditBases</a>, то здесь будут показаны описания ошибок и ключей командной строки.</p>
+	  </div>
+	  <div class="col-md-5 order-md-1">
+		<a href="images/doc.png" data-lightbox="general" data-title="Документация">
+			<img class="featurette-image img-fluid mx-auto" src="images/doc.png" alt="Документация">
+		</a>
+	  </div>
+	</div>
+	<hr class="featurette-divider">
+	
+	<!-- FOOTER -->
+	<footer class="container">
+	  <p class="float-right"><a href="#">Наверх</a></p>
+	  <p>&copy; 2017 ap-exe</p>
+	</footer>
+
+    <!-- JavaScript
+    ================================================== -->
+    <script src="js/jquery-3.2.1.slim.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+	<script src="js/lightbox-plus-jquery.min.js"></script>
+	<script>
+    lightbox.option({
+		fitImagesInViewport: false
+    })
+	</script>
+  </body>
+</html>

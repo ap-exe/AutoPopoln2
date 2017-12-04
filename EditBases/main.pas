@@ -180,6 +180,7 @@ end;
 // сохранение описания баз в текстовый файл
 procedure TMainForm.SaveBasesTXTClick(Sender: TObject);
 begin
+  BasesListEditor.Strings.Sort;
   SaveDialog1.FileName:='bases.txt';
   SaveDialog1.Filter:='*.txt|*.txt';
   if SaveDialog1.Execute then
@@ -216,6 +217,7 @@ end;
 // сохранение LST файла
 procedure TMainForm.SaveLSTClick(Sender: TObject);
 begin
+  BasesListEditor.Strings.Sort;
   SaveDialog1.FileName:='bases.lst';
   SaveDialog1.Filter:='*.lst|*.lst';
   if SaveDialog1.Execute then begin
@@ -239,9 +241,7 @@ begin
     ListFiles.Add(tmp+'bases.txt');
     ListFiles.Add(tmp+'errors.rtf');
     ListFiles.Add(tmp+'keys.rtf');
-  end
-  else
-    MessageDlg('Внимание!', 'Не найден файл bases.lst!', mtWarning, [mbOk], 0);
+  end;
 end;
 
 // процедура изменения статуса программы
@@ -307,15 +307,14 @@ end;
 // инициализация программы
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
-  BasesListEditor.Strings.Sorted:=True;
   tmp:=GetLocalTmpPath;
   ListFiles:=TStringList.Create;
   ListFiles.Sorted:=True;
   LoadLST('bases.lst');
   SetChange(False);
 
-  Label1.Caption:='EditBases'+#10#13+FileVersion(Application.ExeName)+
-    #10#13+'Freeware (C) 2012-2017';
+  Label1.Caption:='EditBases'+#13#10+FileVersion(Application.ExeName)+
+    #13#10+'Freeware (C) 2012-2017';
 
   PageControl1.ActivePageIndex:=0;
   SaveDialog1.InitialDir:=ParamStr(0);

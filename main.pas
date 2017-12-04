@@ -332,7 +332,6 @@ var
   d, masks: string;
   RegExp: TRegExpr;
   CopyThread: TCopyFileThread;
-  date: TDateTime;
 begin
   if PopolnPath='' then begin
     MessageDlg('Ошибка', 'Не указана папка с пополнением!', mtError, [mbOK], 0);
@@ -375,9 +374,7 @@ begin
         end
       end
       else begin // пишем текущую дату
-        date:=Now;
-        d:=IntToStr(DayOf(date))+'.'+IntToStr(MonthOf(date))+'.'+
-          IntToStr(YearOf(date));
+        d:=DateToStr(Now);
         if not DatePopoln.Find(d, i) then begin
           if DatePopoln.Count=10 then DatePopoln.Delete(0);
           DatePopoln.Add(d);
