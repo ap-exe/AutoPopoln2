@@ -5,22 +5,25 @@ unit main;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, RichMemo, Forms, Controls, Graphics, Dialogs,
-  ComCtrls, Menus, ValEdit, ExtCtrls, StdCtrls, Windows, zlibfunc, MyFileUtils;
+  Classes, SysUtils, FileUtil, RichMemo, Forms, Controls,
+  Graphics, Dialogs, ComCtrls, Menus, ValEdit, ExtCtrls, StdCtrls, Buttons,
+  Windows, zlibfunc, about;
 
 type
 
   { TMainForm }
 
   TMainForm = class(TForm)
-    Image1: TImage;
-    Label1: TLabel;
-    Label2: TLabel;
+    BasesListEditor: TValueListEditor;
     MainMenu1: TMainMenu;
     FileMenuItem: TMenuItem;
     LoadError: TMenuItem;
     AddItemBasesPop: TMenuItem;
     DelItemBasesPop: TMenuItem;
+    AboutItem: TMenuItem;
+    AddTabItem: TMenuItem;
+    DelTabItem: TMenuItem;
+    TabsPopupMenu: TPopupMenu;
     SaveError: TMenuItem;
     MenuItem12: TMenuItem;
     LoadKey: TMenuItem;
@@ -45,8 +48,7 @@ type
     TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
-    BasesListEditor: TValueListEditor;
-    About: TTabSheet;
+    procedure AboutItemClick(Sender: TObject);
     procedure AddItemBasesClick(Sender: TObject);
     procedure BasesListEditorStringsChange(Sender: TObject);
     procedure DelItemBasesClick(Sender: TObject);
@@ -64,7 +66,7 @@ type
     procedure SaveErrorClick(Sender: TObject);
     procedure SaveKeyClick(Sender: TObject);
     procedure SaveLSTClick(Sender: TObject);
-  private
+   private
     tmp: string;
     Change: boolean;
     ListFiles: TStringList;
@@ -106,7 +108,7 @@ begin
 
   Result.Position := 0;
 end;
-procedure MyCompressFiles(Files: TStrings; const FileName: string);
+procedure MyCompressFiles2(Files: TStrings; const FileName: string);
 var
   TmpStream: TStream;
 begin
@@ -222,9 +224,9 @@ begin
   SaveDialog1.Filter:='*.lst|*.lst';
   if SaveDialog1.Execute then begin
     if ExtractFileExt(SaveDialog1.FileName)='.lst' then
-      MyCompressFiles(ListFiles, SaveDialog1.FileName)
+      MyCompressFiles2(ListFiles, SaveDialog1.FileName)
     else
-      MyCompressFiles(ListFiles, ChangeFileExt(SaveDialog1.FileName, '.lst'));
+      MyCompressFiles2(ListFiles, ChangeFileExt(SaveDialog1.FileName, '.lst'));
     SetChange(False);
   end;
 end;
@@ -260,6 +262,11 @@ begin
   SetChange(True);
   BasesListEditor.InsertRow('', '', True);
   SendMessage(BasesListEditor.Handle, WM_VSCROLL, SB_BOTTOM, 0);
+end;
+
+procedure TMainForm.AboutItemClick(Sender: TObject);
+begin
+  AboutForm.Show;
 end;
 
 procedure TMainForm.BasesListEditorStringsChange(Sender: TObject);
@@ -312,10 +319,6 @@ begin
   ListFiles.Sorted:=True;
   LoadLST('bases.lst');
   SetChange(False);
-
-  Label1.Caption:='EditBases'+#13#10+FileVersion(Application.ExeName)+
-    #13#10+'Freeware (C) 2012-2017';
-
   PageControl1.ActivePageIndex:=0;
   SaveDialog1.InitialDir:=ParamStr(0);
   OpenDialog1.InitialDir:=ParamStr(0);

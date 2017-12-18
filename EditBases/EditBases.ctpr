@@ -15,7 +15,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
-      <BuildNr Value="23"/>
+      <BuildNr Value="26"/>
       <Language Value="0419"/>
       <StringTable ProductVersion="1.0.0.0"/>
     </VersionInfo>
@@ -59,15 +59,18 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="2">
+    <RequiredPackages Count="3">
       <Item1>
-        <PackageName Value="pl_richmemo"/>
+        <PackageName Value="bs_Controls"/>
       </Item1>
       <Item2>
-        <PackageName Value="adLCL"/>
+        <PackageName Value="pl_richmemo"/>
       </Item2>
+      <Item3>
+        <PackageName Value="adLCL"/>
+      </Item3>
     </RequiredPackages>
-    <Units Count="3">
+    <Units Count="4">
       <Unit0>
         <Filename Value="EditBases.ppr"/>
         <IsPartOfProject Value="True"/>
@@ -83,6 +86,13 @@
         <Filename Value="..\zlib\zlibfunc.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit2>
+      <Unit3>
+        <Filename Value="about.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="AboutForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit3>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

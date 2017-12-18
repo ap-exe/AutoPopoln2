@@ -93,13 +93,11 @@ type
     AboutPage: TTabSheet;
     TreeView1: TTreeView;
     procedure base1Click(Sender: TObject);
-    procedure BasesPageShow(Sender: TObject);
     procedure cbCreateSubDirClick(Sender: TObject);
     procedure CfgPageHide(Sender: TObject);
     procedure CopyButtonClick(Sender: TObject);
     procedure DirConsButtonClick(Sender: TObject);
     procedure DirConsEditChange(Sender: TObject);
-    procedure DirConsEditEditingDone(Sender: TObject);
     procedure ErrDocREMouseEnter(Sender: TObject);
     procedure ErrDocREMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
@@ -180,6 +178,9 @@ uses
 
 { TMainForm }
 
+const
+  br: string = #13#10; // перевод строки
+
 // при щелчке по названию раздела показывает его
 procedure TMainForm.TreeView1Click(Sender: TObject);
 begin
@@ -204,11 +205,6 @@ end;
 procedure TMainForm.base1Click(Sender: TObject);
 begin
   KeyCmdEdit.Text:=KeyCmdEdit.Text+' /base*';
-end;
-
-procedure TMainForm.BasesPageShow(Sender: TObject);
-begin
-
 end;
 
 // создавать или нет подпапки с названием организации
@@ -268,14 +264,10 @@ begin
 end;
 
 procedure TMainForm.DirConsEditChange(Sender: TObject);
-begin
-  DirConsEdit.Color:=clWindow;
-end;
-
-procedure TMainForm.DirConsEditEditingDone(Sender: TObject);
 var
   s: string;
 begin
+  DirConsEdit.Color:=clWindow;
   if DirConsEdit.Text<>'' then begin
     DirConsChange:=True;
     s:=DirConsEdit.Text+'\ADM\STS';
@@ -332,7 +324,9 @@ var
   d, masks: string;
   RegExp: TRegExpr;
   CopyThread: TCopyFileThread;
+  added: boolean;
 begin
+  added:=False;
   if PopolnPath='' then begin
     MessageDlg('Ошибка', 'Не указана папка с пополнением!', mtError, [mbOK], 0);
     Exit;
@@ -368,16 +362,18 @@ begin
       if RegExp.Exec(CopyThread.FFileNames[j]) then begin
         d:=Copy(RegExp.Match[1], 0, 2)+'.'+Copy(RegExp.Match[1], 3, 2)+'.'+
           IntToStr(YearOf(Now));
-        if not DatePopoln.Find(d, i) then begin
+        if not (DatePopoln.Find(d, i) and added) then begin
           if DatePopoln.Count=10 then DatePopoln.Delete(0);
           DatePopoln.Add(d);
+          added:=True;
         end
       end
       else begin // пишем текущую дату
         d:=DateToStr(Now);
-        if not DatePopoln.Find(d, i) then begin
+        if not (DatePopoln.Find(d, i) and added) then begin
           if DatePopoln.Count=10 then DatePopoln.Delete(0);
           DatePopoln.Add(d);
+          added:=True;
         end;
       end;
     RegExp.Free;
@@ -558,8 +554,8 @@ begin
       ListFiles.Add(TempPath+'\keys.rtf');
     end
     else begin
-      MessageDlg('Ошибка!', 'Невозможно загрузить файл bases.lst!'+#13#10+
-        'Файл bases.lst должен находиться в одной папке с программой.'+#13#10+
+      MessageDlg('Ошибка!', 'Невозможно загрузить файл bases.lst!'+br+
+        'Файл bases.lst должен находиться в одной папке с программой.'+br+
         'Если у Вас нет этого файла, сформируйте его с помощью программы EditBases.',
         mtError, [mbOK], 0);
       //Application.Terminate;
@@ -568,12 +564,12 @@ begin
   ErrDocRE.SelStart:=0;
   TotalCopyLabel.Caption:='';
   ClientLabel.Caption:='Организация: '+NameOrgEdit.Text;
-
+  // загружаем параметры
   LoadedCfg:=LoadCfg;
   DirConsChange:=False;
 
-  Label2.Caption:='АвтоПополнение'+#13#10+FileVersion(Application.ExeName)+
-    #13#10+'Freeware (C) 2009-2017';
+  Label2.Caption:='АвтоПополнение'+br+FileVersion(Application.ExeName)+
+    br+'Freeware (C) 2009-2017';
 
   PageControl.Page[0].Show;
   TreeView1.Selected:=TreeView1.Items.GetFirstNode;
@@ -829,9 +825,12 @@ begin
     r.Free;
   end;
 
-  NameOrgEdit.Text:='';
+  NameOrgEdit.Text:='ООО Рога и копыта';
   PopolnEdit.Text:='';
-  DirConsEdit.Text:='';
+  DirConsEdit.Text:=FindCons;
+  if DirConsEdit.Text<>'' then begin
+    DirConsChange:=True;
+  end;
   USRDirEdit.Text:='';
   STTEdit.Text:='';
   cbCreateSubDir.Checked:=true;
@@ -907,14 +906,14 @@ var
   lastrec: TStringList;
 begin
   Report.Clear;
-  Report.Lines.Add('Даты последних пополнений:');
+  Report.Lines.Add('Даты последних 10 пополнений:');
   Report.Lines.AddStrings(DatePopoln);
   Report.Lines.Add('');
   Report.Lines.Add('last_rec.txt:');
   lastrec:=TStringList.Create;
   try
     if FileExists(DirConsEdit.Text+'\Receive\last_rec.txt') then begin
-      lastrec.LoadFromFile(DirConsEdit.Text+'\Receive\last_rec.txt', TEncoding.ANSI);
+      lastrec.LoadFromFile(DirConsEdit.Text+'\Receive\last_rec.txt', TEncoding.Default);
       Report.Lines.AddStrings(lastrec);
     end
     else Report.Lines.Add('Не найден файл last_rec.txt');
@@ -928,7 +927,7 @@ procedure TMainForm.FillTableBase;
 var
   i, p, index: integer;
   bases: TStringList;
-  ShortName, FullName, s: string;
+  ShortName, FullName, s, s2: string;
   NewItem: TListItem;
 begin
   ShortName:='';
@@ -949,24 +948,30 @@ begin
           FullName:=Copy(bases[i], p+9, Length(bases[i])-(p+9));
         end
         else begin
-          s:=bases[i];
+          s:=UpperCase(bases[i]);
           for index:=0 to BasesLST.Count-1 do begin
             p:=Pos('=', BasesLST[index]);
-            if ShortName=Copy(BasesLST[index], 0, p-1) then begin
+            s2:=Copy(BasesLST[index], 0, p-1);
+            if s=s2 then begin
               FullName:=Copy(BasesLST[index], p+1, Length(BasesLst[index]));
               Break;
             end;
           end;
         end;
-        ShortName:=UpperCase(s);
+        ShortName:=s;
 
         NewItem:=ListBases.Items.Add;
         NewItem.SubItems.Add(IntToStr(i+1));
         NewItem.SubItems.Add(ShortName);
         NewItem.SubItems.Add(FullName);
+        FullName:='';
+        ShortName:='';
       end;
     finally
       bases.Free;
+      // уменьшаем размер последней колонки,
+      // так как папраметр AutoWidthLastColumn неправильно работает
+      ListBases.Columns.Items[3].Width:=ListBases.Columns.Items[3].Width-20;
     end;
   end
   else

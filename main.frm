@@ -1,5 +1,5 @@
 object MainForm: TMainForm
-  Left = 317
+  Left = 316
   Height = 500
   Top = 184
   Width = 624
@@ -52,10 +52,10 @@ object MainForm: TMainForm
     Top = 42
     Width = 504
     TabStop = False
-    ActivePage = AboutPage
+    ActivePage = CfgPage
     Align = alClient
     ShowTabs = False
-    TabIndex = 5
+    TabIndex = 2
     TabOrder = 1
     object PopolnPage: TTabSheet
       Caption = 'PopolnPage'
@@ -251,7 +251,6 @@ object MainForm: TMainForm
       Caption = 'BasesPage'
       ClientHeight = 400
       ClientWidth = 496
-      OnShow = BasesPageShow
       object ListBases: TListView
         Left = 0
         Height = 400
@@ -291,7 +290,7 @@ object MainForm: TMainForm
         PopupMenu = BasesMenu
         ReadOnly = True
         RowSelect = True
-        ScrollBars = ssVertical
+        ScrollBars = ssAutoVertical
         TabOrder = 0
         ViewStyle = vsReport
         OnColumnClick = ListBasesColumnClick
@@ -387,7 +386,6 @@ object MainForm: TMainForm
           EditLabel.ParentColor = False
           TabOrder = 1
           OnChange = DirConsEditChange
-          OnEditingDone = DirConsEditEditingDone
         end
         object DirConsButton: TSpeedButton
           AnchorSideRight.Side = asrBottom
