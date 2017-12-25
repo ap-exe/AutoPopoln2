@@ -1,99 +1,97 @@
 object MainForm: TMainForm
-  Left = 57
-  Height = 429
-  Top = 57
-  Width = 566
+  Left = 85
+  Height = 415
+  Top = 85
+  Width = 521
   Caption = 'Редактирование bases.lst'
-  ClientHeight = 409
-  ClientWidth = 566
+  ClientHeight = 395
+  ClientWidth = 521
   Menu = MainMenu1
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   Position = poScreenCenter
   LCLVersion = '6.2'
-  object PageControl1: TPageControl
+  object ExtendedTabControl1: TExtendedTabControl
     Left = 0
-    Height = 409
+    Height = 395
     Top = 0
-    Width = 566
-    ActivePage = TabSheet1
-    Align = alClient
-    PopupMenu = TabsPopupMenu
+    Width = 521
+    OnChanging = ExtendedTabControl1Changing
     TabIndex = 0
+    Tabs.Strings = (
+      'Базы'
+    )
+    Align = alClient
+    OnMouseMove = ExtendedTabControl1MouseMove
+    PopupMenu = TabsPopupMenu
     TabOrder = 0
-    object TabSheet1: TTabSheet
-      Caption = 'Базы'
-      ClientHeight = 381
-      ClientWidth = 558
-      object BasesListEditor: TValueListEditor
-        Left = 0
-        Height = 381
-        Top = 0
-        Width = 558
-        Align = alClient
-        BorderStyle = bsNone
-        DefaultColWidth = 96
-        FixedCols = 0
-        PopupMenu = BasesPopupMenu
-        RowCount = 2
-        TabOrder = 0
-        TitleStyle = tsNative
-        DoubleBuffered = True
-        KeyOptions = [keyEdit, keyAdd, keyDelete]
-        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goDrawFocusSelected, goColSizing, goEditing, goAutoAddRows, goTabs, goRowSelect, goThumbTracking, goRelaxedRowSelect, goDblClickAutoSize, goFixedRowNumbering]
-        TitleCaptions.Strings = (
-          'База'
-          'Полное название'
-        )
-        OnStringsChange = BasesListEditorStringsChange
-        ColWidths = (
-          96
-          462
-        )
+    ShowToolBar = tsRight
+    object ExtendedTabToolbar1: TExtendedTabToolbar
+      Left = 497
+      Height = 21
+      Top = 0
+      Width = 28
+      Align = alCustom
+      AutoSize = True
+      Constraints.MaxHeight = 21
+      Constraints.MinHeight = 21
+      EdgeBorders = [ebLeft]
+      ShowCaptions = True
+      TabOrder = 0
+    end
+    object PageControl1: TPageControl
+      Left = 2
+      Height = 370
+      Top = 23
+      Width = 517
+      ActivePage = TabSheet1
+      Align = alClient
+      ShowTabs = False
+      TabIndex = 0
+      TabOrder = 2
+      object TabSheet1: TTabSheet
+        Caption = 'Базы'
+        ClientHeight = 362
+        ClientWidth = 509
+        object BasesListEditor: TValueListEditor
+          Left = 0
+          Height = 362
+          Top = 0
+          Width = 509
+          Align = alClient
+          BorderStyle = bsNone
+          DefaultColWidth = 96
+          FixedCols = 0
+          PopupMenu = BasesPopupMenu
+          RowCount = 2
+          TabOrder = 0
+          TitleStyle = tsNative
+          DoubleBuffered = True
+          KeyOptions = [keyEdit, keyAdd, keyDelete]
+          Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goDrawFocusSelected, goColSizing, goEditing, goAutoAddRows, goTabs, goRowSelect, goThumbTracking, goRelaxedRowSelect, goDblClickAutoSize, goFixedRowNumbering]
+          TitleCaptions.Strings = (
+            'База'
+            'Полное название'
+          )
+          OnStringsChange = BasesListEditorStringsChange
+          ColWidths = (
+            96
+            413
+          )
+        end
       end
     end
-    object TabSheet2: TTabSheet
-      Caption = 'Ошибки'
-      ClientHeight = 381
-      ClientWidth = 558
-      object ErrEdit: TRichMemo
-        Left = 0
-        Height = 381
-        Top = 0
-        Width = 558
-        Align = alClient
-        BorderStyle = bsNone
-        HideSelection = False
-        OnKeyPress = ErrEditKeyPress
-        Rtf = '{\rtf1\ansi\ansicpg1251\deff0\nouicompat\deflang1049{\fonttbl{\f0\fnil Segoe UI;}}'#13#10'{\*\generator Riched20 10.0.16299}\viewkind4\uc1 '#13#10'\pard\f0\fs18\par'#13#10'}'#13#10#0
-        ScrollBars = ssAutoVertical
-        TabOrder = 0
-        ZoomFactor = 1
-      end
-    end
-    object TabSheet3: TTabSheet
-      Caption = 'Ключи'
-      ClientHeight = 381
-      ClientWidth = 558
-      object KeyEdit: TRichMemo
-        Left = 0
-        Height = 381
-        Top = 0
-        Width = 558
-        Align = alClient
-        BorderStyle = bsNone
-        HideSelection = False
-        OnKeyPress = KeyEditKeyPress
-        Rtf = '{\rtf1\ansi\ansicpg1251\deff0\nouicompat\deflang1049{\fonttbl{\f0\fnil Segoe UI;}}'#13#10'{\*\generator Riched20 10.0.16299}\viewkind4\uc1 '#13#10'\pard\f0\fs18\par'#13#10'}'#13#10#0
-        ScrollBars = ssAutoVertical
-        TabOrder = 0
-        ZoomFactor = 1
-      end
+    object AddTabButton: TExtendedTabToolButton
+      Left = 3
+      Hint = 'Добавление вкладки'
+      Top = 0
+      Caption = '+'
+      OnClick = AddTabButtonClick
     end
   end
   object MainMenu1: TMainMenu
-    Left = 112
+    Left = 120
     Top = 296
     object FileMenuItem: TMenuItem
       Caption = 'Файл'
@@ -111,36 +109,14 @@ object MainForm: TMainForm
         Caption = '-'
       end
       object LoadBasesTXT: TMenuItem
-        Caption = 'Загрузить описание баз'
+        Caption = 'Загрузить названия баз'
         OnClick = LoadBasesTXTClick
       end
       object SaveBasesTXT: TMenuItem
-        Caption = 'Сохранить описание баз'
+        Caption = 'Сохранить названия баз'
         OnClick = SaveBasesTXTClick
       end
-      object MenuItem9: TMenuItem
-        Caption = '-'
-      end
-      object LoadError: TMenuItem
-        Caption = 'Загрузить описание ошибок'
-        OnClick = LoadErrorClick
-      end
-      object SaveError: TMenuItem
-        Caption = 'Сохранить описание ошибок'
-        OnClick = SaveErrorClick
-      end
       object MenuItem12: TMenuItem
-        Caption = '-'
-      end
-      object LoadKey: TMenuItem
-        Caption = 'Загрузить описание ключей'
-        OnClick = LoadKeyClick
-      end
-      object SaveKey: TMenuItem
-        Caption = 'Сохранить описание ключей'
-        OnClick = SaveKeyClick
-      end
-      object MenuItem16: TMenuItem
         Caption = '-'
       end
       object ExitItem: TMenuItem
@@ -165,7 +141,7 @@ object MainForm: TMainForm
     end
   end
   object BasesPopupMenu: TPopupMenu
-    Left = 176
+    Left = 216
     Top = 296
     object AddItemBasesPop: TMenuItem
       Caption = 'Добавить'
@@ -178,7 +154,7 @@ object MainForm: TMainForm
   end
   object OpenDialog1: TOpenDialog
     Title = 'Открыть файл'
-    Left = 240
+    Left = 304
     Top = 296
   end
   object SaveDialog1: TSaveDialog
@@ -187,13 +163,20 @@ object MainForm: TMainForm
     Top = 296
   end
   object TabsPopupMenu: TPopupMenu
-    Left = 312
+    OnPopup = TabsPopupMenuPopup
+    Left = 392
     Top = 296
-    object DelTabItem: TMenuItem
-      Caption = 'Удалить вкладку'
-    end
     object AddTabItem: TMenuItem
-      Caption = 'Добавить вкладку'
+      Caption = 'Добавить'
+      OnClick = AddTabItemClick
+    end
+    object RenameMenuItem: TMenuItem
+      Caption = 'Изменить'
+      OnClick = RenameMenuItemClick
+    end
+    object DelTabItem: TMenuItem
+      Caption = 'Удалить'
+      OnClick = DelTabItemClick
     end
   end
 end

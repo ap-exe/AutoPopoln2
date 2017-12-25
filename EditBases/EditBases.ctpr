@@ -15,7 +15,8 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
-      <BuildNr Value="26"/>
+      <MinorVersionNr Value="1"/>
+      <BuildNr Value="32"/>
       <Language Value="0419"/>
       <StringTable ProductVersion="1.0.0.0"/>
     </VersionInfo>
@@ -70,7 +71,7 @@
         <PackageName Value="adLCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="4">
+    <Units Count="5">
       <Unit0>
         <Filename Value="EditBases.ppr"/>
         <IsPartOfProject Value="True"/>
@@ -93,6 +94,13 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit3>
+      <Unit4>
+        <Filename Value="addtabform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="AddTabForm1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit4>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

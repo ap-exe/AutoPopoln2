@@ -2,19 +2,20 @@ object AboutForm: TAboutForm
   Left = 316
   Height = 388
   Top = 184
-  Width = 535
+  Width = 600
   HorzScrollBar.Page = 525
   HorzScrollBar.Range = 525
   VertScrollBar.Page = 295
   VertScrollBar.Range = 295
   AutoSize = True
   BorderIcons = [biSystemMenu]
-  BorderStyle = bsSingle
+  BorderStyle = bsDialog
   Caption = 'О программе'
   ClientHeight = 388
-  ClientWidth = 535
+  ClientWidth = 600
   Constraints.MinHeight = 388
   Constraints.MinWidth = 535
+  OnClick = FormClick
   OnCreate = FormCreate
   Position = poMainFormCenter
   LCLVersion = '6.2'
@@ -25,6 +26,7 @@ object AboutForm: TAboutForm
     Width = 64
     BorderSpacing.Left = 20
     BorderSpacing.Top = 20
+    OnClick = FormClick
     Picture.Data = {
       1754506F727461626C654E6574776F726B47726170686963C501000089504E47
       0D0A1A0A0000000D4948445200000040000000400806000000AA6971DE000000
@@ -51,20 +53,22 @@ object AboutForm: TAboutForm
     Width = 34
     Caption = 'Label1'
     ParentColor = False
+    OnClick = FormClick
   end
   object Label2: TLabel
-    Left = 10
-    Height = 282
+    Left = 20
+    Height = 272
     Top = 96
-    Width = 515
+    Width = 560
     Align = alBottom
     Anchors = [akTop, akLeft, akRight, akBottom]
     AutoSize = False
-    BorderSpacing.Left = 10
-    BorderSpacing.Right = 10
-    BorderSpacing.Bottom = 10
+    BorderSpacing.Left = 20
+    BorderSpacing.Right = 20
+    BorderSpacing.Bottom = 20
     Caption = 'Программа распростроняется под лицензией GNU General Public License version 3'#13#10'Это проект с открытыми исходными кодами, они доступны на GitHub (https://github.com/ap-exe/AutoPopoln2).'#13#10'Абсолютна бесплатна для коммерческого использования.'#13#10'Программа написана на FreePascal(https://www.freepascal.org/) с использованием CodeTyphon(http://www.pilotlogic.com/).'#13#10#13#10'Лицензионное соглашение.'#13#10#13#10'ПРОГРАММА РАСПРОСТРАНЯЕТСЯ ПО ПРИНЦИПУ "КАК ЕСТЬ". ПРИ ЭТОМ НЕ ПРЕДУСМАТРИВАЕТСЯ НИКАКИХ ГАРАНТИЙ, ЯВНЫХ ИЛИ ПОДРАЗУМЕВАЕМЫХ. ВЫ ИСПОЛЬЗУЕТЕ ЕЕ НА СВОЙ СОБСТВЕННЫЙ РИСК. АВТОР НЕ НЕСЕТ ОТВЕТСТВЕННОСТИ ЗА ПОТЕРИ ДАННЫХ, ПОВРЕЖДЕНИЯ, ПОТЕРИ ПРИБЫЛИ ИЛИ ЛЮБЫЕ ДРУГИЕ ВИДЫ ПОТЕРЬ, СВЯЗАННЫЕ С ИСПОЛЬЗОВАНИЕМ (ПРАВИЛЬНЫМ ИЛИ НЕПРАВИЛЬНЫМ) ЭТОЙ ПРОГРАММЫ.'#13#10#13#10'Если вы не согласны с условиями данной лицензии, то должны удалить программу со своих устройств хранения информации и отказаться от дальнейшего использования этого программного продукта.'
     ParentColor = False
     WordWrap = True
+    OnClick = FormClick
   end
 end
