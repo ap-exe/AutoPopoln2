@@ -16,9 +16,9 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="1"/>
-      <BuildNr Value="32"/>
+      <BuildNr Value="36"/>
       <Language Value="0419"/>
-      <StringTable ProductVersion="1.0.0.0"/>
+      <StringTable CompanyName="ap-exe" FileDescription="Редактирование bases.lst" InternalName="EditBases" LegalCopyright="Freeware" OriginalFilename="EditBases" ProductVersion="1.1"/>
     </VersionInfo>
     <BuildModes Count="2">
       <Item1 Name="Debug" Default="True"/>

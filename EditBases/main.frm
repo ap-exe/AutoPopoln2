@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 85
+  Left = 268
   Height = 415
-  Top = 85
+  Top = 184
   Width = 521
   Caption = 'Редактирование bases.lst'
   ClientHeight = 395
@@ -12,82 +12,48 @@ object MainForm: TMainForm
   OnCreate = FormCreate
   Position = poScreenCenter
   LCLVersion = '6.2'
-  object ExtendedTabControl1: TExtendedTabControl
+  object PageControl1: TPageControl
     Left = 0
     Height = 395
     Top = 0
     Width = 521
-    OnChanging = ExtendedTabControl1Changing
-    TabIndex = 0
-    Tabs.Strings = (
-      'Базы'
-    )
+    ActivePage = BasesTab
     Align = alClient
-    OnMouseMove = ExtendedTabControl1MouseMove
     PopupMenu = TabsPopupMenu
+    TabIndex = 0
     TabOrder = 0
-    ShowToolBar = tsRight
-    object ExtendedTabToolbar1: TExtendedTabToolbar
-      Left = 497
-      Height = 21
-      Top = 0
-      Width = 28
-      Align = alCustom
-      AutoSize = True
-      Constraints.MaxHeight = 21
-      Constraints.MinHeight = 21
-      EdgeBorders = [ebLeft]
-      ShowCaptions = True
-      TabOrder = 0
-    end
-    object PageControl1: TPageControl
-      Left = 2
-      Height = 370
-      Top = 23
-      Width = 517
-      ActivePage = TabSheet1
-      Align = alClient
-      ShowTabs = False
-      TabIndex = 0
-      TabOrder = 2
-      object TabSheet1: TTabSheet
-        Caption = 'Базы'
-        ClientHeight = 362
-        ClientWidth = 509
-        object BasesListEditor: TValueListEditor
-          Left = 0
-          Height = 362
-          Top = 0
-          Width = 509
-          Align = alClient
-          BorderStyle = bsNone
-          DefaultColWidth = 96
-          FixedCols = 0
-          PopupMenu = BasesPopupMenu
-          RowCount = 2
-          TabOrder = 0
-          TitleStyle = tsNative
-          DoubleBuffered = True
-          KeyOptions = [keyEdit, keyAdd, keyDelete]
-          Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goDrawFocusSelected, goColSizing, goEditing, goAutoAddRows, goTabs, goRowSelect, goThumbTracking, goRelaxedRowSelect, goDblClickAutoSize, goFixedRowNumbering]
-          TitleCaptions.Strings = (
-            'База'
-            'Полное название'
-          )
-          OnStringsChange = BasesListEditorStringsChange
-          ColWidths = (
-            96
-            413
-          )
-        end
+    OnMouseMove = PageControl1MouseMove
+    object BasesTab: TTabSheet
+      Caption = 'Базы'
+      ClientHeight = 367
+      ClientWidth = 513
+      OnExit = BasesTabExit
+      object BasesListEditor: TValueListEditor
+        Left = 0
+        Height = 367
+        Top = 0
+        Width = 513
+        Align = alClient
+        BorderStyle = bsNone
+        DefaultColWidth = 96
+        FixedCols = 0
+        PopupMenu = BasesPopupMenu
+        RowCount = 2
+        TabOrder = 0
+        TitleStyle = tsNative
+        DoubleBuffered = True
+        KeyOptions = [keyEdit, keyAdd]
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goColSizing, goEditing, goThumbTracking, goFixedRowNumbering, goRowHighlight]
+        TitleCaptions.Strings = (
+          'База'
+          'Полное название'
+        )
+        OnStringsChange = BasesListEditorStringsChange
+        ColWidths = (
+          96
+          417
+        )
       end
-    end
-    object AddTabButton: TExtendedTabToolButton
-      Left = 3
-      Hint = 'Добавление вкладки'
-      Top = 0
-      Caption = '+'
-      OnClick = AddTabButtonClick
     end
   end
   object MainMenu1: TMainMenu
@@ -100,20 +66,22 @@ object MainForm: TMainForm
         ShortCut = 16463
         OnClick = OpenLSTClick
       end
-      object SaveLST: TMenuItem
+      object SaveLST1: TMenuItem
         Caption = 'Сохранить LST'
         ShortCut = 16467
-        OnClick = SaveLSTClick
+        OnClick = SaveLST1Click
       end
       object MenuItem6: TMenuItem
         Caption = '-'
       end
       object LoadBasesTXT: TMenuItem
         Caption = 'Загрузить названия баз'
+        ShortCut = 24655
         OnClick = LoadBasesTXTClick
       end
       object SaveBasesTXT: TMenuItem
         Caption = 'Сохранить названия баз'
+        ShortCut = 24659
         OnClick = SaveBasesTXTClick
       end
       object MenuItem12: TMenuItem
@@ -121,6 +89,7 @@ object MainForm: TMainForm
       end
       object ExitItem: TMenuItem
         Caption = 'Выход'
+        ShortCut = 32883
         OnClick = ExitItemClick
       end
     end
@@ -128,11 +97,21 @@ object MainForm: TMainForm
       Caption = 'Правка'
       object AddItemBases: TMenuItem
         Caption = 'Добавить описание базы'
+        ShortCut = 45
         OnClick = AddItemBasesClick
       end
       object DelItemBases: TMenuItem
         Caption = 'Удалить описание базы'
+        ShortCut = 16430
         OnClick = DelItemBasesClick
+      end
+      object MenuItem1: TMenuItem
+        Caption = '-'
+      end
+      object AddTabItemMain: TMenuItem
+        Caption = 'Добавить вкладку'
+        ShortCut = 16429
+        OnClick = AddTabItemMainClick
       end
     end
     object AboutItem: TMenuItem

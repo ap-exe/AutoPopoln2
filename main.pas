@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, DateTimePicker, Forms, Controls, Graphics,
   ActiveX, Dialogs, ComCtrls, ExtCtrls, StdCtrls, Menus, Buttons, EditBtn,
-  ShlObj, Windows, RegExpr, zlibfunc, LCLType, lconvencoding, RichMemo,
+  ShlObj, Windows, RegExpr, LCLType, lconvencoding, RichMemo,
   LazUTF8, DateUtils, Registry, Types;
 
 type
@@ -16,7 +16,11 @@ type
 
   TMainForm = class(TForm)
     BasesMenu: TPopupMenu;
+    FindEdit: TEdit;
+    Label1: TLabel;
     Label3: TLabel;
+    PageControl1: TPageControl;
+    Panel2: TPanel;
     ReloadDTButton: TButton;
     cbCloseProg: TCheckBox;
     cbCreateSubDir: TCheckBox;
@@ -24,7 +28,6 @@ type
     DateTimePicker1: TDateTimePicker;
     DirConsButton: TSpeedButton;
     DirConsEdit: TLabeledEdit;
-    FindEdit: TEdit;
     FreeSizeText: TLabel;
     GroupBox1: TGroupBox;
     GroupBox2: TGroupBox;
@@ -33,20 +36,16 @@ type
     GroupBox5: TGroupBox;
     Image1: TImage;
     KeyCmdEdit: TLabeledEdit;
-    Label1: TLabel;
     Label2: TLabel;
     Label4: TLabel;
     ListBases: TListView;
     NameOrgEdit: TEdit;
-    PageControl1: TPageControl;
     PopolnButton: TSpeedButton;
     PopolnCheckBox: TCheckBox;
     PopolnEdit: TLabeledEdit;
     Report: TMemo;
     ResetCFGButton: TButton;
     ResText: TLabel;
-    ErrDocRE: TRichMemo;
-    KeyCmdMemo: TRichMemo;
     RunPopolnButton: TButton;
     CopyButton: TButton;
     ExitButton: TButton;
@@ -56,10 +55,8 @@ type
     KeyCmdMenu: TPopupMenu;
     adm1: TMenuItem;
     base1: TMenuItem;
-    MenuItem1: TMenuItem;
     N4: TMenuItem;
     N3: TMenuItem;
-    N1: TMenuItem;
     OpenDirConsButton: TButton;
     ProgressBar1: TProgressBar;
     ScrollBox1: TScrollBox;
@@ -72,8 +69,6 @@ type
     STTCheckBox: TCheckBox;
     STTDirButton: TSpeedButton;
     STTEdit: TLabeledEdit;
-    TabSheet1: TTabSheet;
-    TabSheet2: TTabSheet;
     TotalCopyLabel: TLabel;
     USRCheckBox: TCheckBox;
     USRDirButton: TSpeedButton;
@@ -98,9 +93,6 @@ type
     procedure CopyButtonClick(Sender: TObject);
     procedure DirConsButtonClick(Sender: TObject);
     procedure DirConsEditChange(Sender: TObject);
-    procedure ErrDocREMouseEnter(Sender: TObject);
-    procedure ErrDocREMouseWheel(Sender: TObject; Shift: TShiftState;
-      WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure ExitButtonClick(Sender: TObject);
     procedure adm1Click(Sender: TObject);
     procedure FindEditChange(Sender: TObject);
@@ -109,14 +101,11 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure KeyCmdButtonClick(Sender: TObject);
-    procedure KeyCmdMemoMouseWheel(Sender: TObject; Shift: TShiftState;
-      WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure ListBasesColumnClick(Sender: TObject; Column: TListColumn);
     procedure ListBasesCustomDrawItem(Sender: TCustomListView; Item: TListItem;
       State: TCustomDrawState; var DefaultDraw: Boolean);
     procedure ListBasesEnter(Sender: TObject);
     procedure LogPageShow(Sender: TObject);
-    procedure N1Click(Sender: TObject);
     procedure N3Click(Sender: TObject);
     procedure N4Click(Sender: TObject);
     procedure NameOrgEditChange(Sender: TObject);
@@ -125,6 +114,7 @@ type
     procedure NameOrgEditUTF8KeyPress(Sender: TObject; var UTF8Key: TUTF8Char);
     procedure norunner1Click(Sender: TObject);
     procedure OpenDirConsButtonClick(Sender: TObject);
+    procedure Panel2Click(Sender: TObject);
     procedure PopolnButtonClick(Sender: TObject);
     procedure PopolnCheckBoxClick(Sender: TObject);
     procedure PopolnEditChange(Sender: TObject);
@@ -158,7 +148,6 @@ type
     procedure CopyPopoln;
     procedure WriteReport;
     procedure OpenCfgPage;
-    function LoadRTF(FileName: string; rm: TRichMemo): boolean;
   public
     LoadedCfg: boolean;
     DatePopoln, ListFiles: TStringList;
@@ -276,20 +265,6 @@ begin
     else
       STTEdit.Text:='';
   end;
-end;
-
-procedure TMainForm.ErrDocREMouseEnter(Sender: TObject);
-begin
-  ErrDocRE.SetFocus;
-end;
-
-procedure TMainForm.ErrDocREMouseWheel(Sender: TObject; Shift: TShiftState;
-  WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
-begin
-  ErrDocRE.ScrollBy(0, WheelDelta+10);
-  // измененяется размер шрифта при зажатом CTRL и вращение колёсика мышки
-  if Shift=[ssCtrl] then
-    ErrDocRE.ZoomFactor:=ErrDocRE.ZoomFactor + WheelDelta * 0.001;
 end;
 
 // процедура используется для копирования SST и USR файлов
@@ -439,7 +414,6 @@ begin
     USRPath:=USRDirEdit.Text;
 end;
 
-
 // добавляет в настройках командной строки параметр /yes
 procedure TMainForm.yes1Click(Sender: TObject);
 begin
@@ -459,20 +433,22 @@ var
   s, l, st: LongInt;
 begin
   opt:=[];
-  st:=ErrDocRE.SelStart;
-  l:=ErrDocRE.SelLength;
-  s:=ErrDocRE.Search(FindEdit.Text, ErrDocRE.SelStart, length(ErrDocRE.Text), opt);
-  if (s>=0) then begin
-    if (st=s) and (l=UTF8Length(FindEdit.Text)) then
-      s:=ErrDocRE.Search(FindEdit.Text, ErrDocRE.SelStart+1, length(ErrDocRE.Text), opt);
-  end;
+  with TRichMemo(PageControl1.ActivePage.Controls[0]) do begin
+    st:=SelStart;
+    l:=SelLength;
+    s:=Search(FindEdit.Text, st, length(Text), opt);
+    if (s>=0) then begin
+      if (st=s) and (l=UTF8Length(FindEdit.Text)) then
+        s:=Search(FindEdit.Text, SelStart+1, length(Text), opt);
+    end;
 
-  if (s>=0) then begin
-    ErrDocRE.SelStart:=s;
-    ErrDocRE.SetSelLengthFor(FindEdit.text);
-  end else begin
-    ErrDocRE.SelStart:=0;
-    ErrDocRE.SelLength:=0;
+    if (s>=0) then begin
+      SelStart:=s;
+      SetSelLengthFor(FindEdit.text);
+    end else begin
+      SelStart:=0;
+      SelLength:=0;
+    end;
   end;
 end;
 
@@ -497,34 +473,15 @@ begin
   ListFiles.Free;
 end;
 
-// загрузка RTF файла в TRichMemo
-function TMainForm.LoadRTF(FileName: string; rm: TRichMemo): boolean;
-var
-  f: TFileStream;
-begin
-  Result:=False;
-  f:=TFileStream.Create(FileName, fmOpenRead);
-  try
-    Result:=rm.LoadRichText(f);
-  finally
-    f.Free;
-  end;
-end;
-
 // инициализация программы
 procedure TMainForm.FormCreate(Sender: TObject);
 var
-  buffer: array [0..255] of Char;
   s, s3: string;
   s2: RawByteString;
   f: text;
 begin
   TotalCopyLabel.Caption:='';
-
-  GetTempPath(256, buffer);
-  s:=StrPas(buffer);
-  TempPath:=Copy(s, 0, Length(s)-1);
-
+  TempPath := GetLocalTmpPath + 'ap\';
   DatePopoln:=TStringList.Create;
   DatePopoln.Duplicates:=dupIgnore;
   DatePopoln.Sorted:=True;
@@ -535,33 +492,28 @@ begin
 
   AppPath:=ExtractFilePath(ParamStr(0));
   s:=AppPath+'bases.lst';
-    if FileExists(s) then begin
-      DecompressFile(s, TempPath, True, True);
-
-      AssignFile(f, TempPath+'\bases.txt');
+  if FileExists(s) then begin
+    if LoadLST(s, TempPath, PageControl1, nil, ListFiles) then begin
+      AssignFile(f, TempPath+'bases.txt');
       reset(f);
       while not Eof(f) do begin
         Readln(f, s2);
         s3:=CP1251ToUTF8(s2);
-        BasesLST.Add(s3);
+        BasesLST.Add(UpperCase(s3));
       end;
       CloseFile(f);
-      LoadRTF(TempPath+'\errors.rtf', ErrDocRE);
-      LoadRTF(TempPath+'\keys.rtf', KeyCmdMemo);
-      ListFiles.Clear;
-      ListFiles.Add(TempPath+'\bases.txt');
-      ListFiles.Add(TempPath+'\errors.rtf');
-      ListFiles.Add(TempPath+'\keys.rtf');
+      ListFiles.Add(TempPath+'bases.txt');
     end
-    else begin
-      MessageDlg('Ошибка!', 'Невозможно загрузить файл bases.lst!'+br+
-        'Файл bases.lst должен находиться в одной папке с программой.'+br+
-        'Если у Вас нет этого файла, сформируйте его с помощью программы EditBases.',
+    else
+      MessageDlg('Ошибка!', 'Произошла ошибка при загрузке файла bases.lst!',
         mtError, [mbOK], 0);
-      //Application.Terminate;
-    end;
+  end
+  else
+    MessageDlg('Ошибка!', 'Нет файла bases.lst!'+br+
+      'Файл bases.lst должен находиться в одной папке с программой.'+br+
+      'Если у Вас нет этого файла, сформируйте его с помощью программы EditBases.',
+      mtError, [mbOK], 0);
 
-  ErrDocRE.SelStart:=0;
   TotalCopyLabel.Caption:='';
   ClientLabel.Caption:='Организация: '+NameOrgEdit.Text;
   // загружаем параметры
@@ -598,15 +550,6 @@ begin
   KeyCmdMenu.PopUp;
 end;
 
-procedure TMainForm.KeyCmdMemoMouseWheel(Sender: TObject; Shift: TShiftState;
-  WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
-begin
-  KeyCmdMemo.ScrollBy(0, WheelDelta+5);
-  // измененяется размер шрифта при зажатом CTRL и вращение колёсика мышки
-  if Shift=[ssCtrl] then
-    KeyCmdMemo.ZoomFactor:=KeyCmdMemo.ZoomFactor + WheelDelta * 0.001;
-end;
-
 // выбор или отмена всех элементов в списке баз
 procedure TMainForm.ListBasesColumnClick(Sender: TObject; Column: TListColumn);
 begin
@@ -636,14 +579,6 @@ end;
 procedure TMainForm.LogPageShow(Sender: TObject);
 begin
   WriteReport;
-end;
-
-procedure TMainForm.N1Click(Sender: TObject);
-begin
-  TreeView1.Items[4].Selected:=True;
-  PageControl.Pages[4].Show;
-  PageControl1.Pages[1].Show;
-  KeyCmdMemo.SetFocus;
 end;
 
 // снятие выбора со всех элементов в списке баз
@@ -709,6 +644,11 @@ begin
   else
     MessageDlg('Ошибка', 'Папка '+DirConsEdit.Text+' не найдена',
       mtError, [mbOk], 0);
+
+end;
+
+procedure TMainForm.Panel2Click(Sender: TObject);
+begin
 
 end;
 

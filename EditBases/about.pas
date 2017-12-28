@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  StdCtrls, MyFileUtils;
+  StdCtrls;
 
 type
 
@@ -28,6 +28,9 @@ var
   AboutForm: TAboutForm;
 
 implementation
+
+uses
+  MyFileUtils;
 
 {$R *.frm}
 

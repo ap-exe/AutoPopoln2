@@ -1,5 +1,5 @@
 object MainForm: TMainForm
-  Left = 316
+  Left = 268
   Height = 500
   Top = 184
   Width = 624
@@ -52,10 +52,10 @@ object MainForm: TMainForm
     Top = 42
     Width = 504
     TabStop = False
-    ActivePage = CfgPage
+    ActivePage = DocPage
     Align = alClient
     ShowTabs = False
-    TabIndex = 2
+    TabIndex = 4
     TabOrder = 1
     object PopolnPage: TTabSheet
       Caption = 'PopolnPage'
@@ -665,71 +665,45 @@ object MainForm: TMainForm
       ClientWidth = 496
       object PageControl1: TPageControl
         Left = 0
-        Height = 400
+        Height = 357
         Top = 0
         Width = 496
-        ActivePage = TabSheet1
         Align = alClient
-        TabIndex = 0
         TabOrder = 0
-        object TabSheet1: TTabSheet
-          Caption = 'Коды ошибок'
-          ClientHeight = 372
-          ClientWidth = 488
-          object Label1: TLabel
-            Left = 25
-            Height = 15
-            Top = 15
-            Width = 83
-            Caption = 'Поиск ошибки'
-            ParentColor = False
-          end
-          object FindEdit: TEdit
-            Left = 120
-            Height = 23
-            Top = 13
-            Width = 192
-            OnChange = FindEditChange
-            OnMouseEnter = FindEditMouseEnter
-            TabOrder = 0
-          end
-          object ErrDocRE: TRichMemo
-            Left = 0
-            Height = 316
-            Top = 56
-            Width = 488
-            Align = alBottom
-            Anchors = [akTop, akLeft, akRight, akBottom]
-            BorderStyle = bsNone
-            HideSelection = False
-            Lines.Strings = (
-              ''
-            )
-            OnMouseWheel = ErrDocREMouseWheel
-            ReadOnly = True
-            ScrollBars = ssVertical
-            TabOrder = 1
-            ZoomFactor = 1
-          end
+      end
+      object Panel2: TPanel
+        Left = 0
+        Height = 43
+        Top = 357
+        Width = 496
+        Align = alBottom
+        Anchors = []
+        BevelOuter = bvNone
+        Caption = 'Panel2'
+        ClientHeight = 43
+        ClientWidth = 496
+        TabOrder = 1
+        OnClick = Panel2Click
+        object Label1: TLabel
+          Left = 16
+          Height = 15
+          Top = 14
+          Width = 35
+          Caption = 'Поиск'
+          ParentColor = False
         end
-        object TabSheet2: TTabSheet
-          Caption = 'Ключи командной строки'
-          ClientHeight = 372
-          ClientWidth = 488
-          object KeyCmdMemo: TRichMemo
-            Left = 0
-            Height = 372
-            Top = 0
-            Width = 488
-            Align = alClient
-            BorderStyle = bsNone
-            HideSelection = False
-            OnMouseWheel = KeyCmdMemoMouseWheel
-            ReadOnly = True
-            ScrollBars = ssVertical
-            TabOrder = 0
-            ZoomFactor = 1
-          end
+        object FindEdit: TEdit
+          AnchorSideRight.Control = Panel2
+          AnchorSideRight.Side = asrBottom
+          Left = 64
+          Height = 23
+          Top = 11
+          Width = 412
+          Anchors = [akTop, akLeft, akRight]
+          BorderSpacing.Right = 20
+          OnChange = FindEditChange
+          OnMouseEnter = FindEditMouseEnter
+          TabOrder = 0
         end
       end
     end
@@ -880,13 +854,6 @@ object MainForm: TMainForm
     object yes1: TMenuItem
       Caption = '/yes'
       OnClick = yes1Click
-    end
-    object MenuItem1: TMenuItem
-      Caption = '-'
-    end
-    object N1: TMenuItem
-      Caption = 'Описание всех ключей'
-      OnClick = N1Click
     end
   end
   object BasesMenu: TPopupMenu

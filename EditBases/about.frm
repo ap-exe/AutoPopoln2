@@ -1,5 +1,5 @@
 object AboutForm: TAboutForm
-  Left = 316
+  Left = 262
   Height = 388
   Top = 184
   Width = 600
@@ -18,7 +18,6 @@ object AboutForm: TAboutForm
   OnClick = FormClick
   OnCreate = FormCreate
   Position = poMainFormCenter
-  LCLVersion = '6.2'
   object Image1: TImage
     Left = 10
     Height = 64

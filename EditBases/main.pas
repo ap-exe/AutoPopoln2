@@ -5,9 +5,8 @@ unit main;
 interface
 
 uses
-  Classes, SysUtils, ExtendedTabControls, RichMemo, Forms, Controls,
-  Graphics, Dialogs, ComCtrls, Menus, ValEdit, ExtCtrls, StdCtrls, Buttons,
-  Windows, FileUtil;
+  Classes, SysUtils, RichMemo, Forms, Controls, Windows, FileUtil,
+  Graphics, Dialogs, ComCtrls, Menus, ValEdit, ExtCtrls, StdCtrls, Buttons;
 
 type
 
@@ -15,9 +14,7 @@ type
 
   TMainForm = class(TForm)
      BasesListEditor: TValueListEditor;
-    ExtendedTabControl1: TExtendedTabControl;
-    ExtendedTabToolbar1: TExtendedTabToolbar;
-    AddTabButton: TExtendedTabToolButton;
+     BasesTab: TTabSheet;
     MainMenu1: TMainMenu;
     FileMenuItem: TMenuItem;
     AddItemBasesPop: TMenuItem;
@@ -25,16 +22,17 @@ type
     AboutItem: TMenuItem;
     AddTabItem: TMenuItem;
     DelTabItem: TMenuItem;
-    RenameMenuItem: TMenuItem;
+    MenuItem1: TMenuItem;
+    AddTabItemMain: TMenuItem;
     PageControl1: TPageControl;
-    TabSheet1: TTabSheet;
+    RenameMenuItem: TMenuItem;
     TabsPopupMenu: TPopupMenu;
     MenuItem12: TMenuItem;
     ExitItem: TMenuItem;
     AddItemBases: TMenuItem;
     DelItemBases: TMenuItem;
     OpenLST: TMenuItem;
-    SaveLST: TMenuItem;
+    SaveLST1: TMenuItem;
     EditMenuItem: TMenuItem;
     MenuItem6: TMenuItem;
     LoadBasesTXT: TMenuItem;
@@ -45,35 +43,30 @@ type
     procedure AboutItemClick(Sender: TObject);
     procedure AddItemBasesClick(Sender: TObject);
     procedure AddTabItemClick(Sender: TObject);
+    procedure AddTabItemMainClick(Sender: TObject);
     procedure BasesListEditorStringsChange(Sender: TObject);
+    procedure BasesTabExit(Sender: TObject);
     procedure DelItemBasesClick(Sender: TObject);
     procedure AddTabButtonClick(Sender: TObject);
     procedure DelTabItemClick(Sender: TObject);
     procedure ExitItemClick(Sender: TObject);
-    procedure ExtendedTabControl1Changing(Sender: TObject;
-      var AllowChange: Boolean);
-    procedure ExtendedTabControl1MouseMove(Sender: TObject; Shift: TShiftState;
-      X, Y: Integer);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
     procedure LoadBasesTXTClick(Sender: TObject);
     procedure OpenLSTClick(Sender: TObject);
+    procedure PageControl1MouseMove(Sender: TObject; Shift: TShiftState; X,
+      Y: Integer);
     procedure RenameMenuItemClick(Sender: TObject);
     procedure SaveBasesTXTClick(Sender: TObject);
-    procedure SaveLSTClick(Sender: TObject);
+    procedure SaveLST1Click(Sender: TObject);
     procedure TabsPopupMenuPopup(Sender: TObject);
    private
     tmp: string;
     Change: boolean;
     ListFiles: TStringList;
     TabIndex: integer;
-    function LoadRTF(FileName: string; rm: TRichMemo): boolean;
-    function SaveRTF(FileName: string; rm: TRichMemo): boolean;
-    procedure LoadLST(FileName: string; TC: TExtendedTabControl;
-      PC: TPageControl; LE: TValueListEditor; LF: TStringList);
     procedure SetChange(Changes: boolean);
-    function GetLocalTmpPath: string;
   public
 
   end;
@@ -84,88 +77,11 @@ var
 implementation
 
 uses
-  zlibfunc, about, addtabform;
+  about, addtabform, MyFileUtils;
 
 {$R *.frm}
 
 { TMainForm }
-
-////////////////////////////////////////////////////////////////////////
-// измененные функции из файла zlibfunc
-// удалил из функции запись в сжатый файл путей к файлам
-function MyCompressFiles(Files: TStrings): TStream;
-var
-  I: Integer;
-  S: string;
-begin
-  Result := TMemoryStream.Create;
-  if Files.Count = 0 then
-    Exit;
-
-  for I := 0 to Files.Count - 1 do
-  begin
-    S := ExtractFileName(Files[I]);
-    AddFile(S, '', Files[I], Result);
-  end;
-
-  Result.Position := 0;
-end;
-procedure MyCompressFiles2(Files: TStrings; const FileName: string);
-var
-  TmpStream: TStream;
-begin
-  TmpStream := MyCompressFiles(Files);
-  try
-    TMemoryStream(TmpStream).SaveToFile(FileName);
-  finally
-    TmpStream.Free;
-  end;
-end;
-/////////////////////////////////////////////////////////////////////
-
-// загрузка RTF файла
-function TMainForm.LoadRTF(FileName: string; rm: TRichMemo): boolean;
-var
-  f: TFileStream;
-begin
-  Result:=False;
-  if FileExists(FileName) then begin
-    f := TFileStream.Create(FileName, fmOpenRead);
-    try
-      Result := rm.LoadRichText(f);
-    finally
-      f.Free;
-    end;
-  end;
-end;
-
-// сохранение RTF Файла
-function TMainForm.SaveRTF(FileName: string; rm: TRichMemo): boolean;
-var
-  f: TFileStream;
-begin
-  Result := False;
-  if FileName <> '' then begin
-    f := TFileStream.Create(FileName, fmCreate);
-    try
-      Result := rm.SaveRichText(f);
-    finally
-      f.Free;
-    end;
-  end;
-end;
-
-// путь к папке temp
-function TMainForm.GetLocalTmpPath: string;
-var
-  buffer: array [0..255] of Char;
-  s: string;
-begin
-  Result := ExtractFilePath(Application.ExeName) + 'temp\';
-  GetTempPath(256, buffer);
-  s := StrPas(buffer);
-  if s <> '' then Result := s;
-end;
 
 // открытие LST файла
 procedure TMainForm.OpenLSTClick(Sender: TObject);
@@ -174,12 +90,17 @@ begin
   OpenDialog1.Filter := '*.lst|*.lst';
   if OpenDialog1.Execute then begin
     Screen.Cursor := crHourGlass;
-    LoadLST(OpenDialog1.FileName, ExtendedTabControl1, PageControl1, BasesListEditor, ListFiles);
-    ExtendedTabControl1.TabIndex := 0;
+    LoadLST(OpenDialog1.FileName, tmp, PageControl1, BasesListEditor, ListFiles);
     PageControl1.PageIndex := 0;
     Screen.Cursor := crDefault;
   end;
   SetChange(False);
+end;
+
+procedure TMainForm.PageControl1MouseMove(Sender: TObject; Shift: TShiftState;
+  X, Y: Integer);
+begin
+  TabIndex := PageControl1.IndexOfPageAt(X, Y);
 end;
 
 // изменение вкладки
@@ -189,15 +110,14 @@ var
   LTFile: TStringList;
   s: string;
 begin
-  if TabIndex = 0 then Exit; // запрет на изменение 1 вкладки
   AddTabForm1 := TAddTabForm1.Create(self);
   try
-    AddTabForm1.NameTabEdit.Text := ExtendedTabControl1.Tabs[TabIndex];
-    AddTabForm1.FileTabEdit.Text := ListFiles[TabIndex];
+    AddTabForm1.NameTabEdit.Text := PageControl1.Pages[TabIndex].Caption;
+    AddTabForm1.FileTabEdit.Text := ListFiles[TabIndex + 1];
     AddTabForm1.Caption := 'Изменить вкладку';
 
     if AddTabForm1.ShowModal = mrOk then begin
-      ExtendedTabControl1.Tabs[TabIndex] := AddTabForm1.NameTabEdit.Text;
+      PageControl1.Pages[TabIndex].Caption := AddTabForm1.NameTabEdit.Text;
       if AddTabForm1.FileTabEdit.Text <> '' then begin
         s := tmp + ExtractFileName(AddTabForm1.FileTabEdit.Text);
         if AddTabForm1.FileTabEdit.Text <> s then
@@ -208,14 +128,13 @@ begin
         LTFile := TStringList.Create;
         try
           LTFile.LoadFromFile(tmp + 'listtabs.ini', TEncoding.Default);
-          LTFile[TabIndex - 1] := AddTabForm1.NameTabEdit.Text + '=' +
-            ExtractFileName(s);
+          LTFile[TabIndex - 1] := AddTabForm1.NameTabEdit.Text + '=' + ExtractFileName(s);
           LTFile.SaveToFile(tmp + 'listtabs.ini');
         finally
           LTFile.Free;
         end;
         LoadRTF(s, TRichMemo(PageControl1.Pages[TabIndex].Controls[0]));
-        ListFiles[TabIndex] := s;
+        ListFiles[TabIndex + 1] := s;
       end;
       SetChange(True);
     end;
@@ -236,8 +155,8 @@ begin
   AddTabForm1 := TAddTabForm1.Create(self);
   try
     if AddTabForm1.ShowModal = mrOk then begin
-      ExtendedTabControl1.Tabs.Add(AddTabForm1.NameTabEdit.Text);
       TabSheet := TTabSheet.Create(Self);
+      TabSheet.Caption := AddTabForm1.NameTabEdit.Text;
       RM := TRichMemo.Create(self);
       RM.Align := alClient;
       RM.ScrollBars := ssAutoVertical;
@@ -250,7 +169,8 @@ begin
         ListFiles.Add(s);
         LTFile := TStringList.Create;
         try
-          LTFile.LoadFromFile(tmp + 'listtabs.ini', TEncoding.Default);
+          if FileExists(tmp + 'listtabs.ini') then
+            LTFile.LoadFromFile(tmp + 'listtabs.ini', TEncoding.Default);
           LTFile.Add(AddTabForm1.NameTabEdit.Text + '=' + ExtractFileName(s));
           LtFile.SaveToFile(tmp + 'listtabs.ini');
         finally
@@ -264,15 +184,18 @@ begin
   end;
 end;
 
+procedure TMainForm.AddTabItemMainClick(Sender: TObject);
+begin
+  AddTabItemClick(nil);
+end;
+
 // удаление выделенной вкладки
 procedure TMainForm.DelTabItemClick(Sender: TObject);
 var
   LTFile: TStringList;
 begin
-  if TabIndex = 0 then Exit; // запрет на удаление 1 вкладки
-  ExtendedTabControl1.Tabs.Delete(TabIndex);
-  PageControl1.ActivePage.Destroy;
-  ListFiles.Delete(TabIndex);
+  PageControl1.Pages[TabIndex].Free;
+  ListFiles.Delete(TabIndex + 1);
   LTFile := TStringList.Create;
   try
     LTFile.LoadFromFile(tmp + 'listtabs.ini', TEncoding.Default);
@@ -298,23 +221,32 @@ begin
 end;
 
 // сохранение LST файла
-procedure TMainForm.SaveLSTClick(Sender: TObject);
+procedure TMainForm.SaveLST1Click(Sender: TObject);
 begin
   BasesListEditor.Strings.Sort;
-  BasesListEditor.Strings.SaveToFile(tmp + 'bases.txt');
   SaveDialog1.FileName := 'bases.lst';
   SaveDialog1.Filter := '*.lst|*.lst';
   if SaveDialog1.Execute then begin
-    if FileExists(SaveDialog1.FileName) then
+    if FileExists(SaveDialog1.FileName) then begin
       if MessageDlg('Такой файл уже существует! Заменить?', mtWarning,
         [mbYes, mbNo], 0, mbYes) = mrYes then begin
         if ExtractFileExt(SaveDialog1.FileName) = '.lst' then
-          MyCompressFiles2(ListFiles, SaveDialog1.FileName)
+          //MyCompressFiles2(ListFiles, SaveDialog1.FileName)
+          SaveLST(SaveDialog1.FileName, tmp, PageControl1, BasesListEditor, ListFiles)
         else
-          MyCompressFiles2(ListFiles, ChangeFileExt(SaveDialog1.FileName, '.lst'));
-        SetChange(False);
+          //MyCompressFiles2(ListFiles, ChangeFileExt(SaveDialog1.FileName, '.lst'));
+          SaveLST(ChangeFileExt(SaveDialog1.FileName, '.lst'), tmp, PageControl1,
+            BasesListEditor, ListFiles);
       end;
+    end
+    else
+      if ExtractFileExt(SaveDialog1.FileName) = '.lst' then
+        SaveLST(SaveDialog1.FileName, tmp, PageControl1, BasesListEditor, ListFiles)
+      else
+        SaveLST(ChangeFileExt(SaveDialog1.FileName, '.lst'), tmp, PageControl1,
+          BasesListEditor, ListFiles);
   end;
+  SetChange(False);
 end;
 
 // запрет на изменение 1 вкладки
@@ -327,56 +259,6 @@ begin
   else begin
     DelTabItem.Enabled := True;
     RenameMenuItem.Enabled := True;
-  end;
-end;
-
-// загрузка LST файла
-procedure TMainForm.LoadLST(FileName: string; TC: TExtendedTabControl;
-  PC: TPageControl; LE: TValueListEditor; LF: TStringList);
-var
-  LTFile: TStringList;
-  TabSheet: TTabSheet;
-  RM: TRichMemo;
-  i: integer;
-  s: string;
-begin
-  if FileExists(FileName) then begin
-    DecompressFile(FileName, tmp, True, False);
-    if FileExists(tmp + 'listtabs.ini') then begin
-      // чистка
-      LF.Clear;
-      LE.Strings.Clear;
-      for i := TC.Tabs.Count - 1 downto 1 do begin;
-         TC.Tabs.Delete(i);
-        PC.Page[i].Free;
-      end;
-      LTFile := TStringList.Create;
-      try
-        // загрузка описания вкладок из ini файла
-        LTFile.LoadFromFile(tmp + 'listtabs.ini', TEncoding.Default);
-        LF.Add(tmp + 'listtabs.ini');
-        // загрузка описания баз в первую вкладку
-        LE.Strings.LoadFromFile(tmp + 'bases.txt', TEncoding.Default);
-        LF.Add(tmp + 'bases.txt');
-        // добавление вкладок и загрузка в них RTF файлов
-        for i := 0 to LTFile.Count - 1 do begin
-          TC.Tabs.Add(Copy(LTFile[i], 0, Pos('=', LTFile[i]) - 1));
-          TabSheet := TTabSheet.Create(Self);
-          TabSheet.PageControl := PC;
-          RM := TRichMemo.Create(self);
-          RM.Align := alClient;
-          RM.ScrollBars := ssAutoVertical;
-          TabSheet.InsertControl(RM);
-          s := tmp + Copy(LTFile[i], Pos('=', LTFile[i]) + 1, Length(LTFile[i]) - 1);
-          // если это не RTF, то пытаемся открыть как текстовый файл
-          if not LoadRTF(s, RM) then
-            RM.Lines.LoadFromFile(s, TEncoding.Default);
-          LF.Add(s);
-        end;
-      finally
-        LTFile.Free;
-      end;
-    end;
   end;
 end;
 
@@ -393,9 +275,11 @@ end;
 // вставка строки в описании баз
 procedure TMainForm.AddItemBasesClick(Sender: TObject);
 begin
-  BasesListEditor.InsertRow('', '', True);
-  SendMessage(BasesListEditor.Handle, WM_VSCROLL, SB_BOTTOM, 0);
-  SetChange(True);
+  if PageControl1.ActivePageIndex = 0 then begin
+    BasesListEditor.InsertRow('', '', True);
+    SendMessage(BasesListEditor.Handle, WM_VSCROLL, SB_BOTTOM, 0);
+    SetChange(True);
+  end;
 end;
 
 // показ окна "О программе"
@@ -416,13 +300,20 @@ begin
   SetChange(True);
 end;
 
+procedure TMainForm.BasesTabExit(Sender: TObject);
+begin
+  BasesListEditor.Strings.SaveToFile(tmp + 'bases.txt');
+end;
+
 // удаление строки в описании баз
 procedure TMainForm.DelItemBasesClick(Sender: TObject);
 begin
-  if BasesListEditor.Row >= 0 then begin
-    BasesListEditor.DeleteRow(BasesListEditor.Row);
-    SetChange(True);
-  end;
+  if PageControl1.ActivePageIndex = 0 then
+    if BasesListEditor.Row >= 0 then begin
+      BasesTab.SetFocus;
+      BasesListEditor.DeleteRow(BasesListEditor.Row);
+      SetChange(True);
+    end;
 end;
 
 // добавление вкладки
@@ -436,20 +327,6 @@ begin
   Close;
 end;
 
-// переключение табов
-procedure TMainForm.ExtendedTabControl1Changing(Sender: TObject;
-  var AllowChange: Boolean);
-begin
-  PageControl1.PageIndex := TabIndex;
-end;
-
-// определение выделеноого таба по координатам курсора
-procedure TMainForm.ExtendedTabControl1MouseMove(Sender: TObject;
-  Shift: TShiftState; X, Y: Integer);
-begin
-  TabIndex := ExtendedTabControl1.IndexOfTabAt(X, Y);
-end;
-
 // закрытие программы
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 var
@@ -458,6 +335,8 @@ begin
   for i := 0 to ListFiles.Count - 1 do
     if ExtractFilePath(ListFiles[i]) = tmp then
       SysUtils.DeleteFile(ListFiles[i]);
+  for i := PageControl1.PageCount - 1 downto 1 do
+    PageControl1.Pages[i].Free;
   ListFiles.Free;
 end;
 
@@ -466,7 +345,7 @@ procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
   if Change then
     if MessageDlg('Сохранить изменения?', mtConfirmation, [mbYes, mbNo],
-      0, mbYes)=mrYes then MainForm.SaveLSTClick(nil);
+      0, mbYes)=mrYes then MainForm.SaveLST1Click(nil);
 end;
 
 // инициализация программы
@@ -476,7 +355,8 @@ begin
   ForceDirectories(tmp);
 
   ListFiles := TStringList.Create;
-  LoadLST('bases.lst', ExtendedTabControl1, PageControl1, BasesListEditor, ListFiles);
+  if not LoadLST('bases.lst', tmp, PageControl1, BasesListEditor, ListFiles) then
+    ListFiles.Add(tmp + 'bases.txt');
   SetChange(False);
 
   PageControl1.ActivePageIndex := 0;
@@ -488,7 +368,6 @@ end;
 procedure TMainForm.LoadBasesTXTClick(Sender: TObject);
 var
   s: string;
-  i: integer;
 begin
   OpenDialog1.Filter := '*.txt|*.txt';
   if OpenDialog1.Execute then
@@ -499,8 +378,6 @@ begin
       EndUpdate();
       s := tmp + 'bases.txt';
       Strings.SaveToFile(s);
-      if not ListFiles.Find(s, i) then
-        ListFiles.Add(s);
     end;
 end;
 

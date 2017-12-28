@@ -3,8 +3,8 @@ unit MyFileUtils;
 interface
 
 uses
-  Windows, SysUtils, Classes, ComObj, Masks, ShellApi, Graphics, Forms, Dialogs,
-  Controls, ShlObj, ActiveX;
+  Windows, SysUtils, Classes, ComObj, Masks, ShellApi, Graphics, Forms, Dialogs, StdCtrls,
+  Controls, ShlObj, ActiveX, RichMemo, ComCtrls, ValEdit, zlibfunc;
 
 {$IFDEF UNICODE}
     function PrivateExtractIcons(lpszFile: PChar; nIconIndex, cxIcon, cyIcon: integer; phicon: PHANDLE; piconid: PDWORD; nicon, flags: DWORD): DWORD; stdcall ; external 'user32.dll' name 'PrivateExtractIconsW';
@@ -15,18 +15,56 @@ uses
 Type
   TCallBack=procedure (Position, FileSize: Int64); {Для индикации процесса копирования}
 
-
-procedure FindFiles(StartFolder, Mask: string; List: TStrings;
-  ScanSubFolders: Boolean = True);
-function CopyFileEx(const InFile, OutFile: string; Replace: boolean;
-  CallBack: TCallBack): boolean;
-function FileVersion(const FileName: TFileName): String;
-procedure RunAsAdministrator(const source: string; const params: string = '');
-function GetFileNameFromLink(LinkFileName: string): string;
-function GetDesktopDir: string;
-function FindCons: string;
+  procedure FindFiles(StartFolder, Mask: string; List: TStrings;
+    ScanSubFolders: Boolean = True);
+  function CopyFileEx(const InFile, OutFile: string; Replace: boolean;
+    CallBack: TCallBack): boolean;
+  function FileVersion(const FileName: TFileName): String;
+  procedure RunAsAdministrator(const source: string; const params: string = '');
+  function GetFileNameFromLink(LinkFileName: string): string;
+  function GetDesktopDir: string;
+  function FindCons: string;
+  function LoadLST(FileName, tmp: string; PC: TPageControl; LE: TValueListEditor; LF: TStringList): boolean;
+  procedure SaveLST(FileName, tmp: string; PC: TPageControl; LE: TValueListEditor; LF: TStringList);
+  function LoadRTF(FileName: string; rm: TRichMemo): boolean;
+  function SaveRTF(FileName: string; rm: TRichMemo): boolean;
+  function GetLocalTmpPath: string;
+  procedure DelFiles(Path, Mask: string);
 
 implementation
+
+////////////////////////////////////////////////////////////////////////
+// измененные функции из файла zlibfunc
+// удалил из функции запись в сжатый файл путей к файлам
+function MyCompressFiles(Files: TStrings): TStream;
+var
+  I: Integer;
+  S: string;
+begin
+  Result := TMemoryStream.Create;
+  if Files.Count = 0 then
+    Exit;
+
+  for I := 0 to Files.Count - 1 do
+  begin
+    S := ExtractFileName(Files[I]);
+    AddFile(S, '', Files[I], Result);
+  end;
+
+  Result.Position := 0;
+end;
+procedure MyCompressFiles2(Files: TStrings; const FileName: string);
+var
+  TmpStream: TStream;
+begin
+  TmpStream := MyCompressFiles(Files);
+  try
+    TMemoryStream(TmpStream).SaveToFile(FileName);
+  finally
+    TmpStream.Free;
+  end;
+end;
+/////////////////////////////////////////////////////////////////////
 
 // процедура поиска файлов
 procedure FindFiles(StartFolder, Mask: string; List: TStrings;
@@ -228,6 +266,127 @@ begin
     end;
   finally
     l.Free;
+  end;
+end;
+
+// загрузка LST файла
+function LoadLST(FileName, tmp: string; PC: TPageControl; LE: TValueListEditor; LF: TStringList): boolean;
+var
+  ini: TStringList;
+  TabSheet: TTabSheet;
+  RM: TRichMemo;
+  i: integer;
+  s: string;
+begin
+  Result := False;
+  if FileExists(FileName) then begin
+    DelFiles(tmp, '*');
+    DecompressFile(FileName, tmp, True, False);
+    LF.Clear;
+    // загрузка описания баз
+    if LE <> nil then begin
+      LE.Strings.Clear;
+      LE.Strings.LoadFromFile(tmp + 'bases.txt', TEncoding.Default);
+      LF.Add(tmp + 'bases.txt');
+    end;
+    for i := PC.PageCount - 1 downto 1 do
+      PC.Page[i].Free;
+
+    if FileExists(tmp + 'listtabs.ini') then begin
+      ini := TStringList.Create;
+      try
+        // загрузка описания вкладок из ini файла
+        ini.LoadFromFile(tmp + 'listtabs.ini', TEncoding.Default);
+        LF.Add(tmp + 'listtabs.ini');
+        // добавление вкладок и загрузка в них RTF файлов
+        for i := 0 to ini.Count - 1 do begin
+          TabSheet := TTabSheet.Create(nil);
+          TabSheet.Caption := Copy(ini[i], 0, Pos('=', ini[i]) - 1);
+          TabSheet.PageControl := PC;
+          RM := TRichMemo.Create(nil);
+          RM.Align := alClient;
+          RM.ScrollBars := ssBoth;
+          RM.BorderStyle := bsNone;
+          TabSheet.InsertControl(RM);
+          s := tmp + Copy(ini[i], Pos('=', ini[i]) + 1, Length(ini[i]) - 1);
+          Result := LoadRTF(s, RM);
+          LF.Add(s);
+        end;
+      finally
+        ini.Free;
+      end;
+    end;
+    if FileExists(tmp + 'bases.txt') then
+      Result := True;
+  end;
+end;
+
+// сохранение LST файла
+procedure SaveLST(FileName, tmp: string; PC: TPageControl; LE: TValueListEditor; LF: TStringList);
+begin
+  LE.Strings.SaveToFile(tmp + 'bases.txt');
+  if FileExists(tmp + 'listtabs.ini') then
+    LF.Add(tmp + 'listtabs.ini');
+  MyCompressFiles2(LF, FileName);
+end;
+
+// загрузка RTF файла
+function LoadRTF(FileName: string; rm: TRichMemo): boolean;
+var
+  f: TFileStream;
+begin
+  Result:=False;
+  if FileExists(FileName) then begin
+    f := TFileStream.Create(FileName, fmOpenRead);
+    try
+      Result := rm.LoadRichText(f);
+    finally
+      f.Free;
+    end;
+  end;
+end;
+
+// сохранение RTF Файла
+function SaveRTF(FileName: string; rm: TRichMemo): boolean;
+var
+  f: TFileStream;
+begin
+  Result := False;
+  if FileName <> '' then begin
+    f := TFileStream.Create(FileName, fmCreate);
+    try
+      Result := rm.SaveRichText(f);
+    finally
+      f.Free;
+    end;
+  end;
+end;
+
+// путь к папке temp
+function GetLocalTmpPath: string;
+var
+  buffer: array [0..255] of Char;
+  s: string;
+begin
+  Result := ExtractFilePath(Application.ExeName) + 'temp\';
+  GetTempPath(256, buffer);
+  s := StrPas(buffer);
+  if s <> '' then Result := s;
+end;
+
+// удаление всех файлов в папке
+procedure DelFiles(Path, Mask: string);
+var
+  list: TStringList;
+  i: integer;
+begin
+  list := TStringList.Create;
+  try
+    FindFiles(Path, Mask, list, False);
+    for i := 0 to list.Count - 1 do
+      DeleteFile(list[i]);
+  finally
+    list.Free;
   end;
 end;
 

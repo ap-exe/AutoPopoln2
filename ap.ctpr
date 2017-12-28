@@ -16,7 +16,8 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="2"/>
-      <BuildNr Value="81"/>
+      <MinorVersionNr Value="1"/>
+      <BuildNr Value="84"/>
       <Language Value="0419"/>
       <StringTable LegalCopyright="Freeware" OriginalFilename="ap" ProductName="АвтоПополнение" ProductVersion="2.0"/>
     </VersionInfo>
@@ -74,25 +75,28 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="6">
+    <RequiredPackages Count="7">
       <Item1>
-        <PackageName Value="pl_cindy"/>
+        <PackageName Value="bs_Controls"/>
       </Item1>
       <Item2>
-        <PackageName Value="pl_exsystem"/>
+        <PackageName Value="pl_cindy"/>
       </Item2>
       <Item3>
-        <PackageName Value="adFCL"/>
+        <PackageName Value="pl_exsystem"/>
       </Item3>
       <Item4>
-        <PackageName Value="pl_richmemo"/>
+        <PackageName Value="adFCL"/>
       </Item4>
       <Item5>
-        <PackageName Value="lz_datetimectrls"/>
+        <PackageName Value="pl_richmemo"/>
       </Item5>
       <Item6>
-        <PackageName Value="adLCL"/>
+        <PackageName Value="lz_datetimectrls"/>
       </Item6>
+      <Item7>
+        <PackageName Value="adLCL"/>
+      </Item7>
     </RequiredPackages>
     <Units Count="3">
       <Unit0>
