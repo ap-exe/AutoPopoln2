@@ -16,7 +16,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="1"/>
-      <BuildNr Value="36"/>
+      <BuildNr Value="38"/>
       <Language Value="0419"/>
       <StringTable CompanyName="ap-exe" FileDescription="Редактирование bases.lst" InternalName="EditBases" LegalCopyright="Freeware" OriginalFilename="EditBases" ProductVersion="1.1"/>
     </VersionInfo>
@@ -60,16 +60,25 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="3">
+    <RequiredPackages Count="6">
       <Item1>
-        <PackageName Value="bs_Controls"/>
+        <PackageName Value="adFCL"/>
       </Item1>
       <Item2>
-        <PackageName Value="pl_richmemo"/>
+        <PackageName Value="pl_rx"/>
       </Item2>
       <Item3>
-        <PackageName Value="adLCL"/>
+        <PackageName Value="pl_exsystem"/>
       </Item3>
+      <Item4>
+        <PackageName Value="bs_Controls"/>
+      </Item4>
+      <Item5>
+        <PackageName Value="pl_richmemo"/>
+      </Item5>
+      <Item6>
+        <PackageName Value="adLCL"/>
+      </Item6>
     </RequiredPackages>
     <Units Count="5">
       <Unit0>

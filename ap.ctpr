@@ -17,7 +17,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="2"/>
       <MinorVersionNr Value="1"/>
-      <BuildNr Value="84"/>
+      <BuildNr Value="90"/>
       <Language Value="0419"/>
       <StringTable LegalCopyright="Freeware" OriginalFilename="ap" ProductName="АвтоПополнение" ProductVersion="2.0"/>
     </VersionInfo>
@@ -59,7 +59,10 @@
             </Options>
           </Linking>
           <Other>
-            <CustomOptions Value="-vd"/>
+            <CustomOptions Value="-dap"/>
+            <OtherDefines Count="1">
+              <Define0 Value="ap"/>
+            </OtherDefines>
           </Other>
         </CompilerOptions>
       </Item2>

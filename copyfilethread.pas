@@ -6,8 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ComCtrls, Masks, Windows, Main;
-
+  ComCtrls, Masks, Main;
 
 type
   TCopyFileThread = class(TThread)
@@ -18,17 +17,17 @@ type
     FDestDir,                // папка куда все копируется
     FMask,                   // маска файлов
     FName: string;           // имя файла которое сейчас копируется
-    FReplace: boolean;       // заменять файлы при копировании или нет
+    FReplace,                // заменять файлы при копировании или нет
+    FCreateDir: boolean;
     function FindFiles(StartFolder, Mask: string; List: TStringList;
       ScanSubFolders: Boolean = False; SearchDir: boolean = False): Int64;
-    procedure CopyFiles(FileNames: TStringList; SizeFiles: Int64; DestDir: string;
-      Replace: boolean = False; CreateDir: boolean = False);
+    procedure CopyFiles;
   protected
     procedure Execute; override;
     procedure ShowProgress;
   public
     FFileNames: TStringList; // список найденых файлов
-    constructor Create(SrcDir, DestDir, Mask: string; Replace: boolean);
+    constructor Create(SrcDir, DestDir, Mask: string; Replace, CreateDir: boolean);
     destructor Destroy; override;
   end;
 
@@ -80,40 +79,37 @@ begin
 end;
 
 // Процедура копирования файлов
-// FileNames - список файлов
-// SizeFiles - размер всех файлов полученый из функции FindFiles
-// DestDir - папка куда все копируется
-// Replace - Заменять файлы или нет?
-// CreateDir - создавать подкаталоги или все в DestDir свалить?
-procedure TCopyFileThread.CopyFiles(FileNames: TStringList; SizeFiles: Int64; DestDir: string;
-  Replace: boolean = False; CreateDir: boolean = False);
+procedure TCopyFileThread.CopyFiles;
 var
   InStream, OutStream: TFileStream;
-  Temp: array[0..$FFFF] of Byte;
   i, stemp: integer;
   OutFile, s: string;
 begin
-  FPosition:=0;
-  if (FileNames.Count=0) or (DestDir='') then Exit;
-  ForceDirectories(DestDir);
+  FPosition := 0;
+  if (FFileNames.Count=0) or (FDestDir='') then Exit;
   try
-    for i:=0 to FileNames.Count-1 do begin
-      ZeroMemory(@Temp, sizeof(Temp));
-      InStream := TFileStream.Create(FileNames[i], fmOpenRead);
+    for i:=0 to FFileNames.Count-1 do begin
+      InStream := TFileStream.Create(FFileNames[i], fmOpenRead);
 
-      if CreateDir then begin
-        s:=DestDir+Copy(ExtractFilePath(FileNames[i]),
-          Length(FSrcDir)+1, Length(FileNames[i]));
+      if FCreateDir then begin
+        s:=FDestDir+Copy(ExtractFilePath(FFileNames[i]),
+          Length(FSrcDir)+1, Length(FFileNames[i]));
         ForceDirectories(s);
-        OutFile:=s+ExtractFileName(FileNames[i]);
+        OutFile:=s+ExtractFileName(FFileNames[i]);
       end
       else
-        OutFile:=DestDir+'\'+ExtractFileName(FileNames[i]);
+        OutFile:=FDestDir+'\'+ExtractFileName(FFileNames[i]);
+
+      if FileExists(OutFile) and FReplace then
+        SysUtils.DeleteFile(OutFile);
       OutStream := TFileStream.Create(OutFile, fmCreate);
+      FName:=ExtractFileName(FFileNames[i]);
+
+      InStream.Position := OutStream.Size;
+      OutStream.Position := OutStream.Size;
+      FPosition := FPosition + InStream.Position;
+
       try
-        if FileExists(OutFile) and Replace then
-          SysUtils.DeleteFile(OutFile);
-        FName:=ExtractFileName(FileNames[i]);
         while InStream.Size <> OutStream.Size do begin
           stemp:=65536;
           if (InStream.Size - OutStream.Position) < 65536 then begin
@@ -136,7 +132,7 @@ begin
 end;
 
 // инициализируем поток
-constructor TCopyFileThread.Create(SrcDir, DestDir, Mask: string; Replace: boolean);
+constructor TCopyFileThread.Create(SrcDir, DestDir, Mask: string; Replace, CreateDir: boolean);
 begin
   inherited Create(True);
   FFileNames:=TStringList.Create;
@@ -145,6 +141,7 @@ begin
   FSrcDir:=SrcDir;
   FMask:=Mask;
   FReplace:=Replace;
+  FCreateDir:=CreateDir;
 end;
 
 destructor TCopyFileThread.Destroy;
@@ -172,8 +169,7 @@ procedure TCopyFileThread.Execute;
 begin
   // поиск файлов. размер найденных файлов персчитавется в МБ
   FSizeFiles:=round((FindFiles(FSrcDir, FMask, FFileNames, true)/1024)/1024);
-  CopyFiles(FFileNames, FSizeFiles, FDestDir, True);
-
+  CopyFiles;
 end;
 
 end.

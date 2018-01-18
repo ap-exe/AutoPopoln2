@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, SysUtils, Classes, ComObj, Masks, ShellApi, Graphics, Forms, Dialogs, StdCtrls,
-  Controls, ShlObj, ActiveX, RichMemo, ComCtrls, ValEdit, zlibfunc;
+  Controls, ShlObj, ActiveX, RichMemo, ComCtrls, ValEdit, zlibfunc, main;
 
 {$IFDEF UNICODE}
     function PrivateExtractIcons(lpszFile: PChar; nIconIndex, cxIcon, cyIcon: integer; phicon: PHANDLE; piconid: PDWORD; nicon, flags: DWORD): DWORD; stdcall ; external 'user32.dll' name 'PrivateExtractIconsW';
@@ -304,10 +304,17 @@ begin
           TabSheet.Caption := Copy(ini[i], 0, Pos('=', ini[i]) - 1);
           TabSheet.PageControl := PC;
           RM := TRichMemo.Create(nil);
+          RM.Parent := TabSheet;
           RM.Align := alClient;
           RM.ScrollBars := ssBoth;
           RM.BorderStyle := bsNone;
-          TabSheet.InsertControl(RM);
+          // пришлось использовать этот костыль, чтоб проги компилировались
+          // по непонятной причине в AP компилится без @, а в EditBases с @
+          {$IFDEF ap}
+            RM.OnMouseWheel := MainForm.RichMemo1MouseWheel;
+          {$ELSE}
+            RM.OnMouseWheel := @MainForm.RichMemo1MouseWheel;
+          {$ENDIF}
           s := tmp + Copy(ini[i], Pos('=', ini[i]) + 1, Length(ini[i]) - 1);
           Result := LoadRTF(s, RM);
           LF.Add(s);

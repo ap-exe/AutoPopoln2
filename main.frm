@@ -1,5 +1,5 @@
 object MainForm: TMainForm
-  Left = 268
+  Left = 273
   Height = 500
   Top = 184
   Width = 624
@@ -52,10 +52,10 @@ object MainForm: TMainForm
     Top = 42
     Width = 504
     TabStop = False
-    ActivePage = DocPage
+    ActivePage = PopolnPage
     Align = alClient
     ShowTabs = False
-    TabIndex = 4
+    TabIndex = 0
     TabOrder = 1
     object PopolnPage: TTabSheet
       Caption = 'PopolnPage'
@@ -669,7 +669,7 @@ object MainForm: TMainForm
         Top = 0
         Width = 496
         Align = alClient
-        TabOrder = 0
+        TabOrder = 1
       end
       object Panel2: TPanel
         Left = 0
@@ -682,7 +682,7 @@ object MainForm: TMainForm
         Caption = 'Panel2'
         ClientHeight = 43
         ClientWidth = 496
-        TabOrder = 1
+        TabOrder = 0
         OnClick = Panel2Click
         object Label1: TLabel
           Left = 16
@@ -702,6 +702,7 @@ object MainForm: TMainForm
           Anchors = [akTop, akLeft, akRight]
           BorderSpacing.Right = 20
           OnChange = FindEditChange
+          OnKeyDown = FindEditKeyDown
           OnMouseEnter = FindEditMouseEnter
           TabOrder = 0
         end

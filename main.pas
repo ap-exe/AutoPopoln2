@@ -96,6 +96,7 @@ type
     procedure ExitButtonClick(Sender: TObject);
     procedure adm1Click(Sender: TObject);
     procedure FindEditChange(Sender: TObject);
+    procedure FindEditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FindEditMouseEnter(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -153,6 +154,8 @@ type
     DatePopoln, ListFiles: TStringList;
     iTaskBar: ITaskbarList3;
     procedure FillTableBase;
+    procedure RichMemo1MouseWheel(Sender: TObject; Shift: TShiftState;
+      WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
   end;
 
 var
@@ -161,7 +164,7 @@ var
 implementation
 
 uses
-  MyFileUtils, MainCfg, CopyFileThread;
+  MainCfg, CopyFileThread, MyFileUtils;
 
 {$R *.frm}
 
@@ -170,11 +173,18 @@ uses
 const
   br: string = #13#10; // перевод строки
 
+procedure TMainForm.RichMemo1MouseWheel(Sender: TObject; Shift: TShiftState;
+  WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+begin
+  (sender as trichmemo).ScrollBy(0, WheelDelta);
+end;
+
 // при щелчке по названию раздела показывает его
 procedure TMainForm.TreeView1Click(Sender: TObject);
 begin
   PageControl.Pages[TreeView1.Selected.Index].Show;
   InfoLabel.Caption:='Текущий раздел: '+TreeView1.Selected.Text;
+  if TreeView1.Selected.Index = 4 then FindEdit.SetFocus;
 end;
 
 procedure TMainForm.ExitButtonClick(Sender: TObject);
@@ -185,9 +195,12 @@ end;
 // копирование файлов
 procedure TMainForm.CopyButtonClick(Sender: TObject);
 begin
-  if USRCheckBox.Checked then CopyUSR;
-  if STTCheckBox.Checked then CopySTT;
-  if PopolnCheckBox.Checked then CopyPopoln;
+  if USRCheckBox.Checked then
+    CopyUSR;
+  if STTCheckBox.Checked then
+    CopySTT;
+  if PopolnCheckBox.Checked then
+    CopyPopoln;
 end;
 
 // добавляет в настройках командной строки параметр /base*
@@ -200,9 +213,9 @@ end;
 procedure TMainForm.cbCreateSubDirClick(Sender: TObject);
 begin
   if cbCreateSubDir.Checked then
-    USRPath:=USRPath+'\'+NameOrgEdit.Text+'\'
+    USRPath:=USRPath+'\'+NameOrgEdit.Text
   else
-    USRPath:=USRPath+'\';
+    USRPath:=USRPath;
 end;
 
 // проверка на правильность настроек
@@ -272,7 +285,7 @@ procedure TMainForm.CopyConsFiles(FromPath, ToPath, Mask: string);
 var
   CopyThread: TCopyFileThread;
 begin
-  CopyThread:=TCopyFileThread.Create(FromPath, ToPath, Mask, True);
+  CopyThread:=TCopyFileThread.Create(FromPath, ToPath, Mask, True, cbCreateSubDir.Checked);
   CopyThread.Start;
   while not CopyThread.Finished do Application.ProcessMessages;
   CopyThread.Terminate;
@@ -283,13 +296,13 @@ end;
 // копирование USR файлов
 procedure TMainForm.CopyUSR;
 begin
-  CopyConsFiles(DirConsEdit.Text+'\Receive\', USRPath, 'CONS#*.USR');
+  CopyConsFiles(DirConsEdit.Text+'\Receive', USRPath, 'CONS#*.USR');
 end;
 
 // копирование STT файлов в папку USR
 procedure TMainForm.CopySTT;
 begin
-  CopyConsFiles(STTEdit.Text+'\', USRPath, '*.STT');
+  CopyConsFiles(STTEdit.Text, USRPath, '*.STT');
 end;
 
 // копирвание пополнений
@@ -319,8 +332,8 @@ begin
       if ListBases.Items[i].Checked then
         masks:=masks+ListBases.Items[i].SubItems[1]+'*.ans;';
     // поиск и копирование файлов в потоке)
-    CopyThread:=TCopyFileThread.Create(PopolnPath, DirConsEdit.Text+'\Receive',
-      masks, True);
+    CopyThread:=TCopyFileThread.Create(PopolnPath, DirConsEdit.Text+'\Receive', masks,
+      True, False);
     CopyThread.Start;
     // ждем поток
     while not CopyThread.Finished do Application.ProcessMessages;
@@ -430,18 +443,12 @@ end;
 procedure TMainForm.FindEditChange(Sender: TObject);
 var
   opt: TSearchOptions;
-  s, l, st: LongInt;
+  s, st: LongInt;
 begin
   opt:=[];
   with TRichMemo(PageControl1.ActivePage.Controls[0]) do begin
     st:=SelStart;
-    l:=SelLength;
     s:=Search(FindEdit.Text, st, length(Text), opt);
-    if (s>=0) then begin
-      if (st=s) and (l=UTF8Length(FindEdit.Text)) then
-        s:=Search(FindEdit.Text, SelStart+1, length(Text), opt);
-    end;
-
     if (s>=0) then begin
       SelStart:=s;
       SetSelLengthFor(FindEdit.text);
@@ -449,6 +456,17 @@ begin
       SelStart:=0;
       SelLength:=0;
     end;
+  end;
+end;
+
+procedure TMainForm.FindEditKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_RETURN then begin
+    with TRichMemo(PageControl1.ActivePage.Controls[0]) do begin
+      SelStart:=SelStart+SelLength;
+    end;
+    FindEditChange(self);
   end;
 end;
 

@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, RichMemo, Forms, Controls, Windows, FileUtil,
-  Graphics, Dialogs, ComCtrls, Menus, ValEdit, ExtCtrls, StdCtrls, Buttons;
+  Graphics, Dialogs, ComCtrls, Menus, ValEdit, ExtCtrls, StdCtrls, Buttons, Types;
 
 type
 
@@ -68,7 +68,8 @@ type
     TabIndex: integer;
     procedure SetChange(Changes: boolean);
   public
-
+    procedure RichMemo1MouseWheel(Sender: TObject; Shift: TShiftState;
+      WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
   end;
 
 var
@@ -82,6 +83,12 @@ uses
 {$R *.frm}
 
 { TMainForm }
+
+procedure TMainForm.RichMemo1MouseWheel(Sender: TObject; Shift: TShiftState;
+  WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+begin
+  (sender as trichmemo).ScrollBy(0, WheelDelta);
+end;
 
 // открытие LST файла
 procedure TMainForm.OpenLSTClick(Sender: TObject);
@@ -158,9 +165,10 @@ begin
       TabSheet := TTabSheet.Create(Self);
       TabSheet.Caption := AddTabForm1.NameTabEdit.Text;
       RM := TRichMemo.Create(self);
+      RM.Parent := TabSheet;
       RM.Align := alClient;
       RM.ScrollBars := ssAutoVertical;
-      TabSheet.InsertControl(RM);
+      RM.OnMouseWheel := @RichMemo1MouseWheel;
       TabSheet.PageControl := PageControl1;
       if AddTabForm1.FileTabEdit.Text <> '' then begin
         s := tmp + ExtractFileName(AddTabForm1.FileTabEdit.Text);
