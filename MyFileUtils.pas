@@ -312,6 +312,7 @@ begin
           // по непонятной причине в AP компилится без @, а в EditBases с @
           {$IFDEF ap}
             RM.OnMouseWheel := MainForm.RichMemo1MouseWheel;
+            RM.ReadOnly := True;
           {$ELSE}
             RM.OnMouseWheel := @MainForm.RichMemo1MouseWheel;
           {$ENDIF}

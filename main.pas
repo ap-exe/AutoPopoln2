@@ -16,6 +16,8 @@ type
 
   TMainForm = class(TForm)
     BasesMenu: TPopupMenu;
+    PrevSearchButton: TButton;
+    NextSearchButton: TButton;
     FindEdit: TEdit;
     Label1: TLabel;
     Label3: TLabel;
@@ -113,6 +115,7 @@ type
     procedure NameOrgEditKeyUp(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure NameOrgEditUTF8KeyPress(Sender: TObject; var UTF8Key: TUTF8Char);
+    procedure NextSearchButtonClick(Sender: TObject);
     procedure norunner1Click(Sender: TObject);
     procedure OpenDirConsButtonClick(Sender: TObject);
     procedure Panel2Click(Sender: TObject);
@@ -120,6 +123,7 @@ type
     procedure PopolnCheckBoxClick(Sender: TObject);
     procedure PopolnEditChange(Sender: TObject);
     procedure PopolnPageShow(Sender: TObject);
+    procedure PrevSearchButtonClick(Sender: TObject);
     procedure process21Click(Sender: TObject);
     procedure receive1Click(Sender: TObject);
     procedure ReloadDTButtonClick(Sender: TObject);
@@ -142,6 +146,7 @@ type
     BasesLST: TStringList;
     TempPath, USRPath, PopolnPath, AppPath: string;
     AddDate, DirConsChange: boolean;
+    opt: TSearchOptions;
     procedure CopyConsFiles(FromPath, ToPath, Mask: string);
     function GetPathX(const path: string): string;
     procedure CopyUSR;
@@ -442,10 +447,8 @@ end;
 // поиск в описаниях ошибок
 procedure TMainForm.FindEditChange(Sender: TObject);
 var
-  opt: TSearchOptions;
   s, st: LongInt;
 begin
-  opt:=[];
   with TRichMemo(PageControl1.ActivePage.Controls[0]) do begin
     st:=SelStart;
     s:=Search(FindEdit.Text, st, length(Text), opt);
@@ -462,12 +465,8 @@ end;
 procedure TMainForm.FindEditKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  if Key = VK_RETURN then begin
-    with TRichMemo(PageControl1.ActivePage.Controls[0]) do begin
-      SelStart:=SelStart+SelLength;
-    end;
-    FindEditChange(self);
-  end;
+  if Key = VK_RETURN then
+    NextSearchButtonClick(nil);
 end;
 
 
@@ -647,6 +646,15 @@ begin
   end;
 end;
 
+procedure TMainForm.NextSearchButtonClick(Sender: TObject);
+begin
+  opt:=[];
+  with TRichMemo(PageControl1.ActivePage.Controls[0]) do begin
+    SelStart:=SelStart+SelLength;
+  end;
+  FindEditChange(self);
+end;
+
 // добавляет в настройках командной строки параметр /norunner
 procedure TMainForm.norunner1Click(Sender: TObject);
 begin
@@ -733,6 +741,15 @@ begin
     ': '+IntToStr(FreeSize)+' МБ';
   // текущее время и дата
   DateTimePicker1.DateTime:=Now;
+end;
+
+procedure TMainForm.PrevSearchButtonClick(Sender: TObject);
+begin
+  opt:=[soBackward];
+  with TRichMemo(PageControl1.ActivePage.Controls[0]) do begin
+    SelStart:=SelStart-SelLength;
+  end;
+  FindEditChange(self);
 end;
 
 // добавляет в настройках командной строки параметр /process=2

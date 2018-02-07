@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 273
+  Left = 85
   Height = 500
-  Top = 184
+  Top = 85
   Width = 624
   Caption = 'АвтоПополнение'
   ClientHeight = 500
@@ -52,10 +52,10 @@ object MainForm: TMainForm
     Top = 42
     Width = 504
     TabStop = False
-    ActivePage = PopolnPage
+    ActivePage = DocPage
     Align = alClient
     ShowTabs = False
-    TabIndex = 0
+    TabIndex = 4
     TabOrder = 1
     object PopolnPage: TTabSheet
       Caption = 'PopolnPage'
@@ -685,7 +685,7 @@ object MainForm: TMainForm
         TabOrder = 0
         OnClick = Panel2Click
         object Label1: TLabel
-          Left = 16
+          Left = 9
           Height = 15
           Top = 14
           Width = 35
@@ -695,16 +695,35 @@ object MainForm: TMainForm
         object FindEdit: TEdit
           AnchorSideRight.Control = Panel2
           AnchorSideRight.Side = asrBottom
-          Left = 64
+          Left = 49
           Height = 23
           Top = 11
-          Width = 412
-          Anchors = [akTop, akLeft, akRight]
+          Width = 367
           BorderSpacing.Right = 20
           OnChange = FindEditChange
           OnKeyDown = FindEditKeyDown
           OnMouseEnter = FindEditMouseEnter
           TabOrder = 0
+        end
+        object PrevSearchButton: TButton
+          Left = 424
+          Height = 25
+          Hint = 'Найти предыдущее'
+          Top = 11
+          Width = 25
+          Caption = '<'
+          OnClick = PrevSearchButtonClick
+          TabOrder = 1
+        end
+        object NextSearchButton: TButton
+          Left = 456
+          Height = 25
+          Hint = 'Найти следующее'
+          Top = 11
+          Width = 27
+          Caption = '>'
+          OnClick = NextSearchButtonClick
+          TabOrder = 2
         end
       end
     end
