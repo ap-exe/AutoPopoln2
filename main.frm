@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 85
+  Left = 273
   Height = 500
-  Top = 85
+  Top = 184
   Width = 624
   Caption = 'АвтоПополнение'
   ClientHeight = 500
@@ -693,34 +693,42 @@ object MainForm: TMainForm
           ParentColor = False
         end
         object FindEdit: TEdit
-          AnchorSideRight.Control = Panel2
-          AnchorSideRight.Side = asrBottom
-          Left = 49
+          AnchorSideLeft.Side = asrBottom
+          AnchorSideRight.Control = PrevSearchButton
+          Left = 56
           Height = 23
           Top = 11
-          Width = 367
-          BorderSpacing.Right = 20
+          Width = 360
+          Anchors = [akTop, akLeft, akRight]
+          BorderSpacing.Right = 10
           OnChange = FindEditChange
           OnKeyDown = FindEditKeyDown
           OnMouseEnter = FindEditMouseEnter
           TabOrder = 0
         end
         object PrevSearchButton: TButton
-          Left = 424
+          AnchorSideRight.Control = NextSearchButton
+          Left = 426
           Height = 25
           Hint = 'Найти предыдущее'
           Top = 11
           Width = 25
+          Anchors = [akTop, akRight]
+          BorderSpacing.Right = 10
           Caption = '<'
           OnClick = PrevSearchButtonClick
           TabOrder = 1
         end
         object NextSearchButton: TButton
-          Left = 456
+          AnchorSideRight.Control = Panel2
+          AnchorSideRight.Side = asrBottom
+          Left = 461
           Height = 25
           Hint = 'Найти следующее'
           Top = 11
-          Width = 27
+          Width = 25
+          Anchors = [akTop, akRight]
+          BorderSpacing.Right = 10
           Caption = '>'
           OnClick = NextSearchButtonClick
           TabOrder = 2
