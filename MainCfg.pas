@@ -150,11 +150,16 @@ begin
         MainForm.cbCloseProg.Checked:=false;
       MainForm.FillTableBase;
       // читаем положение окна
-      if r.ValueExists('WindowState') then MainForm.WindowState:=TWindowState(r.ReadInteger('WindowState'));
       if r.ValueExists('Top') then MainForm.Top:=r.ReadInteger('Top');
       if r.ValueExists('Left') then MainForm.Left:=r.ReadInteger('Left');
       if r.ValueExists('Width') then MainForm.Width:=r.ReadInteger('Width');
       if r.ValueExists('Height') then MainForm.Height:=r.ReadInteger('Height');
+      if r.ValueExists('WindowState') then
+        MainForm.WindowState:=TWindowState(r.ReadInteger('WindowState'));
+      if MainForm.Top < 0 then MainForm.Top:=0;
+      if MainForm.Left < 0 then MainForm.Left:=0;
+      if MainForm.Width > Screen.Width then MainForm.Width:=Screen.Width;
+      if MainForm.Height > Screen.Height then MainForm.Height:=Screen.WorkAreaHeight;
 
       if r.ValueExists('PopolnBases') then begin
         s:=r.ReadString('PopolnBases');

@@ -103,7 +103,9 @@ type
     procedure FindEditMouseEnter(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
+    procedure FormResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure FormWindowStateChange(Sender: TObject);
     procedure KeyCmdButtonClick(Sender: TObject);
     procedure ListBasesColumnClick(Sender: TObject; Column: TListColumn);
     procedure ListBasesCustomDrawItem(Sender: TCustomListView; Item: TListItem;
@@ -119,7 +121,6 @@ type
     procedure NextSearchButtonClick(Sender: TObject);
     procedure norunner1Click(Sender: TObject);
     procedure OpenDirConsButtonClick(Sender: TObject);
-    procedure Panel2Click(Sender: TObject);
     procedure PopolnButtonClick(Sender: TObject);
     procedure PopolnCheckBoxClick(Sender: TObject);
     procedure PopolnEditChange(Sender: TObject);
@@ -136,7 +137,11 @@ type
     procedure STTDirButtonClick(Sender: TObject);
     procedure STTEditChange(Sender: TObject);
     procedure TreeView1Click(Sender: TObject);
+    procedure TreeView1KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
     procedure TreeView1KeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure TreeView1MouseMove(Sender: TObject; Shift: TShiftState; X,
+      Y: Integer);
     procedure USRCheckBoxClick(Sender: TObject);
     procedure USRCheckBoxKeyUp(Sender: TObject; var Key: Word;
       Shift: TShiftState);
@@ -146,7 +151,7 @@ type
   private
     BasesLST: TStringList;
     TempPath, USRPath, PopolnPath, AppPath: string;
-    AddDate, DirConsChange: boolean;
+    AddDate, DirConsChange, ctrl: boolean;
     opt: TSearchOptions;
     CountFiles: integer;
     procedure CopyConsFiles(FromPath, ToPath, Mask: string);
@@ -193,6 +198,13 @@ begin
   PageControl.Pages[TreeView1.Selected.Index].Show;
   InfoLabel.Caption:='Текущий раздел: '+TreeView1.Selected.Text;
   if TreeView1.Selected.Index = 4 then FindEdit.SetFocus;
+end;
+
+procedure TMainForm.TreeView1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Shift=[ssCtrl] then
+    ctrl:=True;
 end;
 
 procedure TMainForm.ExitButtonClick(Sender: TObject);
@@ -407,6 +419,15 @@ begin
   end;
 end;
 
+procedure TMainForm.TreeView1MouseMove(Sender: TObject; Shift: TShiftState; X,
+  Y: Integer);
+begin
+  if ctrl then begin
+    ReleaseCapture;
+    SendMessage(MainForm.Handle, WM_NCLBUTTONDOWN, HTCAPTION,0);
+  end;
+end;
+
 procedure TMainForm.USRCheckBoxClick(Sender: TObject);
 begin
   USRDirEdit.Color:=clWindow;
@@ -514,6 +535,8 @@ var
   s2: RawByteString;
   f: text;
 begin
+  mainform.Caption:=inttostr(screen.PixelsPerInch);
+
   TotalCopyLabel.Caption:='';
   TempPath := GetLocalTmpPath + 'ap\';
   DatePopoln:=TStringList.Create;
@@ -559,7 +582,7 @@ begin
   DirConsChange:=False;
 
   Label2.Caption:='АвтоПополнение'+br+FileVersion(Application.ExeName)+
-    br+'Freeware (C) 2009-2017';
+    br+'Freeware (C) 2009-2018';
 
   // инициализация прогрессбара на панели задач в Windows 7+
   if CheckWin32Version(6,1) then begin
@@ -570,11 +593,29 @@ begin
   end;
 end;
 
+procedure TMainForm.FormResize(Sender: TObject);
+begin
+  if (MainForm.Width < Round((600*(Screen.PixelsPerInch/100)))) or
+    (MainForm.Height < Round((500*(Screen.PixelsPerInch/100)))) then
+    MainForm.AutoScroll:=True
+  else
+    MainForm.AutoScroll:=False;
+end;
+
 // если не загрузились параметры при запуске программы, открыть раздел с настройками
 procedure TMainForm.FormShow(Sender: TObject);
 begin
   if not LoadedCfg then
     ResetCFGButtonClick(nil);
+end;
+
+procedure TMainForm.FormWindowStateChange(Sender: TObject);
+begin
+  if (MainForm.WindowState = wsMaximized) and
+    (Screen.PixelsPerInch > MainForm.DesignTimePPI) then
+      MainForm.AutoScroll:=True
+  else
+    MainForm.AutoScroll:=False;
 end;
 
 // показ меню с ключами коммандной строки
@@ -687,11 +728,6 @@ begin
   else
     MessageDlg('Ошибка', 'Папка '+DirConsEdit.Text+' не найдена',
       mtError, [mbOk], 0);
-end;
-
-procedure TMainForm.Panel2Click(Sender: TObject);
-begin
-
 end;
 
 procedure TMainForm.PopolnCheckBoxClick(Sender: TObject);

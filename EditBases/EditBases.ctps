@@ -58,7 +58,7 @@
         <Loaded Value="True"/>
       </Unit5>
     </Units>
-    <JumpHistory Count="8" HistoryIndex="7">
+    <JumpHistory Count="7" HistoryIndex="6">
       <Position1>
         <Filename Value="main.pas"/>
       </Position1>
@@ -84,12 +84,8 @@
       </Position6>
       <Position7>
         <Filename Value="main.pas"/>
-        <Caret Line="221" Column="3" TopLine="248"/>
-      </Position7>
-      <Position8>
-        <Filename Value="main.pas"/>
         <Caret Line="81" Column="3" TopLine="71"/>
-      </Position8>
+      </Position7>
     </JumpHistory>
   </ProjectSession>
 </CONFIG>

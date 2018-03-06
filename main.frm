@@ -1,17 +1,21 @@
 object MainForm: TMainForm
-  Left = 85
+  Left = 273
   Height = 500
-  Top = 85
+  Top = 181
   Width = 624
+  HorzScrollBar.Page = 597
+  HorzScrollBar.Range = 597
+  VertScrollBar.Page = 388
+  VertScrollBar.Range = 388
   Caption = 'АвтоПополнение'
   ClientHeight = 500
   ClientWidth = 624
-  Constraints.MinHeight = 500
-  Constraints.MinWidth = 624
   DefaultMonitor = dmPrimary
   OnClose = FormClose
   OnCreate = FormCreate
+  OnResize = FormResize
   OnShow = FormShow
+  OnWindowStateChange = FormWindowStateChange
   Position = poWorkAreaCenter
   ShowHint = True
   LCLVersion = '6.3'
@@ -26,13 +30,15 @@ object MainForm: TMainForm
     Images = ImageList1
     ReadOnly = True
     RowSelect = True
-    ScrollBars = ssNone
+    ScrollBars = ssAutoVertical
     ShowLines = False
     ShowRoot = False
     TabOrder = 0
     ToolTips = False
     OnClick = TreeView1Click
+    OnKeyDown = TreeView1KeyDown
     OnKeyUp = TreeView1KeyUp
+    OnMouseMove = TreeView1MouseMove
     Options = [tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoRowSelect, tvoShowButtons, tvoThemedDraw]
     Items.Data = {
       F9FFFFFF020006000000FFFFFFFF00000000FFFFFFFFFFFFFFFF000000000000
@@ -61,6 +67,7 @@ object MainForm: TMainForm
       Caption = 'PopolnPage'
       ClientHeight = 400
       ClientWidth = 496
+      OnMouseMove = TreeView1MouseMove
       OnShow = PopolnPageShow
       object Shape1: TShape
         AnchorSideRight.Control = PopolnPage
@@ -73,6 +80,7 @@ object MainForm: TMainForm
         BorderSpacing.Right = 9
         Brush.Style = bsClear
         Pen.Color = clBtnShadow
+        OnMouseMove = TreeView1MouseMove
       end
       object Shape2: TShape
         AnchorSideRight.Control = PopolnPage
@@ -85,6 +93,7 @@ object MainForm: TMainForm
         BorderSpacing.Right = 9
         Brush.Style = bsClear
         Pen.Color = clBtnShadow
+        OnMouseMove = TreeView1MouseMove
       end
       object TotalCopyLabel: TLabel
         AnchorSideRight.Control = ProgressBar1
@@ -189,6 +198,7 @@ object MainForm: TMainForm
         BorderSpacing.Right = 9
         Brush.Style = bsClear
         Pen.Color = clBtnShadow
+        OnMouseMove = TreeView1MouseMove
       end
       object SetDTButton: TButton
         AnchorSideRight.Control = Shape3
@@ -251,6 +261,7 @@ object MainForm: TMainForm
       Caption = 'BasesPage'
       ClientHeight = 400
       ClientWidth = 496
+      OnMouseMove = TreeView1MouseMove
       object ListBases: TListView
         Left = 0
         Height = 400
@@ -296,6 +307,7 @@ object MainForm: TMainForm
         OnColumnClick = ListBasesColumnClick
         OnCustomDrawItem = ListBasesCustomDrawItem
         OnEnter = ListBasesEnter
+        OnMouseMove = TreeView1MouseMove
       end
     end
     object CfgPage: TTabSheet
@@ -310,17 +322,14 @@ object MainForm: TMainForm
         Width = 496
         HorzScrollBar.Increment = 36
         HorzScrollBar.Page = 365
-        HorzScrollBar.Smooth = True
-        HorzScrollBar.Tracking = True
-        VertScrollBar.Increment = 40
+        VertScrollBar.Increment = 57
         VertScrollBar.Page = 400
-        VertScrollBar.Smooth = True
-        VertScrollBar.Tracking = True
         Align = alClient
         BorderStyle = bsNone
         ClientHeight = 400
         ClientWidth = 479
         TabOrder = 0
+        OnMouseMove = TreeView1MouseMove
         object GroupBox1: TGroupBox
           AnchorSideRight.Side = asrBottom
           Left = 8
@@ -333,6 +342,7 @@ object MainForm: TMainForm
           ClientHeight = 63
           ClientWidth = 444
           TabOrder = 0
+          OnMouseMove = TreeView1MouseMove
           object NameOrgEdit: TEdit
             AnchorSideRight.Control = GroupBox1
             AnchorSideRight.Side = asrBottom
@@ -363,6 +373,7 @@ object MainForm: TMainForm
             ParentColor = False
             ParentFont = False
             WordWrap = True
+            OnMouseMove = TreeView1MouseMove
           end
         end
         object DirConsEdit: TLabeledEdit
@@ -411,6 +422,7 @@ object MainForm: TMainForm
           ClientHeight = 52
           ClientWidth = 444
           TabOrder = 2
+          OnMouseMove = TreeView1MouseMove
           object PopolnCheckBox: TCheckBox
             Left = 8
             Height = 19
@@ -465,6 +477,7 @@ object MainForm: TMainForm
           ClientHeight = 52
           ClientWidth = 444
           TabOrder = 3
+          OnMouseMove = TreeView1MouseMove
           object STTCheckBox: TCheckBox
             Left = 8
             Height = 19
@@ -518,6 +531,7 @@ object MainForm: TMainForm
           ClientHeight = 71
           ClientWidth = 444
           TabOrder = 4
+          OnMouseMove = TreeView1MouseMove
           object USRCheckBox: TCheckBox
             Left = 8
             Height = 19
@@ -584,6 +598,7 @@ object MainForm: TMainForm
           ClientHeight = 28
           ClientWidth = 444
           TabOrder = 5
+          OnMouseMove = TreeView1MouseMove
           object cbCloseProg: TCheckBox
             Left = 8
             Height = 19
@@ -639,6 +654,7 @@ object MainForm: TMainForm
           ClientHeight = 50
           ClientWidth = 479
           TabOrder = 7
+          OnMouseMove = TreeView1MouseMove
           object ResetCFGButton: TButton
             AnchorSideRight.Side = asrBottom
             Left = 361
@@ -668,6 +684,7 @@ object MainForm: TMainForm
         Align = alClient
         BorderStyle = bsNone
         OnKeyDown = ReportKeyDown
+        OnMouseMove = TreeView1MouseMove
         ReadOnly = True
         ScrollBars = ssAutoBoth
         TabOrder = 0
@@ -684,6 +701,7 @@ object MainForm: TMainForm
         Width = 496
         Align = alClient
         TabOrder = 1
+        OnMouseMove = TreeView1MouseMove
       end
       object Panel2: TPanel
         Left = 0
@@ -697,7 +715,7 @@ object MainForm: TMainForm
         ClientHeight = 43
         ClientWidth = 496
         TabOrder = 0
-        OnClick = Panel2Click
+        OnMouseMove = TreeView1MouseMove
         object Label1: TLabel
           Left = 9
           Height = 15
@@ -753,12 +771,14 @@ object MainForm: TMainForm
       Caption = 'AboutPage'
       ClientHeight = 400
       ClientWidth = 496
+      OnMouseMove = TreeView1MouseMove
       object Image1: TImage
         Left = 16
         Height = 64
         Top = 16
         Width = 64
         AutoSize = True
+        OnMouseMove = TreeView1MouseMove
         Picture.Data = {
           1754506F727461626C654E6574776F726B477261706869637301000089504E47
           0D0A1A0A0000000D4948445200000040000000400806000000AA6971DE000000
@@ -784,6 +804,7 @@ object MainForm: TMainForm
         Caption = 'АвтоПополнение'#13#10'Версия 2.0'#13#10'Freeware (C) 2009-2017'
         ParentColor = False
         WordWrap = True
+        OnMouseMove = TreeView1MouseMove
       end
       object Label3: TLabel
         AnchorSideLeft.Control = AboutPage
@@ -803,6 +824,7 @@ object MainForm: TMainForm
         Caption = 'Программа распростроняется под лицензией GNU General Public License version 3'#13#10'Это проект с открытыми исходными кодами, они доступны на GitHub (https://github.com/ap-exe/AutoPopoln2).'#13#10'Абсолютна бесплатна для коммерческого использования.'#13#10'Программа написана на FreePascal(https://www.freepascal.org/) с использованием и CodeTyphon(http://www.pilotlogic.com/).'#13#10#13#10'Лицензионное соглашение.'#13#10#13#10'ПРОГРАММА РАСПРОСТРАНЯЕТСЯ ПО ПРИНЦИПУ "КАК ЕСТЬ". ПРИ ЭТОМ НЕ ПРЕДУСМАТРИВАЕТСЯ НИКАКИХ ГАРАНТИЙ, ЯВНЫХ ИЛИ ПОДРАЗУМЕВАЕМЫХ. ВЫ ИСПОЛЬЗУЕТЕ ЕЕ НА СВОЙ СОБСТВЕННЫЙ РИСК. АВТОР НЕ НЕСЕТ ОТВЕТСТВЕННОСТИ ЗА ПОТЕРИ ДАННЫХ, ПОВРЕЖДЕНИЯ, ПОТЕРИ ПРИБЫЛИ ИЛИ ЛЮБЫЕ ДРУГИЕ ВИДЫ ПОТЕРЬ, СВЯЗАННЫЕ С ИСПОЛЬЗОВАНИЕМ (ПРАВИЛЬНЫМ ИЛИ НЕПРАВИЛЬНЫМ) ЭТОЙ ПРОГРАММЫ.'#13#10#13#10'Если вы не согласны с условиями данной лицензии, то должны удалить программу со своих устройств хранения информации и отказаться от дальнейшего использования этого программного продукта.'
         ParentColor = False
         WordWrap = True
+        OnMouseMove = TreeView1MouseMove
       end
     end
   end
@@ -816,15 +838,19 @@ object MainForm: TMainForm
     ClientHeight = 50
     ClientWidth = 624
     TabOrder = 2
+    OnMouseMove = TreeView1MouseMove
     object ExitButton: TButton
       AnchorSideRight.Control = Panel1
       AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = Panel1
+      AnchorSideBottom.Side = asrBottom
       Left = 519
       Height = 25
-      Top = 12
+      Top = 15
       Width = 85
-      Anchors = [akRight]
+      Anchors = [akRight, akBottom]
       BorderSpacing.Right = 20
+      BorderSpacing.Bottom = 10
       Caption = 'Выход'
       OnClick = ExitButtonClick
       TabOrder = 0
