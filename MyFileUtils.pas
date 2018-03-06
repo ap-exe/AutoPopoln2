@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, SysUtils, Classes, ComObj, Masks, ShellApi, Graphics, Forms, Dialogs, StdCtrls,
-  Controls, ShlObj, ActiveX, RichMemo, ComCtrls, ValEdit, zlibfunc, main;
+  Controls, ShlObj, ActiveX, RichMemo, ComCtrls, ValEdit, zlibfunc, main, LConvEncoding;
 
 {$IFDEF UNICODE}
     function PrivateExtractIcons(lpszFile: PChar; nIconIndex, cxIcon, cyIcon: integer; phicon: PHANDLE; piconid: PDWORD; nicon, flags: DWORD): DWORD; stdcall ; external 'user32.dll' name 'PrivateExtractIconsW';
@@ -83,7 +83,7 @@ begin
         begin
           if (Attr and faDirectory) <> 0 then
           begin
-            if MatchesMaskList(Name, Mask) then
+            if MatchesWindowsMaskList(Name, Mask) then
               List.Add(StartFolder + Name);
 
             if ScanSubFolders and (Name <> '.') and (Name <> '..') then
@@ -93,7 +93,7 @@ begin
           end
           else
           begin
-            if MatchesMaskList(Name, Mask) then
+            if MatchesWindowsMaskList(Name, Mask) then
               List.Add(StartFolder + Name);
           end;
           FindResult := FindNext(SearchRec);
@@ -154,7 +154,7 @@ begin
 end;
 
 // функция возвращает версию exe-файла
-function FileVersion(const FileName: TFileName): String;
+function FileVersion(const FileName: string): String;
 var
   VerInfoSize: Cardinal;
   VerValueSize: Cardinal;
@@ -163,11 +163,11 @@ var
   PVerValue: PVSFixedFileInfo;
 begin
   Result := '';
-  VerInfoSize := GetFileVersionInfoSize(PChar(FileName), Dummy);
+  VerInfoSize := GetFileVersionInfoSizeW(PWideChar(UnicodeString(FileName)), Dummy);
   GetMem(PVerInfo, VerInfoSize);
   try
-    if GetFileVersionInfo(PChar(FileName), 0, VerInfoSize, PVerInfo) then
-      if VerQueryValue(PVerInfo, '\', Pointer(PVerValue), VerValueSize) then
+    if GetFileVersionInfoW(PWideChar(UnicodeString(FileName)), 0, VerInfoSize, PVerInfo) then
+      if VerQueryValueW(PVerInfo, '\', Pointer(PVerValue), VerValueSize) then
         with PVerValue^ do
           Result := Format('Версия %d.%d.%d.%d', [
             HiWord(dwFileVersionMS), //Major
@@ -218,24 +218,25 @@ begin
   StringToWideChar(LinkFileName, FullPathToLnk, SizeOf(FullPathToLnk));
   PF.Load(FullPathToLnk, STGM_READ);
   SL.GetPath(Buff, MAX_PATH, FindData, SLGP_UNCPRIORITY);
-  Result:=Buff;
+  Result:=cp1251ToUTF8(Buff);
 end;
 
 // функция определения папки рабочего стола
 function GetDesktopDir: string;
 var
-  idl: PITEMIDLIST;
-  tmp: LPSTR;
+  iDesktop: IShellFolder;
+  s : STRRET;
+  pidlObject: PItemIDList;
+  CharsDone: ULONG;
+  dwAttributes: DWORD;
+  WC : array[0..MAX_PATH-1] of WideChar;
 begin
   Result:='';
-  SHGetSpecialFolderLocation(0, CSIDL_DESKTOPDIRECTORY, idl);
-  try
-    tmp:=StrAlloc(MAX_PATH);
-    if SHGetPathFromIDList(idl, tmp) then
-      Result:=tmp;
-  finally
-    CoTaskMemFree(idl);
-  end;
+  StringToWideChar('DESKTOP', WC, MAX_PATH);
+  SHGetDesktopFolder(iDesktop);
+  iDesktop.ParseDisplayName(0, nil, WC, CharsDone, pidlObject, dwAttributes);
+  iDesktop.GetDisplayNameOf(pidlObject, SHGDN_NORMAL or SHGDN_FORPARSING, s);
+  Result:=UTF8ToCP1251(s.pOleStr);
 end;
 
 // функция пытается найти где установлен Консультант

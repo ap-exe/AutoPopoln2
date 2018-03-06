@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, DateTimePicker, Forms, Controls, Graphics,
   ActiveX, Dialogs, ComCtrls, ExtCtrls, StdCtrls, Menus, Buttons, EditBtn,
-  ShlObj, Windows, RegExpr, LCLType, lconvencoding, RichMemo,
+  ShlObj, Windows, RegExpr, LCLType, lconvencoding, RichMemo, Process,
   LazUTF8, DateUtils, Registry, Types;
 
 type
@@ -16,6 +16,7 @@ type
 
   TMainForm = class(TForm)
     BasesMenu: TPopupMenu;
+    Panel3: TPanel;
     PrevSearchButton: TButton;
     NextSearchButton: TButton;
     FindEdit: TEdit;
@@ -147,6 +148,7 @@ type
     TempPath, USRPath, PopolnPath, AppPath: string;
     AddDate, DirConsChange: boolean;
     opt: TSearchOptions;
+    CountFiles: integer;
     procedure CopyConsFiles(FromPath, ToPath, Mask: string);
     function GetPathX(const path: string): string;
     procedure CopyUSR;
@@ -155,6 +157,7 @@ type
     procedure WriteReport;
     procedure OpenCfgPage;
   public
+    dircons: string;
     LoadedCfg: boolean;
     DatePopoln, ListFiles: TStringList;
     iTaskBar: ITaskbarList3;
@@ -200,12 +203,14 @@ end;
 // копирование файлов
 procedure TMainForm.CopyButtonClick(Sender: TObject);
 begin
+  CountFiles:=0;
   if USRCheckBox.Checked then
     CopyUSR;
   if STTCheckBox.Checked then
     CopySTT;
   if PopolnCheckBox.Checked then
     CopyPopoln;
+  TotalCopyLabel.Caption:='Скопировано файлов: '+IntToStr(CountFiles);
 end;
 
 // добавляет в настройках командной строки параметр /base*
@@ -217,39 +222,46 @@ end;
 // создавать или нет подпапки с названием организации
 procedure TMainForm.cbCreateSubDirClick(Sender: TObject);
 begin
+  USRDirEditChange(nil);
   if cbCreateSubDir.Checked then
-    USRPath:=USRPath+'\'+NameOrgEdit.Text
-  else
-    USRPath:=USRPath;
+    USRPath:=USRPath+'\'+NameOrgEdit.Text;
 end;
 
 // проверка на правильность настроек
 procedure TMainForm.CfgPageHide(Sender: TObject);
+var
+  err: boolean;
 begin
+  err:=False;
   if NameOrgEdit.Text='' then begin
     NameOrgEdit.Color:=clRed;
+    err:=True;
     OpenCfgPage;
   end;
 
   if not DirectoryExists(PopolnEdit.Text) and PopolnCheckBox.Checked and
     not (Copy(PopolnEdit.Text, 0, 3)='[x]') then begin
       PopolnEdit.Color:=clRed;
+      err:=True;
       OpenCfgPage;
   end;
 
   if not DirectoryExists(STTEdit.Text) and STTCheckBox.Checked then begin
     STTEdit.Color:=clRed;
+    err:=True;
     OpenCfgPage;
   end;
 
   if not DirectoryExists(USRDirEdit.Text) and USRCheckBox.Checked and
     not (Copy(USRDirEdit.Text, 0, 3)='[x]') then begin
       USRDirEdit.Color:=clRed;
+      err:=True;
       OpenCfgPage;
   end;
 
   if not FileExists(DirConsEdit.Text+'\base\baselist.cfg') then begin
     DirConsEdit.Color:=clRed;
+    err:=True;
     OpenCfgPage;
   end
   else
@@ -258,6 +270,11 @@ begin
       N3Click(self);
       DirConsChange:=False;
     end;
+
+  if not err then begin
+    SaveCFG;
+    LoadedCfg:=LoadCFG;
+  end;
 end;
 
 // выбор папки с Консультантом
@@ -293,8 +310,9 @@ begin
   CopyThread:=TCopyFileThread.Create(FromPath, ToPath, Mask, True, cbCreateSubDir.Checked);
   CopyThread.Start;
   while not CopyThread.Finished do Application.ProcessMessages;
+  CountFiles:=CountFiles+CopyThread.FFileNames.Count;
   CopyThread.Terminate;
-  TotalCopyLabel.Caption:='';
+  //TotalCopyLabel.Caption:='';
   ProgressBar1.Position:=0;
 end;
 
@@ -342,8 +360,7 @@ begin
     CopyThread.Start;
     // ждем поток
     while not CopyThread.Finished do Application.ProcessMessages;
-    TotalCopyLabel.Caption:=IntToStr(CopyThread.FFileNames.Count)+
-      ' файлов пополнения скопированы';
+    CountFiles:=CountFiles+CopyThread.FFileNames.Count;
 
     //добавление в лог последней даты пополнения
     //формат папки с пополнением 3112pop
@@ -531,17 +548,18 @@ begin
       'Если у Вас нет этого файла, сформируйте его с помощью программы EditBases.',
       mtError, [mbOK], 0);
 
-  TotalCopyLabel.Caption:='';
-  ClientLabel.Caption:='Организация: '+NameOrgEdit.Text;
   // загружаем параметры
   LoadedCfg:=LoadCfg;
+  PageControl.Page[0].Show;
+  TreeView1.Selected:=TreeView1.Items.GetFirstNode;
+  PopolnPageShow(nil);
+
+  TotalCopyLabel.Caption:='';
+  ClientLabel.Caption:='Организация: '+NameOrgEdit.Text;
   DirConsChange:=False;
 
   Label2.Caption:='АвтоПополнение'+br+FileVersion(Application.ExeName)+
     br+'Freeware (C) 2009-2017';
-
-  PageControl.Page[0].Show;
-  TreeView1.Selected:=TreeView1.Items.GetFirstNode;
 
   // инициализация прогрессбара на панели задач в Windows 7+
   if CheckWin32Version(6,1) then begin
@@ -555,10 +573,8 @@ end;
 // если не загрузились параметры при запуске программы, открыть раздел с настройками
 procedure TMainForm.FormShow(Sender: TObject);
 begin
-  if not LoadedCfg then begin
-    DirConsEdit.Text:=FindCons;
-    OpenCfgPage;
-  end;
+  if not LoadedCfg then
+    ResetCFGButtonClick(nil);
 end;
 
 // показ меню с ключами коммандной строки
@@ -663,14 +679,14 @@ end;
 
 // открытие в проводнике папки с Консультантом
 procedure TMainForm.OpenDirConsButtonClick(Sender: TObject);
+var
+  s: string;
 begin
   if DirectoryExists(DirConsEdit.Text) then
-    ShellExecute(MainForm.Handle, nil, PChar(DirConsEdit.Text), nil, nil,
-      SW_SHOWNORMAL)
+    RunCommand('explorer.exe '+DirConsEdit.Text, s)
   else
     MessageDlg('Ошибка', 'Папка '+DirConsEdit.Text+' не найдена',
       mtError, [mbOk], 0);
-
 end;
 
 procedure TMainForm.Panel2Click(Sender: TObject);
@@ -712,8 +728,9 @@ var
   ResFiles: TStringList;
 begin
   // вывод версии cons.exe
-  if FileExists(DirConsEdit.Text+'\cons.exe') then
-    ConsText.Caption:='cons.exe: '+FileVersion(DirConsEdit.Text+'\cons.exe')
+  s:=DirConsEdit.Text + '\cons.exe';
+  if FileExists(UnicodeString(s)) then
+    ConsText.Caption:='cons.exe: '+FileVersion(s)
   else
     ConsText.Caption:='Файл cons.exe не найден';
   // поиск и вывод версии файла *.res
@@ -807,7 +824,7 @@ begin
     DirConsChange:=True;
   end;
   USRDirEdit.Text:='';
-  STTEdit.Text:='';
+  STTEdit.Text:=DirConsEdit.Text+'\ADM\STS';
   cbCreateSubDir.Checked:=true;
   PopolnCheckBox.Checked:=false;
   PopolnCheckBoxClick(nil);
@@ -824,15 +841,11 @@ end;
 // запуск Консультанта с ключами указанными в настройках
 procedure TMainForm.RunPopolnButtonClick(Sender: TObject);
 var
-  StartupInfo: TStartupInfo;
-  ProcessInfo: TProcessInformation;
+  s: string;
 begin
   if FileExists(DirConsEdit.Text+'\cons.exe') then begin
     SaveCfg;
-
-    GetStartupInfo(StartupInfo);
-    Win32Check(CreateProcess(nil, PChar(DirConsEdit.Text+'\cons.exe '+
-      KeyCmdEdit.Text), nil, nil, False, 0, nil, nil, StartupInfo, ProcessInfo));
+    RunCommand(DirConsEdit.Text+'\cons.exe '+KeyCmdEdit.Text, s);
   end
   else
     MessageDlg('Ошибка', 'Не найден файл cons.exe', mtError, [mbOK], 0);

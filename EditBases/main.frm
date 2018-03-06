@@ -1,7 +1,7 @@
 object MainForm: TMainForm
   Left = 273
   Height = 415
-  Top = 184
+  Top = 182
   Width = 521
   Caption = 'Редактирование bases.lst'
   ClientHeight = 395
@@ -11,7 +11,7 @@ object MainForm: TMainForm
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   Position = poScreenCenter
-  LCLVersion = '6.2'
+  LCLVersion = '6.3'
   object PageControl1: TPageControl
     Left = 0
     Height = 395

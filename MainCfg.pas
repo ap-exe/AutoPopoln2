@@ -107,8 +107,10 @@ begin
       end;
       MainForm.PopolnCheckBoxClick(nil);
 
-      if r.ValueExists('DirCons') then
-        MainForm.DirConsEdit.Text:=r.ReadString('DirCons')
+      if r.ValueExists('DirCons') then begin
+        MainForm.DirConsEdit.Text:=r.ReadString('DirCons');
+        mainform.dircons:=r.ReadString('DirCons');
+      end
       else
         MainForm.DirConsEdit.Text:='';
 

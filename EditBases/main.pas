@@ -239,10 +239,8 @@ begin
       if MessageDlg('Такой файл уже существует! Заменить?', mtWarning,
         [mbYes, mbNo], 0, mbYes) = mrYes then begin
         if ExtractFileExt(SaveDialog1.FileName) = '.lst' then
-          //MyCompressFiles2(ListFiles, SaveDialog1.FileName)
           SaveLST(SaveDialog1.FileName, tmp, PageControl1, BasesListEditor, ListFiles)
         else
-          //MyCompressFiles2(ListFiles, ChangeFileExt(SaveDialog1.FileName, '.lst'));
           SaveLST(ChangeFileExt(SaveDialog1.FileName, '.lst'), tmp, PageControl1,
             BasesListEditor, ListFiles);
       end;

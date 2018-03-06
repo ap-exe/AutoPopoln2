@@ -39,7 +39,7 @@ uses
 procedure TAboutForm.FormCreate(Sender: TObject);
 begin
   Label1.Caption:='EditBases'+#13#10+FileVersion(Application.ExeName)+
-    #13#10+'Freeware (C) 2012-2017';
+    #13#10+'Freeware (C) 2012-2018';
 end;
 
 procedure TAboutForm.FormClick(Sender: TObject);

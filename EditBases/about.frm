@@ -1,7 +1,7 @@
 object AboutForm: TAboutForm
-  Left = 262
+  Left = 273
   Height = 388
-  Top = 184
+  Top = 182
   Width = 600
   HorzScrollBar.Page = 525
   HorzScrollBar.Range = 525
@@ -18,6 +18,7 @@ object AboutForm: TAboutForm
   OnClick = FormClick
   OnCreate = FormCreate
   Position = poMainFormCenter
+  LCLVersion = '6.3'
   object Image1: TImage
     Left = 10
     Height = 64

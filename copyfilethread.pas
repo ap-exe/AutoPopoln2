@@ -51,20 +51,20 @@ begin
   Result:=0;
   List.BeginUpdate;
   try
-    StartFolder := StartFolder+'\';
+    StartFolder := IncludeTrailingBackslash(StartFolder);
     FindResult := FindFirst(StartFolder + '*.*', faAnyFile, SearchRec);
     try
       while FindResult = 0 do
         with SearchRec do begin
           if (Attr and faDirectory) <> 0 then begin
-            if MatchesMaskList(Name, Mask) and SearchDir then
+            if MatchesWindowsMaskList(Name, Mask) and SearchDir then
               List.Add(StartFolder + Name);
 
             if ScanSubFolders and (Name <> '.') and (Name <> '..') then
               Result:=Result+FindFiles(StartFolder + Name, Mask, List, ScanSubFolders);
           end
           else
-            if MatchesMaskList(Name, Mask) then begin
+            if MatchesWindowsMaskList(Name, Mask) then begin
               List.Add(StartFolder + Name);
               Result:=Result+SearchRec.Size;
             end;
