@@ -535,8 +535,6 @@ var
   s2: RawByteString;
   f: text;
 begin
-  mainform.Caption:=inttostr(screen.PixelsPerInch);
-
   TotalCopyLabel.Caption:='';
   TempPath := GetLocalTmpPath + 'ap\';
   DatePopoln:=TStringList.Create;
@@ -871,6 +869,7 @@ begin
   KeyCmdEdit.Text:='/adm /receive /base* /yes';
   cbCloseProg.Checked:=False;
   ListBases.Items.Clear;
+  DatePopoln.Clear;
   OpenCfgPage;
 end;
 
