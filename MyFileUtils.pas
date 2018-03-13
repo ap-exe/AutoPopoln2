@@ -4,7 +4,8 @@ interface
 
 uses
   Windows, SysUtils, Classes, ComObj, Masks, ShellApi, Graphics, Forms, Dialogs, StdCtrls,
-  Controls, ShlObj, ActiveX, RichMemo, ComCtrls, ValEdit, zlibfunc, main, LConvEncoding;
+  Controls, ShlObj, ActiveX, RichMemo, ComCtrls, ValEdit, zlibfunc, main, LConvEncoding,
+  Process;
 
 {$IFDEF UNICODE}
     function PrivateExtractIcons(lpszFile: PChar; nIconIndex, cxIcon, cyIcon: integer; phicon: PHANDLE; piconid: PDWORD; nicon, flags: DWORD): DWORD; stdcall ; external 'user32.dll' name 'PrivateExtractIconsW';
@@ -21,6 +22,7 @@ Type
     CallBack: TCallBack): boolean;
   function FileVersion(const FileName: TFileName): String;
   procedure RunAsAdministrator(const source: string; const params: string = '');
+  procedure RunCommand2(const exename, cmdline: string);
   function GetFileNameFromLink(LinkFileName: string): string;
   function GetDesktopDir: string;
   function FindCons: string;
@@ -199,6 +201,28 @@ begin
   shExecInfo := nil;
 end;
 
+procedure RunCommand2(const exename, cmdline: string);
+var
+  Process: TProcess;
+  I: Integer;
+begin
+  Process := TProcess.Create(nil);
+  try
+    Process.InheritHandles := False;
+    Process.Options := [];
+    Process.ShowWindow := swoShow;
+
+    for I := 1 to GetEnvironmentVariableCount do
+      Process.Environment.Add(GetEnvironmentString(I));
+
+    Process.Executable := exename;
+    Process.Parameters.Add(cmdline);
+    Process.Execute;
+  finally
+    Process.Free;
+  end;
+end;
+
 // функция получение имени файла из его ярлыка
 function GetFileNameFromLink(LinkFileName: string): string;
 var
@@ -281,7 +305,6 @@ var
 begin
   Result := False;
   if FileExists(FileName) then begin
-    DelFiles(tmp, '*');
     DecompressFile(FileName, tmp, True, False);
     LF.Clear;
     // загрузка описания баз

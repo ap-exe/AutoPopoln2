@@ -58,10 +58,10 @@ object MainForm: TMainForm
     Top = 42
     Width = 504
     TabStop = False
-    ActivePage = AboutPage
+    ActivePage = PopolnPage
     Align = alClient
     ShowTabs = False
-    TabIndex = 5
+    TabIndex = 0
     TabOrder = 1
     object PopolnPage: TTabSheet
       Caption = 'PopolnPage'

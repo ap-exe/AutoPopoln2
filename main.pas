@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, DateTimePicker, Forms, Controls, Graphics,
   ActiveX, Dialogs, ComCtrls, ExtCtrls, StdCtrls, Menus, Buttons, EditBtn,
-  ShlObj, Windows, RegExpr, LCLType, lconvencoding, RichMemo, Process,
+  ShlObj, Windows, RegExpr, LCLType, lconvencoding, RichMemo,
   LazUTF8, DateUtils, Registry, Types;
 
 type
@@ -718,11 +718,9 @@ end;
 
 // открытие в проводнике папки с Консультантом
 procedure TMainForm.OpenDirConsButtonClick(Sender: TObject);
-var
-  s: string;
 begin
   if DirectoryExists(DirConsEdit.Text) then
-    RunCommand('explorer.exe '+DirConsEdit.Text, s)
+    RunCommand2('explorer.exe', DirConsEdit.Text)
   else
     MessageDlg('Ошибка', 'Папка '+DirConsEdit.Text+' не найдена',
       mtError, [mbOk], 0);
@@ -875,13 +873,9 @@ end;
 
 // запуск Консультанта с ключами указанными в настройках
 procedure TMainForm.RunPopolnButtonClick(Sender: TObject);
-var
-  s: string;
 begin
-  if FileExists(DirConsEdit.Text+'\cons.exe') then begin
-    SaveCfg;
-    RunCommand(DirConsEdit.Text+'\cons.exe '+KeyCmdEdit.Text, s);
-  end
+  if FileExists(DirConsEdit.Text+'\cons.exe') then
+    RunCommand2(DirConsEdit.Text+'\cons.exe', KeyCmdEdit.Text)
   else
     MessageDlg('Ошибка', 'Не найден файл cons.exe', mtError, [mbOK], 0);
 end;
