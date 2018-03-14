@@ -16,6 +16,8 @@ type
 
   TMainForm = class(TForm)
     BasesMenu: TPopupMenu;
+    ApplyButton: TButton;
+    InvertSelect: TMenuItem;
     Panel3: TPanel;
     PrevSearchButton: TButton;
     NextSearchButton: TButton;
@@ -58,8 +60,8 @@ type
     KeyCmdMenu: TPopupMenu;
     adm1: TMenuItem;
     base1: TMenuItem;
-    N4: TMenuItem;
-    N3: TMenuItem;
+    UnselectAllBases: TMenuItem;
+    SelectAllBases: TMenuItem;
     OpenDirConsButton: TButton;
     ProgressBar1: TProgressBar;
     ScrollBox1: TScrollBox;
@@ -90,9 +92,9 @@ type
     DocPage: TTabSheet;
     AboutPage: TTabSheet;
     TreeView1: TTreeView;
+    procedure ApplyButtonClick(Sender: TObject);
     procedure base1Click(Sender: TObject);
     procedure cbCreateSubDirClick(Sender: TObject);
-    procedure CfgPageHide(Sender: TObject);
     procedure CopyButtonClick(Sender: TObject);
     procedure DirConsButtonClick(Sender: TObject);
     procedure DirConsEditChange(Sender: TObject);
@@ -106,14 +108,15 @@ type
     procedure FormResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormWindowStateChange(Sender: TObject);
+    procedure InvertSelectClick(Sender: TObject);
     procedure KeyCmdButtonClick(Sender: TObject);
     procedure ListBasesColumnClick(Sender: TObject; Column: TListColumn);
     procedure ListBasesCustomDrawItem(Sender: TCustomListView; Item: TListItem;
       State: TCustomDrawState; var DefaultDraw: Boolean);
     procedure ListBasesEnter(Sender: TObject);
     procedure LogPageShow(Sender: TObject);
-    procedure N3Click(Sender: TObject);
-    procedure N4Click(Sender: TObject);
+    procedure SelectAllBasesClick(Sender: TObject);
+    procedure UnselectAllBasesClick(Sender: TObject);
     procedure NameOrgEditChange(Sender: TObject);
     procedure NameOrgEditKeyUp(Sender: TObject; var Key: Word;
       Shift: TShiftState);
@@ -151,7 +154,7 @@ type
   private
     BasesLST: TStringList;
     TempPath, USRPath, PopolnPath, AppPath: string;
-    AddDate, DirConsChange, ctrl: boolean;
+    AddDate, DirConsChange, ctrl, ResizingColumn: boolean;
     opt: TSearchOptions;
     CountFiles: integer;
     procedure CopyConsFiles(FromPath, ToPath, Mask: string);
@@ -162,7 +165,6 @@ type
     procedure WriteReport;
     procedure OpenCfgPage;
   public
-    dircons: string;
     LoadedCfg: boolean;
     DatePopoln, ListFiles: TStringList;
     iTaskBar: ITaskbarList3;
@@ -231,62 +233,51 @@ begin
   KeyCmdEdit.Text:=KeyCmdEdit.Text+' /base*';
 end;
 
-// создавать или нет подпапки с названием организации
-procedure TMainForm.cbCreateSubDirClick(Sender: TObject);
+procedure TMainForm.ApplyButtonClick(Sender: TObject);
 begin
-  USRDirEditChange(nil);
-  if cbCreateSubDir.Checked then
-    USRPath:=USRPath+'\'+NameOrgEdit.Text;
-end;
-
-// проверка на правильность настроек
-procedure TMainForm.CfgPageHide(Sender: TObject);
-var
-  err: boolean;
-begin
-  err:=False;
   if NameOrgEdit.Text='' then begin
     NameOrgEdit.Color:=clRed;
-    err:=True;
     OpenCfgPage;
   end;
 
   if not DirectoryExists(PopolnEdit.Text) and PopolnCheckBox.Checked and
     not (Copy(PopolnEdit.Text, 0, 3)='[x]') then begin
       PopolnEdit.Color:=clRed;
-      err:=True;
       OpenCfgPage;
   end;
 
   if not DirectoryExists(STTEdit.Text) and STTCheckBox.Checked then begin
     STTEdit.Color:=clRed;
-    err:=True;
     OpenCfgPage;
   end;
 
   if not DirectoryExists(USRDirEdit.Text) and USRCheckBox.Checked and
     not (Copy(USRDirEdit.Text, 0, 3)='[x]') then begin
       USRDirEdit.Color:=clRed;
-      err:=True;
       OpenCfgPage;
   end;
 
   if not FileExists(DirConsEdit.Text+'\base\baselist.cfg') then begin
     DirConsEdit.Color:=clRed;
-    err:=True;
     OpenCfgPage;
   end
   else
     if DirConsChange then begin
       FillTableBase;
-      N3Click(self);
+      SelectAllBasesClick(self);
       DirConsChange:=False;
     end;
 
-  if not err then begin
-    SaveCFG;
-    LoadedCfg:=LoadCFG;
-  end;
+  SaveCFG;
+  LoadedCfg:=LoadCFG;
+end;
+
+// создавать или нет подпапки с названием организации
+procedure TMainForm.cbCreateSubDirClick(Sender: TObject);
+begin
+  USRDirEditChange(nil);
+  if cbCreateSubDir.Checked then
+    USRPath:=USRPath+'\'+NameOrgEdit.Text;
 end;
 
 // выбор папки с Консультантом
@@ -541,6 +532,7 @@ begin
   DatePopoln.Duplicates:=dupIgnore;
   DatePopoln.Sorted:=True;
   AddDate:=False;
+  ResizingColumn := False;
 
   BasesLST:=TStringList.Create;
   ListFiles:=TStringList.Create;
@@ -571,6 +563,7 @@ begin
 
   // загружаем параметры
   LoadedCfg:=LoadCfg;
+
   PageControl.Page[0].Show;
   TreeView1.Selected:=TreeView1.Items.GetFirstNode;
   PopolnPageShow(nil);
@@ -616,6 +609,18 @@ begin
     MainForm.AutoScroll:=False;
 end;
 
+// инверсное выделение баз
+procedure TMainForm.InvertSelectClick(Sender: TObject);
+var
+  i: integer;
+begin
+  ListBases.BeginUpdate;
+  for i := 0 to ListBases.Items.Count - 1 do
+    ListBases.Items[i].Checked := not ListBases.Items[i].Checked;
+  ListBases.EndUpdate;
+  ListBases.Columns[0].Caption:='[*]';
+end;
+
 // показ меню с ключами коммандной строки
 procedure TMainForm.KeyCmdButtonClick(Sender: TObject);
 begin
@@ -627,9 +632,9 @@ procedure TMainForm.ListBasesColumnClick(Sender: TObject; Column: TListColumn);
 begin
   if Column.Index=0 then begin
     if Column.Caption='[  ]' then
-      N4Click(nil)
+      UnselectAllBasesClick(nil)
     else
-      N3Click(nil);
+      SelectAllBasesClick(nil);
   end;
 end;
 
@@ -654,7 +659,7 @@ begin
 end;
 
 // снятие выбора со всех элементов в списке баз
-procedure TMainForm.N3Click(Sender: TObject);
+procedure TMainForm.SelectAllBasesClick(Sender: TObject);
 var
   i: integer;
 begin
@@ -666,7 +671,7 @@ begin
 end;
 
 // выбор всех элементов в списке баз
-procedure TMainForm.N4Click(Sender: TObject);
+procedure TMainForm.UnselectAllBasesClick(Sender: TObject);
 var
   i: integer;
 begin
@@ -988,7 +993,11 @@ begin
       bases.Free;
       // уменьшаем размер последней колонки,
       // так как папраметр AutoWidthLastColumn неправильно работает
-      ListBases.Columns.Items[3].Width:=ListBases.Columns.Items[3].Width-20;
+      ListBases.AutoWidthLastColumn:=true;
+      if not ResizingColumn then begin
+        ListBases.Columns.Items[3].Width := ListBases.Columns.Items[3].Width - 60;
+        ResizingColumn := True;
+      end;
     end;
   end
   else

@@ -109,7 +109,8 @@ begin
 
       if r.ValueExists('DirCons') then begin
         MainForm.DirConsEdit.Text:=r.ReadString('DirCons');
-        mainform.dircons:=r.ReadString('DirCons');
+        MainForm.FillTableBase;
+        MainForm.UnselectAllBasesClick(nil);
       end
       else
         MainForm.DirConsEdit.Text:='';
@@ -148,7 +149,7 @@ begin
         MainForm.cbCloseProg.Checked:=r.ReadBool('CloseProg')
       else
         MainForm.cbCloseProg.Checked:=false;
-      MainForm.FillTableBase;
+
       // читаем положение окна
       if r.ValueExists('Top') then MainForm.Top:=r.ReadInteger('Top');
       if r.ValueExists('Left') then MainForm.Left:=r.ReadInteger('Left');
@@ -168,12 +169,11 @@ begin
           repeat
             b:=Parse(',', s, p);
             if b<>'' then
-              for i := 0 to MainForm.ListBases.Items.Count - 1 do begin
+              for i := 0 to MainForm.ListBases.Items.Count - 1 do
                 if MainForm.ListBases.Items[i].SubItems[1]=b then begin
                   MainForm.ListBases.Items[i].Checked:=True;
                   break;
                 end;
-              end;
             inc(p);
           until b='';
         end

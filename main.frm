@@ -1,15 +1,15 @@
 object MainForm: TMainForm
-  Left = 273
+  Left = 85
   Height = 500
-  Top = 181
-  Width = 624
+  Top = 85
+  Width = 623
   HorzScrollBar.Page = 597
   HorzScrollBar.Range = 597
   VertScrollBar.Page = 388
   VertScrollBar.Range = 388
   Caption = 'АвтоПополнение'
   ClientHeight = 500
-  ClientWidth = 624
+  ClientWidth = 623
   DefaultMonitor = dmPrimary
   OnClose = FormClose
   OnCreate = FormCreate
@@ -56,7 +56,7 @@ object MainForm: TMainForm
     Left = 120
     Height = 408
     Top = 42
-    Width = 504
+    Width = 503
     TabStop = False
     ActivePage = PopolnPage
     Align = alClient
@@ -66,7 +66,7 @@ object MainForm: TMainForm
     object PopolnPage: TTabSheet
       Caption = 'PopolnPage'
       ClientHeight = 400
-      ClientWidth = 496
+      ClientWidth = 495
       OnMouseMove = TreeView1MouseMove
       OnShow = PopolnPageShow
       object Shape1: TShape
@@ -75,7 +75,7 @@ object MainForm: TMainForm
         Left = 8
         Height = 96
         Top = 8
-        Width = 479
+        Width = 478
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Right = 9
         Brush.Style = bsClear
@@ -88,7 +88,7 @@ object MainForm: TMainForm
         Left = 8
         Height = 96
         Top = 120
-        Width = 479
+        Width = 478
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Right = 9
         Brush.Style = bsClear
@@ -101,7 +101,7 @@ object MainForm: TMainForm
         Left = 18
         Height = 15
         Top = 16
-        Width = 459
+        Width = 458
         Alignment = taCenter
         Anchors = [akTop, akLeft, akRight]
         AutoSize = False
@@ -114,7 +114,7 @@ object MainForm: TMainForm
         Left = 18
         Height = 18
         Top = 32
-        Width = 459
+        Width = 458
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Right = 10
         TabOrder = 0
@@ -122,7 +122,7 @@ object MainForm: TMainForm
       object CopyButton: TButton
         AnchorSideLeft.Control = ProgressBar1
         AnchorSideRight.Control = RunPopolnButton
-        Left = 37
+        Left = 36
         Height = 25
         Hint = 'Копировать обновления, USR и STT файлы'
         Top = 61
@@ -136,7 +136,7 @@ object MainForm: TMainForm
       object OpenDirConsButton: TButton
         AnchorSideRight.Control = ProgressBar1
         AnchorSideRight.Side = asrBottom
-        Left = 357
+        Left = 356
         Height = 25
         Hint = 'Открыть папку с Консультатнтом'
         Top = 61
@@ -151,7 +151,7 @@ object MainForm: TMainForm
         AnchorSideLeft.Control = CopyButton
         AnchorSideLeft.Side = asrBottom
         AnchorSideRight.Control = OpenDirConsButton
-        Left = 197
+        Left = 196
         Height = 25
         Hint = 'Запустить Консультант с заданными ключами'
         Top = 61
@@ -193,7 +193,7 @@ object MainForm: TMainForm
         Left = 8
         Height = 56
         Top = 232
-        Width = 479
+        Width = 478
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Right = 9
         Brush.Style = bsClear
@@ -203,7 +203,7 @@ object MainForm: TMainForm
       object SetDTButton: TButton
         AnchorSideRight.Control = Shape3
         AnchorSideRight.Side = asrBottom
-        Left = 355
+        Left = 354
         Height = 25
         Hint = 'Изменить системную дату и время'
         Top = 246
@@ -221,7 +221,7 @@ object MainForm: TMainForm
         Height = 23
         Hint = 'Колесиком мышки можно менять дату и время'
         Top = 248
-        Width = 185
+        Width = 184
         CenturyFrom = 1941
         MaxDate = 2958465
         MinDate = -53780
@@ -259,12 +259,12 @@ object MainForm: TMainForm
     end
     object BasesPage: TTabSheet
       Caption = 'BasesPage'
-      ClientHeight = 400
+      ClientHeight = 566
       ClientWidth = 496
       OnMouseMove = TreeView1MouseMove
       object ListBases: TListView
         Left = 0
-        Height = 400
+        Height = 566
         Top = 0
         Width = 496
         Align = alClient
@@ -294,8 +294,9 @@ object MainForm: TMainForm
             Width = 70
           end        
           item
+            AutoSize = True
             Caption = 'Полное название'
-            Width = 373
+            Width = 111
           end>
         GridLines = True
         PopupMenu = BasesMenu
@@ -313,13 +314,12 @@ object MainForm: TMainForm
     object CfgPage: TTabSheet
       Caption = 'CfgPage'
       ClientHeight = 400
-      ClientWidth = 496
-      OnHide = CfgPageHide
+      ClientWidth = 477
       object ScrollBox1: TScrollBox
         Left = 0
         Height = 400
         Top = 0
-        Width = 496
+        Width = 477
         HorzScrollBar.Increment = 36
         HorzScrollBar.Page = 365
         VertScrollBar.Increment = 57
@@ -327,7 +327,7 @@ object MainForm: TMainForm
         Align = alClient
         BorderStyle = bsNone
         ClientHeight = 400
-        ClientWidth = 479
+        ClientWidth = 460
         TabOrder = 0
         OnMouseMove = TreeView1MouseMove
         object GroupBox1: TGroupBox
@@ -335,12 +335,12 @@ object MainForm: TMainForm
           Left = 8
           Height = 83
           Top = 8
-          Width = 448
+          Width = 429
           Anchors = [akTop, akLeft, akRight]
           BorderSpacing.Right = 10
           Caption = 'Название организации'
           ClientHeight = 63
-          ClientWidth = 444
+          ClientWidth = 425
           TabOrder = 0
           OnMouseMove = TreeView1MouseMove
           object NameOrgEdit: TEdit
@@ -349,7 +349,7 @@ object MainForm: TMainForm
             Left = 8
             Height = 23
             Top = 3
-            Width = 428
+            Width = 409
             Anchors = [akTop, akLeft, akRight]
             BorderSpacing.Right = 8
             MaxLength = 100
@@ -364,7 +364,7 @@ object MainForm: TMainForm
             Left = 8
             Height = 33
             Top = 30
-            Width = 428
+            Width = 409
             Anchors = [akTop, akLeft, akRight]
             AutoSize = False
             Caption = 'В названии организации можно использовать только буквы, цифры, пробелы и символы - знак подчеркивания и тире. Длина не более 100 символов.'
@@ -381,7 +381,7 @@ object MainForm: TMainForm
           Left = 18
           Height = 23
           Top = 112
-          Width = 404
+          Width = 385
           Anchors = [akTop, akLeft, akRight]
           AutoSize = False
           EditLabel.AnchorSideLeft.Control = DirConsEdit
@@ -392,7 +392,7 @@ object MainForm: TMainForm
           EditLabel.Left = 18
           EditLabel.Height = 15
           EditLabel.Top = 94
-          EditLabel.Width = 404
+          EditLabel.Width = 385
           EditLabel.Caption = 'Папка с Консультантом'
           EditLabel.ParentColor = False
           ParentFont = False
@@ -401,7 +401,7 @@ object MainForm: TMainForm
         end
         object DirConsButton: TSpeedButton
           AnchorSideRight.Side = asrBottom
-          Left = 422
+          Left = 403
           Height = 23
           Hint = 'Открыть окно для выбора папки'
           Top = 112
@@ -416,11 +416,11 @@ object MainForm: TMainForm
           Left = 8
           Height = 72
           Top = 144
-          Width = 448
+          Width = 429
           Anchors = [akTop, akLeft, akRight]
           BorderSpacing.Right = 10
           ClientHeight = 52
-          ClientWidth = 444
+          ClientWidth = 425
           TabOrder = 2
           OnMouseMove = TreeView1MouseMove
           object PopolnCheckBox: TCheckBox
@@ -437,7 +437,7 @@ object MainForm: TMainForm
             Left = 8
             Height = 23
             Top = 21
-            Width = 403
+            Width = 384
             Anchors = [akTop, akLeft, akRight]
             EditLabel.AnchorSideLeft.Control = PopolnEdit
             EditLabel.AnchorSideRight.Control = PopolnEdit
@@ -446,7 +446,7 @@ object MainForm: TMainForm
             EditLabel.Left = 8
             EditLabel.Height = 15
             EditLabel.Top = 3
-            EditLabel.Width = 403
+            EditLabel.Width = 384
             EditLabel.Caption = 'Папка с пополнением'
             EditLabel.ParentColor = False
             TabOrder = 1
@@ -455,7 +455,7 @@ object MainForm: TMainForm
           object PopolnButton: TSpeedButton
             AnchorSideRight.Control = GroupBox2
             AnchorSideRight.Side = asrBottom
-            Left = 411
+            Left = 392
             Height = 23
             Hint = 'Открыть окно для выбора папки'
             Top = 21
@@ -471,11 +471,11 @@ object MainForm: TMainForm
           Left = 8
           Height = 72
           Top = 224
-          Width = 448
+          Width = 429
           Anchors = [akTop, akLeft, akRight]
           BorderSpacing.Right = 10
           ClientHeight = 52
-          ClientWidth = 444
+          ClientWidth = 425
           TabOrder = 3
           OnMouseMove = TreeView1MouseMove
           object STTCheckBox: TCheckBox
@@ -492,7 +492,7 @@ object MainForm: TMainForm
             Left = 8
             Height = 23
             Top = 21
-            Width = 399
+            Width = 380
             Anchors = [akTop, akLeft, akRight]
             EditLabel.AnchorSideLeft.Control = STTEdit
             EditLabel.AnchorSideRight.Control = STTEdit
@@ -501,7 +501,7 @@ object MainForm: TMainForm
             EditLabel.Left = 8
             EditLabel.Height = 15
             EditLabel.Top = 3
-            EditLabel.Width = 399
+            EditLabel.Width = 380
             EditLabel.Caption = 'Папка с STT файлами'
             EditLabel.ParentColor = False
             TabOrder = 1
@@ -509,7 +509,7 @@ object MainForm: TMainForm
           end
           object STTDirButton: TSpeedButton
             AnchorSideRight.Side = asrBottom
-            Left = 407
+            Left = 388
             Height = 23
             Hint = 'Открыть окно для выбора папки'
             Top = 21
@@ -525,11 +525,11 @@ object MainForm: TMainForm
           Left = 8
           Height = 91
           Top = 304
-          Width = 448
+          Width = 429
           Anchors = [akTop, akLeft, akRight]
           BorderSpacing.Right = 10
           ClientHeight = 71
-          ClientWidth = 444
+          ClientWidth = 425
           TabOrder = 4
           OnMouseMove = TreeView1MouseMove
           object USRCheckBox: TCheckBox
@@ -547,7 +547,7 @@ object MainForm: TMainForm
             Left = 8
             Height = 23
             Top = 21
-            Width = 399
+            Width = 380
             Anchors = [akTop, akLeft, akRight]
             EditLabel.AnchorSideLeft.Control = USRDirEdit
             EditLabel.AnchorSideRight.Control = USRDirEdit
@@ -556,7 +556,7 @@ object MainForm: TMainForm
             EditLabel.Left = 8
             EditLabel.Height = 15
             EditLabel.Top = 3
-            EditLabel.Width = 399
+            EditLabel.Width = 380
             EditLabel.Caption = 'Папка куда будут копироваться USR файлы'
             EditLabel.ParentColor = False
             TabOrder = 1
@@ -564,7 +564,7 @@ object MainForm: TMainForm
           end
           object USRDirButton: TSpeedButton
             AnchorSideRight.Side = asrBottom
-            Left = 407
+            Left = 388
             Height = 23
             Hint = 'Открыть окно для выбора папки'
             Top = 21
@@ -591,12 +591,12 @@ object MainForm: TMainForm
           Left = 8
           Height = 48
           Top = 400
-          Width = 448
+          Width = 429
           Anchors = [akTop, akLeft, akRight]
           BorderSpacing.Right = 10
           Caption = 'После запуска программы'
           ClientHeight = 28
-          ClientWidth = 444
+          ClientWidth = 425
           TabOrder = 5
           OnMouseMove = TreeView1MouseMove
           object cbCloseProg: TCheckBox
@@ -613,7 +613,7 @@ object MainForm: TMainForm
           Left = 8
           Height = 23
           Top = 472
-          Width = 438
+          Width = 405
           Anchors = [akTop, akLeft, akRight]
           EditLabel.AnchorSideLeft.Control = KeyCmdEdit
           EditLabel.AnchorSideRight.Control = KeyCmdEdit
@@ -622,7 +622,7 @@ object MainForm: TMainForm
           EditLabel.Left = 8
           EditLabel.Height = 15
           EditLabel.Top = 454
-          EditLabel.Width = 438
+          EditLabel.Width = 405
           EditLabel.Caption = 'Ключи командной строки Консультанта'
           EditLabel.ParentColor = False
           TabOrder = 6
@@ -632,12 +632,12 @@ object MainForm: TMainForm
           AnchorSideLeft.Side = asrBottom
           AnchorSideRight.Control = ScrollBox1
           AnchorSideRight.Side = asrBottom
-          Left = 446
-          Height = 23
-          Top = 472
-          Width = 23
+          Left = 413
+          Height = 24
+          Top = 471
+          Width = 24
           Anchors = [akTop, akRight]
-          BorderSpacing.Right = 10
+          BorderSpacing.Right = 23
           Caption = '\/'
           OnClick = KeyCmdButtonClick
         end
@@ -647,25 +647,39 @@ object MainForm: TMainForm
           AnchorSideRight.Side = asrBottom
           Left = 0
           Height = 50
-          Top = 520
-          Width = 479
+          Top = 504
+          Width = 460
           Anchors = [akTop, akLeft, akRight]
           BevelOuter = bvNone
           ClientHeight = 50
-          ClientWidth = 479
+          ClientWidth = 460
           TabOrder = 7
           OnMouseMove = TreeView1MouseMove
           object ResetCFGButton: TButton
+            AnchorSideLeft.Control = Panel3
             AnchorSideRight.Side = asrBottom
-            Left = 361
+            Left = 8
             Height = 25
-            Top = 11
+            Top = 13
             Width = 108
-            Anchors = [akTop, akRight]
+            BorderSpacing.Left = 8
             BorderSpacing.Right = 10
             Caption = 'Сброс настроек'
             OnClick = ResetCFGButtonClick
             TabOrder = 0
+          end
+          object ApplyButton: TButton
+            AnchorSideRight.Control = Panel3
+            AnchorSideRight.Side = asrBottom
+            Left = 332
+            Height = 25
+            Top = 13
+            Width = 108
+            Anchors = [akTop, akRight]
+            BorderSpacing.Right = 20
+            Caption = 'Применить'
+            OnClick = ApplyButtonClick
+            TabOrder = 1
           end
         end
       end
@@ -832,11 +846,11 @@ object MainForm: TMainForm
     Left = 0
     Height = 50
     Top = 450
-    Width = 624
+    Width = 623
     Align = alBottom
     BevelOuter = bvNone
     ClientHeight = 50
-    ClientWidth = 624
+    ClientWidth = 623
     TabOrder = 2
     OnMouseMove = TreeView1MouseMove
     object ExitButton: TButton
@@ -844,7 +858,7 @@ object MainForm: TMainForm
       AnchorSideRight.Side = asrBottom
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
-      Left = 519
+      Left = 518
       Height = 25
       Top = 15
       Width = 85
@@ -860,12 +874,12 @@ object MainForm: TMainForm
     Left = 0
     Height = 42
     Top = 0
-    Width = 624
+    Width = 623
     Align = alTop
     Alignment = taLeftJustify
     BevelOuter = bvNone
     ClientHeight = 42
-    ClientWidth = 624
+    ClientWidth = 623
     Color = clGrayText
     ParentColor = False
     TabOrder = 3
@@ -927,13 +941,17 @@ object MainForm: TMainForm
   object BasesMenu: TPopupMenu
     Left = 77
     Top = 315
-    object N3: TMenuItem
+    object SelectAllBases: TMenuItem
       Caption = 'Выделить все'
-      OnClick = N3Click
+      OnClick = SelectAllBasesClick
     end
-    object N4: TMenuItem
+    object UnselectAllBases: TMenuItem
       Caption = 'Отменить все'
-      OnClick = N4Click
+      OnClick = UnselectAllBasesClick
+    end
+    object InvertSelect: TMenuItem
+      Caption = 'Инвертировать выделение'
+      OnClick = InvertSelectClick
     end
   end
   object SelectDirDialog: TSelectDirectoryDialog
