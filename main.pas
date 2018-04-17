@@ -17,7 +17,13 @@ type
   TMainForm = class(TForm)
     BasesMenu: TPopupMenu;
     ApplyButton: TButton;
+    DirConsButton: TSpeedButton;
+    DirConsEdit: TLabeledEdit;
+    DisableResizeWindowCB: TCheckBox;
+    GroupBox6: TGroupBox;
     InvertSelect: TMenuItem;
+    KeyCmdButton: TSpeedButton;
+    KeyCmdEdit: TLabeledEdit;
     Panel3: TPanel;
     PrevSearchButton: TButton;
     NextSearchButton: TButton;
@@ -31,8 +37,6 @@ type
     cbCreateSubDir: TCheckBox;
     ConsText: TLabel;
     DateTimePicker1: TDateTimePicker;
-    DirConsButton: TSpeedButton;
-    DirConsEdit: TLabeledEdit;
     FreeSizeText: TLabel;
     GroupBox1: TGroupBox;
     GroupBox2: TGroupBox;
@@ -40,7 +44,6 @@ type
     GroupBox4: TGroupBox;
     GroupBox5: TGroupBox;
     Image1: TImage;
-    KeyCmdEdit: TLabeledEdit;
     Label2: TLabel;
     Label4: TLabel;
     ListBases: TListView;
@@ -70,7 +73,6 @@ type
     Shape1: TShape;
     Shape2: TShape;
     Shape3: TShape;
-    KeyCmdButton: TSpeedButton;
     STTCheckBox: TCheckBox;
     STTDirButton: TSpeedButton;
     STTEdit: TLabeledEdit;
@@ -78,6 +80,7 @@ type
     USRCheckBox: TCheckBox;
     USRDirButton: TSpeedButton;
     USRDirEdit: TLabeledEdit;
+    WordWrapCB: TCheckBox;
     yes1: TMenuItem;
     process21: TMenuItem;
     norunner1: TMenuItem;
@@ -98,6 +101,7 @@ type
     procedure CopyButtonClick(Sender: TObject);
     procedure DirConsButtonClick(Sender: TObject);
     procedure DirConsEditChange(Sender: TObject);
+    procedure DisableResizeWindowCBClick(Sender: TObject);
     procedure ExitButtonClick(Sender: TObject);
     procedure adm1Click(Sender: TObject);
     procedure FindEditChange(Sender: TObject);
@@ -115,6 +119,7 @@ type
       State: TCustomDrawState; var DefaultDraw: Boolean);
     procedure ListBasesEnter(Sender: TObject);
     procedure LogPageShow(Sender: TObject);
+    procedure PageControl1Change(Sender: TObject);
     procedure SelectAllBasesClick(Sender: TObject);
     procedure UnselectAllBasesClick(Sender: TObject);
     procedure NameOrgEditChange(Sender: TObject);
@@ -150,6 +155,7 @@ type
       Shift: TShiftState);
     procedure USRDirButtonClick(Sender: TObject);
     procedure USRDirEditChange(Sender: TObject);
+    procedure WordWrapCBClick(Sender: TObject);
     procedure yes1Click(Sender: TObject);
   private
     BasesLST: TStringList;
@@ -169,8 +175,10 @@ type
     DatePopoln, ListFiles: TStringList;
     iTaskBar: ITaskbarList3;
     procedure FillTableBase;
-    procedure RichMemo1MouseWheel(Sender: TObject; Shift: TShiftState;
+    procedure RichMemoMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+    procedure RichMemoKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
   end;
 
 var
@@ -188,7 +196,7 @@ uses
 const
   br: string = #13#10; // перевод строки
 
-procedure TMainForm.RichMemo1MouseWheel(Sender: TObject; Shift: TShiftState;
+procedure TMainForm.RichMemoMouseWheel(Sender: TObject; Shift: TShiftState;
   WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
 begin
   (sender as trichmemo).ScrollBy(0, WheelDelta);
@@ -234,42 +242,48 @@ begin
 end;
 
 procedure TMainForm.ApplyButtonClick(Sender: TObject);
+var
+  err: boolean;
 begin
+  err:=False;
   if NameOrgEdit.Text='' then begin
     NameOrgEdit.Color:=clRed;
-    OpenCfgPage;
+    err:=True;
   end;
 
   if not DirectoryExists(PopolnEdit.Text) and PopolnCheckBox.Checked and
     not (Copy(PopolnEdit.Text, 0, 3)='[x]') then begin
       PopolnEdit.Color:=clRed;
-      OpenCfgPage;
+      err:=True;
   end;
 
   if not DirectoryExists(STTEdit.Text) and STTCheckBox.Checked then begin
     STTEdit.Color:=clRed;
-    OpenCfgPage;
+    err:=True;
   end;
 
   if not DirectoryExists(USRDirEdit.Text) and USRCheckBox.Checked and
     not (Copy(USRDirEdit.Text, 0, 3)='[x]') then begin
       USRDirEdit.Color:=clRed;
-      OpenCfgPage;
+      err:=True;
   end;
 
   if not FileExists(DirConsEdit.Text+'\base\baselist.cfg') then begin
     DirConsEdit.Color:=clRed;
-    OpenCfgPage;
+    err:=True;
   end
   else
     if DirConsChange then begin
       FillTableBase;
-      SelectAllBasesClick(self);
+      SelectAllBasesClick(nil);
       DirConsChange:=False;
     end;
 
-  SaveCFG;
-  LoadedCfg:=LoadCFG;
+  if err then
+    ScrollBox1.ScrollInView(NameOrgEdit)
+  else
+    SaveCFG;
+  //LoadedCfg:=LoadCFG;
 end;
 
 // создавать или нет подпапки с названием организации
@@ -294,15 +308,36 @@ procedure TMainForm.DirConsEditChange(Sender: TObject);
 var
   s: string;
 begin
-  DirConsEdit.Color:=clWindow;
-  if DirConsEdit.Text<>'' then begin
+  if FileExists(DirConsEdit.Text+'\base\baselist.cfg') then begin
+    DirConsEdit.Color:=clWindow;
     DirConsChange:=True;
     s:=DirConsEdit.Text+'\ADM\STS';
     if DirectoryExists(s) then
       STTEdit.Text:=s
     else
       STTEdit.Text:='';
-  end;
+  end
+  else
+    DirConsEdit.Color:=clRed;
+end;
+
+// отключение возможности изменить размер окна
+procedure TMainForm.DisableResizeWindowCBClick(Sender: TObject);
+begin
+  with MainForm do
+    if DisableResizeWindowCB.Checked then begin
+      Constraints.MaxHeight:=Height;
+      Constraints.MaxWidth:=Width;
+      Constraints.MinHeight:=Height;
+      Constraints.MinWidth:=Width;
+      //MainForm.BorderIcons:=[biSystemMenu, biMinimize];
+    end
+    else begin
+      Constraints.MaxHeight:=0;
+      Constraints.MaxWidth:=0;
+      Constraints.MinHeight:=0;
+      Constraints.MinWidth:=0;
+    end;
 end;
 
 // процедура используется для копирования SST и USR файлов
@@ -453,12 +488,25 @@ begin
 end;
 
 procedure TMainForm.USRDirEditChange(Sender: TObject);
+var
+  de: boolean;
 begin
-  USRDirEdit.Color:=clWindow;
   if Copy(USRDirEdit.Text, 0, 3)='[x]' then
     USRPath:=GetPathX(USRDirEdit.Text)
   else
     USRPath:=USRDirEdit.Text;
+
+  if USRPath<>'' then de:=DirectoryExists(USRPath);
+  if (de and USRCheckBox.Checked) or de then
+    USRDirEdit.Color:=clWindow
+  else
+    USRDirEdit.Color:=clRed;
+end;
+
+// перенос строк в разделе документация
+procedure TMainForm.WordWrapCBClick(Sender: TObject);
+begin
+  TRichMemo(PageControl1.ActivePage.Controls[0]).WordWrap := WordWrapCB.Checked;
 end;
 
 // добавляет в настройках командной строки параметр /yes
@@ -586,11 +634,11 @@ end;
 
 procedure TMainForm.FormResize(Sender: TObject);
 begin
-  if (MainForm.Width < Round((600*(Screen.PixelsPerInch/100)))) or
+  {if (MainForm.Width < Round((600*(Screen.PixelsPerInch/100)))) or
     (MainForm.Height < Round((500*(Screen.PixelsPerInch/100)))) then
     MainForm.AutoScroll:=True
   else
-    MainForm.AutoScroll:=False;
+    MainForm.AutoScroll:=False;}
 end;
 
 // если не загрузились параметры при запуске программы, открыть раздел с настройками
@@ -658,6 +706,19 @@ begin
   WriteReport;
 end;
 
+procedure TMainForm.PageControl1Change(Sender: TObject);
+begin
+  WordWrapCBClick(nil);
+end;
+
+// запрет удаления и вырезания текста в документации
+procedure TMainForm.RichMemoKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if (Key=VK_DELETE) or ((Key=VK_X) and (Shift=[ssCtrl])) then
+     Key:=0;
+end;
+
 // снятие выбора со всех элементов в списке баз
 procedure TMainForm.SelectAllBasesClick(Sender: TObject);
 var
@@ -685,8 +746,12 @@ end;
 // вывод в заголовке названия организации
 procedure TMainForm.NameOrgEditChange(Sender: TObject);
 begin
-   NameOrgEdit.Color:=clWindow;
-   ClientLabel.Caption:='Организация: '+NameOrgEdit.Text;
+  if NameOrgEdit.Text<>'' then begin
+    NameOrgEdit.Color:=clWindow;
+    ClientLabel.Caption:='Организация: '+NameOrgEdit.Text;
+  end
+  else
+    NameOrgEdit.Color:=clRed;
 end;
 
 // перемещение скроллбокса на начало
@@ -748,13 +813,19 @@ begin
 end;
 
 procedure TMainForm.PopolnEditChange(Sender: TObject);
+var
+  de: boolean;
 begin
-  PopolnEdit.Color:=clWindow;
-
   if Copy(PopolnEdit.Text, 0, 3)='[x]' then
     PopolnPath:=GetPathX(PopolnEdit.Text)
   else
     PopolnPath:=PopolnEdit.Text;
+
+  if PopolnPath<>'' then de:=DirectoryExists(PopolnPath);
+  if (de and PopolnCheckBox.Checked) or de then
+    PopolnEdit.Color:=clWindow
+  else
+    PopolnEdit.Color:=clRed;
 end;
 
 // вывод главной вкладки
@@ -859,9 +930,9 @@ begin
   DirConsEdit.Text:=FindCons;
   if DirConsEdit.Text<>'' then begin
     DirConsChange:=True;
+    STTEdit.Text:=DirConsEdit.Text+'\ADM\STS';
   end;
   USRDirEdit.Text:='';
-  STTEdit.Text:=DirConsEdit.Text+'\ADM\STS';
   cbCreateSubDir.Checked:=true;
   PopolnCheckBox.Checked:=false;
   PopolnCheckBoxClick(nil);
@@ -873,6 +944,10 @@ begin
   cbCloseProg.Checked:=False;
   ListBases.Items.Clear;
   DatePopoln.Clear;
+  DisableResizeWindowCB.Checked:=False;
+  DisableResizeWindowCBClick(nil);
+  MainForm.Width:=623;
+  MainForm.Height:=500;
   OpenCfgPage;
 end;
 
@@ -918,8 +993,14 @@ begin
 end;
 
 procedure TMainForm.STTEditChange(Sender: TObject);
+var
+  de: boolean;
 begin
-  STTEdit.Color:=clWindow;
+  de:=DirectoryExists(STTEdit.Text);
+  if (de and STTCheckBox.Checked) or de then
+    STTEdit.Color:=clWindow
+  else
+    STTEdit.Color:=clRed;
 end;
 
 // вывод отчёта

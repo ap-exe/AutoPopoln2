@@ -215,8 +215,9 @@ begin
     for I := 1 to GetEnvironmentVariableCount do
       Process.Environment.Add(GetEnvironmentString(I));
 
-    Process.Executable := exename;
-    Process.Parameters.Add(cmdline);
+    {Process.Executable := exename;
+    Process.Parameters.Add(cmdline);}
+    Process.CommandLine := exename + ' ' + cmdline;
     Process.Execute;
   finally
     Process.Free;
@@ -330,13 +331,14 @@ begin
           RM := TRichMemo.Create(nil);
           RM.Parent := TabSheet;
           RM.Align := alClient;
-          RM.ScrollBars := ssBoth;
+          RM.ScrollBars := ssAutoBoth;
           RM.BorderStyle := bsNone;
           // пришлось использовать этот костыль, чтоб проги компилировались
           // по непонятной причине в AP компилится без @, а в EditBases с @
           {$IFDEF ap}
-            RM.OnMouseWheel := MainForm.RichMemo1MouseWheel;
-            RM.ReadOnly := True;
+            RM.OnMouseWheel := MainForm.RichMemoMouseWheel;
+            RM.OnKeyDown := MainForm.RichMemoKeyDown;
+            //RM.ReadOnly := True;
           {$ELSE}
             RM.OnMouseWheel := @MainForm.RichMemo1MouseWheel;
           {$ENDIF}

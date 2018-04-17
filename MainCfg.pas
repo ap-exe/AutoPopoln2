@@ -72,6 +72,8 @@ begin
         r.WriteInteger('Top', MainForm.Top);
         r.WriteInteger('Left', MainForm.Left);
         r.WriteInteger('WindowState', integer(MainForm.WindowState));
+
+        r.WriteBool('DisableResizeWindow', MainForm.DisableResizeWindowCB.Checked);
        end
       else Exit(False);
     finally
@@ -161,6 +163,11 @@ begin
       if MainForm.Left < 0 then MainForm.Left:=0;
       if MainForm.Width > Screen.Width then MainForm.Width:=Screen.Width;
       if MainForm.Height > Screen.Height then MainForm.Height:=Screen.WorkAreaHeight;
+
+      if r.ValueExists('DisableResizeWindow') then begin
+        MainForm.DisableResizeWindowCB.Checked := r.ReadBool('DisableResizeWindow');
+        MainForm.DisableResizeWindowCBClick(nil);
+      end;
 
       if r.ValueExists('PopolnBases') then begin
         s:=r.ReadString('PopolnBases');
