@@ -1,11 +1,13 @@
 object MainForm: TMainForm
-  Left = 273
+  Left = 272
   Height = 415
   Top = 182
   Width = 521
   Caption = 'Редактирование bases.lst'
   ClientHeight = 395
   ClientWidth = 521
+  Constraints.MinHeight = 415
+  Constraints.MinWidth = 521
   Menu = MainMenu1
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery

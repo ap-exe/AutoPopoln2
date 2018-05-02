@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, FileUtil, DateTimePicker, Forms, Controls, Graphics,
   ActiveX, Dialogs, ComCtrls, ExtCtrls, StdCtrls, Menus, Buttons, EditBtn,
   ShlObj, Windows, RegExpr, LCLType, lconvencoding, RichMemo,
-  LazUTF8, DateUtils, Registry, Types;
+  LazUTF8, TplAppEventsUnit, DateUtils, Registry, Types;
 
 type
 
@@ -24,12 +24,12 @@ type
     InvertSelect: TMenuItem;
     KeyCmdButton: TSpeedButton;
     KeyCmdEdit: TLabeledEdit;
+    Memo1: TMemo;
     Panel3: TPanel;
     PrevSearchButton: TButton;
     NextSearchButton: TButton;
     FindEdit: TEdit;
     Label1: TLabel;
-    Label3: TLabel;
     PageControl1: TPageControl;
     Panel2: TPanel;
     ReloadDTButton: TButton;
@@ -109,7 +109,6 @@ type
     procedure FindEditMouseEnter(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
-    procedure FormResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormWindowStateChange(Sender: TObject);
     procedure InvertSelectClick(Sender: TObject);
@@ -574,6 +573,13 @@ var
   s2: RawByteString;
   f: text;
 begin
+  mainform.Constraints.SetInterfaceConstraints(round(650*Screen.PixelsPerInch/100),
+    round(500*Screen.PixelsPerInch/100), 0, 0);
+  mainform.DoubleBuffered:=true;
+  PageControl.DoubleBuffered:=true;
+  TreeView1.DoubleBuffered:=true;
+  Panel1.DoubleBuffered:=true;
+
   TotalCopyLabel.Caption:='';
   TempPath := GetLocalTmpPath + 'ap\';
   DatePopoln:=TStringList.Create;
@@ -630,15 +636,6 @@ begin
     if (iTaskBar <> nil) then
       iTaskBar.SetProgressState(MainForm.Handle, TBPF_INDETERMINATE);
   end;
-end;
-
-procedure TMainForm.FormResize(Sender: TObject);
-begin
-  {if (MainForm.Width < Round((600*(Screen.PixelsPerInch/100)))) or
-    (MainForm.Height < Round((500*(Screen.PixelsPerInch/100)))) then
-    MainForm.AutoScroll:=True
-  else
-    MainForm.AutoScroll:=False;}
 end;
 
 // если не загрузились параметры при запуске программы, открыть раздел с настройками

@@ -1,8 +1,8 @@
 object AboutForm: TAboutForm
-  Left = 273
-  Height = 388
-  Top = 182
-  Width = 600
+  Left = 270
+  Height = 485
+  Top = 185
+  Width = 669
   HorzScrollBar.Page = 525
   HorzScrollBar.Range = 525
   VertScrollBar.Page = 295
@@ -11,21 +11,22 @@ object AboutForm: TAboutForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'О программе'
-  ClientHeight = 388
-  ClientWidth = 600
-  Constraints.MinHeight = 388
-  Constraints.MinWidth = 535
+  ClientHeight = 485
+  ClientWidth = 669
+  Constraints.MinHeight = 485
+  Constraints.MinWidth = 669
+  DesignTimePPI = 120
   OnClick = FormClick
   OnCreate = FormCreate
   Position = poMainFormCenter
   LCLVersion = '6.3'
   object Image1: TImage
-    Left = 10
-    Height = 64
-    Top = 16
-    Width = 64
-    BorderSpacing.Left = 20
-    BorderSpacing.Top = 20
+    Left = 12
+    Height = 80
+    Top = 20
+    Width = 80
+    BorderSpacing.Left = 25
+    BorderSpacing.Top = 25
     OnClick = FormClick
     Picture.Data = {
       1754506F727461626C654E6574776F726B47726170686963C501000089504E47
@@ -47,28 +48,45 @@ object AboutForm: TAboutForm
     }
   end
   object Label1: TLabel
-    Left = 90
-    Height = 15
-    Top = 22
-    Width = 34
+    Left = 112
+    Height = 20
+    Top = 20
+    Width = 44
     Caption = 'Label1'
     ParentColor = False
     OnClick = FormClick
   end
-  object Label2: TLabel
-    Left = 20
-    Height = 272
-    Top = 96
-    Width = 560
-    Align = alBottom
+  object Memo1: TMemo
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Image1
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 6
+    Height = 373
+    Top = 106
+    Width = 657
     Anchors = [akTop, akLeft, akRight, akBottom]
-    AutoSize = False
-    BorderSpacing.Left = 20
-    BorderSpacing.Right = 20
-    BorderSpacing.Bottom = 20
-    Caption = 'Программа распростроняется под лицензией GNU General Public License version 3'#13#10'Это проект с открытыми исходными кодами, они доступны на GitHub (https://github.com/ap-exe/AutoPopoln2).'#13#10'Абсолютна бесплатна для коммерческого использования.'#13#10'Программа написана на FreePascal(https://www.freepascal.org/) с использованием CodeTyphon(http://www.pilotlogic.com/).'#13#10#13#10'Лицензионное соглашение.'#13#10#13#10'ПРОГРАММА РАСПРОСТРАНЯЕТСЯ ПО ПРИНЦИПУ "КАК ЕСТЬ". ПРИ ЭТОМ НЕ ПРЕДУСМАТРИВАЕТСЯ НИКАКИХ ГАРАНТИЙ, ЯВНЫХ ИЛИ ПОДРАЗУМЕВАЕМЫХ. ВЫ ИСПОЛЬЗУЕТЕ ЕЕ НА СВОЙ СОБСТВЕННЫЙ РИСК. АВТОР НЕ НЕСЕТ ОТВЕТСТВЕННОСТИ ЗА ПОТЕРИ ДАННЫХ, ПОВРЕЖДЕНИЯ, ПОТЕРИ ПРИБЫЛИ ИЛИ ЛЮБЫЕ ДРУГИЕ ВИДЫ ПОТЕРЬ, СВЯЗАННЫЕ С ИСПОЛЬЗОВАНИЕМ (ПРАВИЛЬНЫМ ИЛИ НЕПРАВИЛЬНЫМ) ЭТОЙ ПРОГРАММЫ.'#13#10#13#10'Если вы не согласны с условиями данной лицензии, то должны удалить программу со своих устройств хранения информации и отказаться от дальнейшего использования этого программного продукта.'
-    ParentColor = False
-    WordWrap = True
-    OnClick = FormClick
+    BorderSpacing.Left = 6
+    BorderSpacing.Top = 6
+    BorderSpacing.Right = 6
+    BorderSpacing.Bottom = 6
+    Lines.Strings = (
+      'Программа распростроняется под лицензией GNU General Public License version 3'
+      'Это проект с открытыми исходными кодами, они доступны на GitHub (https://github.com/ap-exe/AutoPopoln2).'
+      'Абсолютна бесплатна для коммерческого использования.'
+      'Программа написана на FreePascal(https://www.freepascal.org/) с использованием CodeTyphon(http://www.pilotlogic.com/).'
+      ''
+      'Лицензионное соглашение.'
+      ''
+      'ПРОГРАММА РАСПРОСТРАНЯЕТСЯ ПО ПРИНЦИПУ "КАК ЕСТЬ". ПРИ ЭТОМ НЕ ПРЕДУСМАТРИВАЕТСЯ НИКАКИХ ГАРАНТИЙ, ЯВНЫХ ИЛИ ПОДРАЗУМЕВАЕМЫХ. ВЫ ИСПОЛЬЗУЕТЕ ЕЕ НА СВОЙ СОБСТВЕННЫЙ РИСК. АВТОР НЕ НЕСЕТ ОТВЕТСТВЕННОСТИ ЗА ПОТЕРИ ДАННЫХ, ПОВРЕЖДЕНИЯ, ПОТЕРИ ПРИБЫЛИ ИЛИ ЛЮБЫЕ ДРУГИЕ ВИДЫ ПОТЕРЬ, СВЯЗАННЫЕ С ИСПОЛЬЗОВАНИЕМ (ПРАВИЛЬНЫМ ИЛИ НЕПРАВИЛЬНЫМ) ЭТОЙ ПРОГРАММЫ.'
+      ''
+      'Если вы не согласны с условиями данной лицензии, то должны удалить программу со своих устройств хранения информации и отказаться от дальнейшего использования этого программного продукта.'
+    )
+    ReadOnly = True
+    ScrollBars = ssAutoVertical
+    TabOrder = 0
   end
 end

@@ -7,8 +7,13 @@
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
       <Title Value="ap"/>
+      <Scaled Value="True"/>
       <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
+      <UseXPManifest Value="True"/>
+      <XPManifest>
+        <DpiAware Value="True"/>
+      </XPManifest>
       <Icon Value="0"/>
     </General>
     <VersionInfo>
@@ -16,7 +21,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="2"/>
       <MinorVersionNr Value="1"/>
-      <BuildNr Value="124"/>
+      <BuildNr Value="132"/>
       <Language Value="0419"/>
       <StringTable LegalCopyright="Freeware" OriginalFilename="ap" ProductName="АвтоПополнение" ProductVersion="2.0"/>
     </VersionInfo>

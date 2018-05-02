@@ -15,7 +15,7 @@ type
   TAboutForm = class(TForm)
     Image1: TImage;
     Label1: TLabel;
-    Label2: TLabel;
+    Memo1: TMemo;
     procedure FormClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private

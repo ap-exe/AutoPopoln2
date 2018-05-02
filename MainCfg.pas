@@ -161,8 +161,8 @@ begin
         MainForm.WindowState:=TWindowState(r.ReadInteger('WindowState'));
       if MainForm.Top < 0 then MainForm.Top:=0;
       if MainForm.Left < 0 then MainForm.Left:=0;
-      if MainForm.Width > Screen.Width then MainForm.Width:=Screen.Width;
-      if MainForm.Height > Screen.Height then MainForm.Height:=Screen.WorkAreaHeight;
+      if MainForm.Width > Screen.WorkAreaWidth-50 then MainForm.Width:=Screen.WorkAreaWidth-50;
+      if MainForm.Height > Screen.WorkAreaHeight-50 then MainForm.Height:=Screen.WorkAreaHeight - 50;
 
       if r.ValueExists('DisableResizeWindow') then begin
         MainForm.DisableResizeWindowCB.Checked := r.ReadBool('DisableResizeWindow');
