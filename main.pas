@@ -24,6 +24,8 @@ type
     InvertSelect: TMenuItem;
     KeyCmdButton: TSpeedButton;
     KeyCmdEdit: TLabeledEdit;
+    WorkDirButton: TSpeedButton;
+    WorkDirEdit: TLabeledEdit;
     Memo1: TMemo;
     Panel3: TPanel;
     PrevSearchButton: TButton;
@@ -63,6 +65,7 @@ type
     KeyCmdMenu: TPopupMenu;
     adm1: TMenuItem;
     base1: TMenuItem;
+    ReportTabControl: TTabControl;
     UnselectAllBases: TMenuItem;
     SelectAllBases: TMenuItem;
     OpenDirConsButton: TButton;
@@ -119,6 +122,7 @@ type
     procedure ListBasesEnter(Sender: TObject);
     procedure LogPageShow(Sender: TObject);
     procedure PageControl1Change(Sender: TObject);
+    procedure ReportTabControlChange(Sender: TObject);
     procedure SelectAllBasesClick(Sender: TObject);
     procedure UnselectAllBasesClick(Sender: TObject);
     procedure NameOrgEditChange(Sender: TObject);
@@ -155,6 +159,7 @@ type
     procedure USRDirButtonClick(Sender: TObject);
     procedure USRDirEditChange(Sender: TObject);
     procedure WordWrapCBClick(Sender: TObject);
+    procedure WorkDirButtonClick(Sender: TObject);
     procedure yes1Click(Sender: TObject);
   private
     BasesLST: TStringList;
@@ -164,6 +169,7 @@ type
     CountFiles: integer;
     procedure CopyConsFiles(FromPath, ToPath, Mask: string);
     function GetPathX(const path: string): string;
+    procedure LoadReportFile(FileName: string);
     procedure CopyUSR;
     procedure CopySTT;
     procedure CopyPopoln;
@@ -511,6 +517,13 @@ begin
   TRichMemo(PageControl1.ActivePage.Controls[0]).WordWrap := WordWrapCB.Checked;
 end;
 
+procedure TMainForm.WorkDirButtonClick(Sender: TObject);
+begin
+  SelectDirDialog.Title:='Выберите рабочую папку КонсультантПлюс';
+  if SelectDirDialog.Execute then
+    WorkDirEdit.Text:=SelectDirDialog.FileName;
+end;
+
 // добавляет в настройках командной строки параметр /yes
 procedure TMainForm.yes1Click(Sender: TObject);
 begin
@@ -707,6 +720,24 @@ end;
 procedure TMainForm.PageControl1Change(Sender: TObject);
 begin
   WordWrapCBClick(nil);
+end;
+
+procedure TMainForm.LoadReportFile(FileName: string);
+begin
+  Report.Clear;
+  if FileExists(WorkDirEdit.Text + '\' + FileName) then
+     Report.Lines.LoadFromFile(WorkDirEdit.Text + '\' + FileName, TEncoding.Default)
+  else
+    Report.Lines.Add('Файл ' + FileName + ' не найден!');
+end;
+
+procedure TMainForm.ReportTabControlChange(Sender: TObject);
+begin
+  case ReportTabControl.TabIndex of
+       0: WriteReport;
+       1: LoadReportFile('cons_err.txt');
+       2: LoadReportFile('cons_inet.txt');
+  end;
 end;
 
 // запрет удаления и вырезания текста в документации

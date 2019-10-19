@@ -49,6 +49,8 @@ begin
 
         r.WriteString('DirCons', MainForm.DirConsEdit.Text);
 
+        r.WriteString('WorkDir', MainForm.WorkDirEdit.Text);
+
         r.WriteBool('CopyUSR', MainForm.USRCheckBox.Checked);
         r.WriteString('USRDir', MainForm.USRDirEdit.Text);
 
@@ -121,6 +123,10 @@ begin
       else
         MainForm.DirConsEdit.Text:='';
 
+      if r.ValueExists('WorkDir') then
+        MainForm.WorkDirEdit.Text:=r.ReadString('WorkDir')
+      else
+        MainForm.WorkDirEdit.Text:='';
 
       if r.ValueExists('CopyUSR') and r.ValueExists('USRDir') then begin
         MainForm.USRCheckBox.Checked:=r.ReadBool('CopyUSR');

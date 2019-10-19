@@ -59,10 +59,10 @@ object MainForm: TMainForm
     Top = 42
     Width = 520
     TabStop = False
-    ActivePage = PopolnPage
+    ActivePage = CfgPage
     Align = alClient
     ShowTabs = False
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 1
     object PopolnPage: TTabSheet
       Caption = 'PopolnPage'
@@ -312,7 +312,7 @@ object MainForm: TMainForm
         Top = 0
         Width = 512
         HorzScrollBar.Increment = 36
-        HorzScrollBar.Page = 365
+        HorzScrollBar.Page = 364
         VertScrollBar.Increment = 57
         VertScrollBar.Page = 400
         Align = alClient
@@ -373,7 +373,7 @@ object MainForm: TMainForm
           AnchorSideRight.Side = asrBottom
           Left = 8
           Height = 72
-          Top = 222
+          Top = 272
           Width = 477
           Anchors = [akTop, akLeft, akRight]
           BorderSpacing.Right = 10
@@ -429,7 +429,7 @@ object MainForm: TMainForm
           AnchorSideRight.Side = asrBottom
           Left = 8
           Height = 72
-          Top = 302
+          Top = 360
           Width = 477
           Anchors = [akTop, akLeft, akRight]
           BorderSpacing.Right = 10
@@ -441,7 +441,7 @@ object MainForm: TMainForm
             Left = 8
             Height = 19
             Top = -18
-            Width = 149
+            Width = 147
             Caption = 'Копировать STT файлы'
             OnClick = STTCheckBoxClick
             TabOrder = 0
@@ -484,7 +484,7 @@ object MainForm: TMainForm
           AnchorSideRight.Side = asrBottom
           Left = 8
           Height = 91
-          Top = 382
+          Top = 440
           Width = 477
           Anchors = [akTop, akLeft, akRight]
           BorderSpacing.Right = 10
@@ -551,7 +551,7 @@ object MainForm: TMainForm
           AnchorSideRight.Side = asrBottom
           Left = 8
           Height = 48
-          Top = 480
+          Top = 538
           Width = 477
           Anchors = [akTop, akLeft, akRight]
           BorderSpacing.Right = 10
@@ -564,7 +564,7 @@ object MainForm: TMainForm
             Left = 8
             Height = 19
             Top = 0
-            Width = 343
+            Width = 342
             Caption = 'Закрывать программу (работает только с ключом /AUTO)'
             TabOrder = 0
           end
@@ -575,7 +575,7 @@ object MainForm: TMainForm
           AnchorSideRight.Side = asrBottom
           Left = 0
           Height = 50
-          Top = 560
+          Top = 624
           Width = 495
           Anchors = [akTop, akLeft, akRight]
           BevelOuter = bvNone
@@ -611,9 +611,9 @@ object MainForm: TMainForm
           end
         end
         object DisableResizeWindowCB: TCheckBox
-          Left = 18
+          Left = 14
           Height = 19
-          Top = 536
+          Top = 600
           Width = 286
           Caption = 'Запретить изменение размера окна программы'
           OnClick = DisableResizeWindowCBClick
@@ -623,19 +623,19 @@ object MainForm: TMainForm
           AnchorSideRight.Control = ScrollBox1
           AnchorSideRight.Side = asrBottom
           Left = 8
-          Height = 115
+          Height = 166
           Top = 98
           Width = 477
           Anchors = [akTop, akLeft, akRight]
           BorderSpacing.Right = 10
-          ClientHeight = 95
+          ClientHeight = 146
           ClientWidth = 473
           TabOrder = 7
           object KeyCmdEdit: TLabeledEdit
             AnchorSideRight.Control = KeyCmdButton
             Left = 8
             Height = 23
-            Top = 62
+            Top = 112
             Width = 433
             Anchors = [akTop, akLeft, akRight]
             EditLabel.AnchorSideLeft.Control = KeyCmdEdit
@@ -644,26 +644,28 @@ object MainForm: TMainForm
             EditLabel.AnchorSideBottom.Control = KeyCmdEdit
             EditLabel.Left = 8
             EditLabel.Height = 15
-            EditLabel.Top = 44
+            EditLabel.Top = 94
             EditLabel.Width = 433
-            EditLabel.Caption = 'Ключи командной строки Консультанта'
+            EditLabel.Caption = 'Ключи командной строки КонсультантПлюс'
             EditLabel.ParentColor = False
             TabOrder = 0
             Text = '/adm /receive /base* /yes'
           end
           object KeyCmdButton: TSpeedButton
             AnchorSideLeft.Side = asrBottom
+            AnchorSideRight.Control = GroupBox6
             AnchorSideRight.Side = asrBottom
             Left = 441
             Height = 23
-            Top = 62
+            Top = 112
             Width = 23
             Anchors = [akTop, akRight]
-            BorderSpacing.Right = 23
+            BorderSpacing.Right = 9
             Caption = '\/'
             OnClick = KeyCmdButtonClick
           end
           object DirConsButton: TSpeedButton
+            AnchorSideRight.Control = GroupBox6
             AnchorSideRight.Side = asrBottom
             Left = 441
             Height = 23
@@ -671,7 +673,7 @@ object MainForm: TMainForm
             Top = 16
             Width = 23
             Anchors = [akTop, akRight]
-            BorderSpacing.Right = 21
+            BorderSpacing.Right = 9
             Caption = '...'
             OnClick = DirConsButtonClick
           end
@@ -692,11 +694,44 @@ object MainForm: TMainForm
             EditLabel.Height = 15
             EditLabel.Top = -2
             EditLabel.Width = 433
-            EditLabel.Caption = 'Папка с Консультантом'
+            EditLabel.Caption = 'Папка с КонсультанПлюс'
             EditLabel.ParentColor = False
             ParentFont = False
             TabOrder = 1
             OnChange = DirConsEditChange
+          end
+          object WorkDirEdit: TLabeledEdit
+            AnchorSideLeft.Side = asrCenter
+            AnchorSideRight.Control = WorkDirButton
+            Left = 8
+            Height = 23
+            Top = 64
+            Width = 433
+            Anchors = [akTop, akLeft, akRight]
+            EditLabel.AnchorSideLeft.Control = WorkDirEdit
+            EditLabel.AnchorSideRight.Control = WorkDirEdit
+            EditLabel.AnchorSideRight.Side = asrBottom
+            EditLabel.AnchorSideBottom.Control = WorkDirEdit
+            EditLabel.Left = 8
+            EditLabel.Height = 15
+            EditLabel.Top = 46
+            EditLabel.Width = 433
+            EditLabel.Caption = 'Рабочая папка КонсультантПлюс'
+            EditLabel.ParentColor = False
+            TabOrder = 2
+            Text = 'C:\ConsUserData'
+          end
+          object WorkDirButton: TSpeedButton
+            AnchorSideRight.Control = GroupBox6
+            AnchorSideRight.Side = asrBottom
+            Left = 441
+            Height = 23
+            Top = 64
+            Width = 23
+            Anchors = [akTop, akRight]
+            BorderSpacing.Right = 9
+            Caption = '...'
+            OnClick = WorkDirButtonClick
           end
         end
       end
@@ -704,21 +739,37 @@ object MainForm: TMainForm
     object LogPage: TTabSheet
       Caption = 'LogPage'
       ClientHeight = 400
-      ClientWidth = 496
+      ClientWidth = 512
       OnShow = LogPageShow
-      object Report: TMemo
+      object ReportTabControl: TTabControl
         Left = 0
         Height = 400
-        Hint = 'Обновить окно можно кнопкой F5'
         Top = 0
-        Width = 496
+        Width = 512
+        HotTrack = True
+        OnChange = ReportTabControlChange
+        TabIndex = 0
+        Tabs.Strings = (
+          'last_rec'
+          'cons_err'
+          'cons_inet'
+        )
         Align = alClient
-        BorderStyle = bsNone
-        OnKeyDown = ReportKeyDown
-        OnMouseMove = TreeView1MouseMove
-        ReadOnly = True
-        ScrollBars = ssAutoBoth
         TabOrder = 0
+        object Report: TMemo
+          Left = 2
+          Height = 375
+          Hint = 'Обновить окно можно кнопкой F5'
+          Top = 23
+          Width = 508
+          Align = alClient
+          BorderStyle = bsNone
+          OnKeyDown = ReportKeyDown
+          OnMouseMove = TreeView1MouseMove
+          ReadOnly = True
+          ScrollBars = ssAutoBoth
+          TabOrder = 1
+        end
       end
     end
     object DocPage: TTabSheet
@@ -947,7 +998,7 @@ object MainForm: TMainForm
       Left = 10
       Height = 17
       Top = 20
-      Width = 166
+      Width = 165
       Anchors = [akTop, akLeft, akBottom]
       BorderSpacing.Left = 10
       BorderSpacing.Bottom = 5
