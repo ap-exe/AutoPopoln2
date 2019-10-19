@@ -20,7 +20,7 @@ Type
     ScanSubFolders: Boolean = True);
   function CopyFileEx(const InFile, OutFile: string; Replace: boolean;
     CallBack: TCallBack): boolean;
-  function FileVersion(const FileName: TFileName): String;
+  function FileVersion(const FileName: string): String;
   procedure RunAsAdministrator(const source: string; const params: string = '');
   procedure RunCommand2(const exename, cmdline: string);
   function GetFileNameFromLink(LinkFileName: string): string;
@@ -340,7 +340,7 @@ begin
             RM.OnKeyDown := MainForm.RichMemoKeyDown;
             //RM.ReadOnly := True;
           {$ELSE}
-            RM.OnMouseWheel := @MainForm.RichMemo1MouseWheel;
+            //RM.OnMouseWheel := @MainForm.RichMemo1MouseWheel;
           {$ENDIF}
           s := tmp + Copy(ini[i], Pos('=', ini[i]) + 1, Length(ini[i]) - 1);
           Result := LoadRTF(s, RM);

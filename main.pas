@@ -159,7 +159,7 @@ type
   private
     BasesLST: TStringList;
     TempPath, USRPath, PopolnPath, AppPath: string;
-    AddDate, DirConsChange, ctrl, ResizingColumn: boolean;
+    DirConsChange, ctrl, ResizingColumn: boolean;
     opt: TSearchOptions;
     CountFiles: integer;
     procedure CopyConsFiles(FromPath, ToPath, Mask: string);
@@ -224,6 +224,9 @@ end;
 // копирование файлов
 procedure TMainForm.CopyButtonClick(Sender: TObject);
 begin
+  CopyButton.Enabled:=False;
+  RunPopolnButton.Enabled:=False;
+
   CountFiles:=0;
   if USRCheckBox.Checked then
     CopyUSR;
@@ -232,6 +235,9 @@ begin
   if PopolnCheckBox.Checked then
     CopyPopoln;
   TotalCopyLabel.Caption:='Скопировано файлов: '+IntToStr(CountFiles);
+
+  CopyButton.Enabled:=True;
+  RunPopolnButton.Enabled:=True;
 end;
 
 // добавляет в настройках командной строки параметр /base*
@@ -325,17 +331,19 @@ procedure TMainForm.DisableResizeWindowCBClick(Sender: TObject);
 begin
   with MainForm do
     if DisableResizeWindowCB.Checked then begin
-      Constraints.MaxHeight:=Height;
+  {    Constraints.MaxHeight:=Height;
       Constraints.MaxWidth:=Width;
       Constraints.MinHeight:=Height;
-      Constraints.MinWidth:=Width;
+      Constraints.MinWidth:=Width;}
       //MainForm.BorderIcons:=[biSystemMenu, biMinimize];
+      MainForm.BorderStyle:=bsDialog;
     end
     else begin
-      Constraints.MaxHeight:=0;
+{      Constraints.MaxHeight:=0;
       Constraints.MaxWidth:=0;
       Constraints.MinHeight:=0;
-      Constraints.MinWidth:=0;
+      Constraints.MinWidth:=0;}
+      MainForm.BorderStyle:=bsSizeable;
     end;
 end;
 
@@ -372,9 +380,7 @@ var
   d, masks: string;
   RegExp: TRegExpr;
   CopyThread: TCopyFileThread;
-  added: boolean;
 begin
-  added:=False;
   if PopolnPath='' then begin
     MessageDlg('Ошибка', 'Не указана папка с пополнением!', mtError, [mbOK], 0);
     Exit;
@@ -384,13 +390,11 @@ begin
     Exit;
   end;
 
-  CopyButton.Enabled:=False;
-  RunPopolnButton.Enabled:=False;
   try
-    masks:='';
+    masks:='cons*.ans;';
     for i := 0 to ListBases.Items.Count - 1 do
       if ListBases.Items[i].Checked then
-        masks:=masks+ListBases.Items[i].SubItems[1]+'*.ans;';
+        masks:=masks+ListBases.Items[i].SubItems[1]+'#*.ans;';
     // поиск и копирование файлов в потоке)
     CopyThread:=TCopyFileThread.Create(PopolnPath, DirConsEdit.Text+'\Receive', masks,
       True, False);
@@ -409,18 +413,19 @@ begin
       if RegExp.Exec(CopyThread.FFileNames[j]) then begin
         d:=Copy(RegExp.Match[1], 0, 2)+'.'+Copy(RegExp.Match[1], 3, 2)+'.'+
           IntToStr(YearOf(Now));
-        if not (DatePopoln.Find(d, i) and added) then begin
-          if DatePopoln.Count=10 then DatePopoln.Delete(0);
-          DatePopoln.Add(d);
-          added:=True;
+
+        if DatePopoln.IndexOf(d) = -1 then begin
+          if DatePopoln.Count=10 then
+            DatePopoln.Delete(9);
+          DatePopoln.Insert(0, d);
         end
       end
       else begin // пишем текущую дату
         d:=DateToStr(Now);
-        if not (DatePopoln.Find(d, i) and added) then begin
-          if DatePopoln.Count=10 then DatePopoln.Delete(0);
-          DatePopoln.Add(d);
-          added:=True;
+       if DatePopoln.IndexOf(d) = -1 then begin
+          if DatePopoln.Count=10 then
+            DatePopoln.Delete(9);
+          DatePopoln.Insert(0, d);
         end;
       end;
     RegExp.Free;
@@ -429,8 +434,6 @@ begin
     ProgressBar1.Position:=0;
     if CheckWin32Version(6,1) then
       iTaskBar.SetProgressState(MainForm.Handle, TBPF_NOPROGRESS);
-    CopyButton.Enabled:=True;
-    RunPopolnButton.Enabled:=True;
   end;
 end;
 
@@ -573,9 +576,7 @@ var
   s2: RawByteString;
   f: text;
 begin
-  mainform.Constraints.SetInterfaceConstraints(round(650*Screen.PixelsPerInch/100),
-    round(500*Screen.PixelsPerInch/100), 0, 0);
-  mainform.DoubleBuffered:=true;
+  MainForm.DoubleBuffered:=true;
   PageControl.DoubleBuffered:=true;
   TreeView1.DoubleBuffered:=true;
   Panel1.DoubleBuffered:=true;
@@ -584,8 +585,8 @@ begin
   TempPath := GetLocalTmpPath + 'ap\';
   DatePopoln:=TStringList.Create;
   DatePopoln.Duplicates:=dupIgnore;
-  DatePopoln.Sorted:=True;
-  AddDate:=False;
+  DatePopoln.Sorted:=False;
+
   ResizingColumn := False;
 
   BasesLST:=TStringList.Create;
@@ -627,7 +628,7 @@ begin
   DirConsChange:=False;
 
   Label2.Caption:='АвтоПополнение'+br+FileVersion(Application.ExeName)+
-    br+'Freeware (C) 2009-2018';
+    br+'Freeware (C) 2009-2019';
 
   // инициализация прогрессбара на панели задач в Windows 7+
   if CheckWin32Version(6,1) then begin

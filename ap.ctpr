@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="10"/>
+    <Version Value="11"/>
     <PathDelim Value="\"/>
     <General>
       <SessionStorage Value="InProjectDir"/>
@@ -21,7 +21,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="2"/>
       <MinorVersionNr Value="1"/>
-      <BuildNr Value="132"/>
+      <BuildNr Value="147"/>
       <Language Value="0419"/>
       <StringTable LegalCopyright="Freeware" OriginalFilename="ap" ProductName="АвтоПополнение" ProductVersion="2.0"/>
     </VersionInfo>
@@ -81,9 +81,10 @@
       <Version Value="2"/>
     </PublishOptions>
     <RunParams>
-      <local>
-        <FormatVersion Value="1"/>
-      </local>
+      <FormatVersion Value="2"/>
+      <Modes Count="1">
+        <Mode0 Name="default"/>
+      </Modes>
     </RunParams>
     <RequiredPackages Count="7">
       <Item1>
@@ -145,10 +146,6 @@
         </Win32>
       </Options>
     </Linking>
-    <Other>
-      <CustomOptions Value="-dap
--vd"/>
-    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="3">

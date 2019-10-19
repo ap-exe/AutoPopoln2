@@ -33,7 +33,7 @@ end;
 // функция сохраняет параметры программы в реестре
 function SaveCfg: boolean;
 var
-  i: integer;
+  i, dpi: integer;
   s: string;
 begin
   Result:=False;
@@ -67,8 +67,12 @@ begin
         for i:=0 to MainForm.DatePopoln.Count-1 do
           r.WriteString(IntToStr(i+1)+'_Popoln', MainForm.DatePopoln[i]);
         // сохранение положения окна
-        r.WriteInteger('Width', MainForm.Width);
-        r.WriteInteger('Height', MainForm.Height);
+        dpi:=1;
+        if Screen.PixelsPerInch = 120 then dpi:=125;
+        if Screen.PixelsPerInch = 144 then dpi:=150;
+
+        r.WriteInteger('Width', MainForm.Width div dpi);
+        r.WriteInteger('Height', MainForm.Height div dpi);
         r.WriteInteger('Top', MainForm.Top);
         r.WriteInteger('Left', MainForm.Left);
         r.WriteInteger('WindowState', integer(MainForm.WindowState));
@@ -155,19 +159,22 @@ begin
       // читаем положение окна
       if r.ValueExists('Top') then MainForm.Top:=r.ReadInteger('Top');
       if r.ValueExists('Left') then MainForm.Left:=r.ReadInteger('Left');
-      if r.ValueExists('Width') then MainForm.Width:=r.ReadInteger('Width');
-      if r.ValueExists('Height') then MainForm.Height:=r.ReadInteger('Height');
+
       if r.ValueExists('WindowState') then
         MainForm.WindowState:=TWindowState(r.ReadInteger('WindowState'));
       if MainForm.Top < 0 then MainForm.Top:=0;
       if MainForm.Left < 0 then MainForm.Left:=0;
-      if MainForm.Width > Screen.WorkAreaWidth-50 then MainForm.Width:=Screen.WorkAreaWidth-50;
-      if MainForm.Height > Screen.WorkAreaHeight-50 then MainForm.Height:=Screen.WorkAreaHeight - 50;
 
       if r.ValueExists('DisableResizeWindow') then begin
         MainForm.DisableResizeWindowCB.Checked := r.ReadBool('DisableResizeWindow');
         MainForm.DisableResizeWindowCBClick(nil);
       end;
+      if not MainForm.DisableResizeWindowCB.Checked then begin
+        if r.ValueExists('Width') then MainForm.Width:=r.ReadInteger('Width');
+        if r.ValueExists('Height') then MainForm.Height:=r.ReadInteger('Height');
+      end;
+      if MainForm.Width > Screen.WorkAreaWidth-50 then MainForm.Width:=Screen.WorkAreaWidth-50;
+      if MainForm.Height > Screen.WorkAreaHeight-50 then MainForm.Height:=Screen.WorkAreaHeight - 50;
 
       if r.ValueExists('PopolnBases') then begin
         s:=r.ReadString('PopolnBases');
